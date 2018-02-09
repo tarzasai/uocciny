@@ -5,11 +5,8 @@ import sys
 import json
 import logging
 from logging.handlers import RotatingFileHandler
-from sqlalchemy import orm, create_engine, sql, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
-
 
 # quando l'app gira in IIS è sempre in una directory virtuale, quindi
 # bisogna gestire la porzione di path "non prevista" prima che le rule
@@ -27,7 +24,6 @@ class PrefixMiddleware(object):
             start_response('404', [('Content-Type', 'text/plain')])
             return ["This url does not belong to the app.".encode()]
 
-
 # creazione e configurazione servizio
 app = Flask(__name__)
 app.config.from_object('config')
@@ -39,7 +35,47 @@ CORS(app, resources=r'/*')
 logging.getLogger('flask_cors').level = logging.DEBUG
 
 
+def get_uof():
+    uof = getattr(g, '_uoccindata', None)
+    if uof is None:
+        with open(os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json')) as uf:
+            uof = g._uoccindata = json.load(uf)
+    return uof
 
+
+@app.before_request
+def do_something_whenever_a_request_comes_in():
+    app.logger.debug(request)
+
+@app.after_request
+def do_something_whenever_a_request_has_been_handled(response):
+    if response.status_code == 200:
+        app.logger.debug(response.data)
+    else:
+        app.logger.debug(response)
+    return response
+
+
+
+@app.route('/movies', methods=['GET', 'OPTIONS'])
+def get_movies():
+    try:
+        res = None
+        return jsonify({'status': 'success', 'result': res})
+    except Exception as err:
+        app.logger.error(err)
+        return jsonify({'status': 'error', 'error': err.message})
+
+
+@app.route('/series', methods=['GET', 'OPTIONS'])
+def get_series():
+    try:
+        res = None
+
+        return jsonify({'status': 'success', 'result': res})
+    except Exception as err:
+        app.logger.error(err)
+        return jsonify({'status': 'error', 'error': err.message})
 
 
 if __name__ == '__main__':

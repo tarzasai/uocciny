@@ -6,16 +6,14 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-            /*"pythonPath": "${config:python.pythonPath}",*/
             "pythonPath": "c:\\Python27",
             "program": "${file}",
             "cwd": "${workspaceRoot}",
             "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
                 "RedirectOutput"
             ],
-            "args": []
+            "args": [],
+            "env": {"UOCCIN_PATH": "C:\\Users\\Giorgio.Gelardi\\Google Drive\\uoccin.test"}
         }
     ]
 }
