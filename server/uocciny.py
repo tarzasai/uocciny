@@ -45,6 +45,8 @@ def get_uof():
 
 @app.before_request
 def do_something_whenever_a_request_comes_in():
+    if 'UOCCIN_PATH' not in app.config:
+        raise Exception('Invalid environment.')
     app.logger.debug(request)
 
 @app.after_request
@@ -56,22 +58,10 @@ def do_something_whenever_a_request_has_been_handled(response):
     return response
 
 
-
-@app.route('/movies', methods=['GET', 'OPTIONS'])
-def get_movies():
-    try:
-        res = None
-        return jsonify({'status': 'success', 'result': res})
-    except Exception as err:
-        app.logger.error(err)
-        return jsonify({'status': 'error', 'error': err.message})
-
-
-@app.route('/series', methods=['GET', 'OPTIONS'])
+@app.route('/data', methods=['GET', 'OPTIONS'])
 def get_series():
     try:
-        res = None
-
+        res = get_uof()
         return jsonify({'status': 'success', 'result': res})
     except Exception as err:
         app.logger.error(err)
