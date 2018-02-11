@@ -5,6 +5,7 @@
         "**/.settings": true,
         "**/.pydevproject": true,
         "**/.project": true,
+        "**/*.egg-info": true,
         "**/*.pyc": true,
         "**/*.log": true,
         "**/*.log.*": true,

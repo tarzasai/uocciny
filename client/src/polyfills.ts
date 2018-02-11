@@ -64,3 +64,28 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+declare global {
+    interface String {
+        startsWith(searchString: string): boolean;
+        endsWith(searchString: string): boolean;
+        contains(searchString: string): boolean;
+        sameAs(compareString: string): boolean;
+    }
+}
+
+String.prototype.startsWith = function(searchString: string): boolean {
+    return this.substr(0, searchString.length) === searchString;
+};
+
+String.prototype.endsWith = function(searchString: string): boolean {
+    return this.slice(-searchString.length) === searchString;
+}
+
+String.prototype.contains = function(searchString: string): boolean {
+    return this.indexOf(searchString) >= 0;
+};
+
+String.prototype.sameAs = function(compareString: string): boolean {
+    return this.toLocaleLowerCase() === compareString.toLocaleLowerCase();
+};
