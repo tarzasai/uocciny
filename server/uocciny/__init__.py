@@ -4,14 +4,14 @@ import sys
 import json
 import logging
 from logging.handlers import RotatingFileHandler
+from functools import wraps
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 
-from database import connect_db
+from database import connect_db, Series, Episode
+from movies import get_movies
 
-# quando l'app gira in IIS è sempre in una directory virtuale, quindi
-# bisogna gestire la porzione di path "non prevista" prima che le rule
-# di werkzeug diano 404 perchè non sanno come mappare le richieste.
+# questa classe serve solo in IIS
 class PrefixMiddleware(object):
     def __init__(self, wsgi_app, prefix=''):
         self.app = wsgi_app
@@ -25,13 +25,25 @@ class PrefixMiddleware(object):
             start_response('404', [('Content-Type', 'text/plain')])
             return ["This url does not belong to the app.".encode()]
 
-# creazione e configurazione servizio
+
+# creazione servizio
 app = Flask(__name__)
+
+# la configurazione può essere definita in tanti modi
 app.config.from_object('config')
 app.config.from_envvar('UOCCINY', silent=True)
-app.config.update(UOCCIN_PATH=os.environ.get("UOCCIN_PATH")) ## obbligatorio
+app.config.update(UOCCINY_DB=os.environ.get("UOCCINY_DB"))
+app.config.update(UOCCIN_PATH=os.environ.get("UOCCIN_PATH"))
+
+# di solito non mi interessa fare debug dal browser
+app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
+
+# quando il servizio gira in IIS è sempre in una directory virtuale, quindi bisogna gestire la porzione di path "non
+# prevista" prima che le rule di werkzeug diano 404 perchè non sanno come mappare le richieste.
 if 'ISS_VIRTUALFOLDER' in app.config:
     app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix='/' + app.config['ISS_VIRTUALFOLDER'])
+
+# CORS forse dovrebbe essere opzionale, cmq...
 CORS(app, resources=r'/*')
 logging.getLogger('flask_cors').level = logging.DEBUG
 
@@ -64,25 +76,53 @@ def after_request(response):
     if response.status_code == 200:
         app.logger.debug(response.data)
     else:
-        app.logger.debug(response)
+        app.logger.warning(response)
     return response
 
-#######################################################################################################################
+@app.errorhandler(500)
+def handle_internal_error(err):
+    app.logger.error(err)
+    return jsonify({'status': 500, 'result': str(err)}), 200
+
+########################################################################################################################
 ## VIEWS
-#######################################################################################################################
+########################################################################################################################
 
 @app.route('/')
 def index():
     return 'Uocciny server'
 
 @app.route('/uof', methods=['GET', 'OPTIONS'])
-def get_series():
-    try:
-        return jsonify({'status': 'success', 'result': get_uf()})
-    except Exception as err:
-        app.logger.error(err)
-        return jsonify({'status': 'error', 'result': str(err)})
+def view_uof():
+    return jsonify({'status': 200, 'result': get_uf()})
 
+@app.route('/movies', methods=['GET', 'OPTIONS'])
+def view_movies():
+    get_db()  ## ???
+
+    res = get_movies(
+        tmdb_id=request.args.get('tmdb_id', None),
+        imdb_id=request.args.get('imdb_id', None),
+        title=request.args.get('title', None),
+        watchlist=request.args.get('watchlist', None),
+        collected=request.args.get('collected', None),
+        watched=request.args.get('watched', None),
+    )
+    return jsonify({'status': 200, 'result': res})
+
+@app.route('/series', methods=['GET', 'OPTIONS'])
+def view_series():
+    res = None
+    ##
+    return jsonify({'status': 200, 'result': res})
+
+@app.route('/episodes', methods=['GET', 'OPTIONS'])
+def view_episodes():
+    res = None
+    ##
+    return jsonify({'status': 200, 'result': res})
+
+########################################################################################################################
 
 if __name__ == '__main__':
     # il debugger di VSCode non funziona se app.debug=True, ma i messaggi di debug vengono registrati
@@ -94,4 +134,4 @@ if __name__ == '__main__':
         logrfh.setLevel(logging.DEBUG if sys.argv[1] == 'DEBUG' else logging.INFO)
         logrfh.setFormatter(logfmt)
         app.logger.addHandler(logrfh)
-    app.run(port=8088, debug=fromShell)
+    app.run(port=5000, debug=fromShell)

@@ -12,7 +12,11 @@
             "debugOptions": [
                 "RedirectOutput"
             ],
-            "args": []
+            "args": [],
+            "env": {
+                "UOCCINY_DB": "C:\\Workspace\\uocciny\\test\\data.db",
+                "UOCCIN_PATH": "C:\\Workspace\\uocciny\\test\\uoccin_path",
+            }
         }
     ]
 }
