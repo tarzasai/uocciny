@@ -29,6 +29,7 @@ class Movie(Base):
         return (datetime.now() - self.updated.python_type).total_seconds() > max_age
     
     def update_from_tmdb(self):
+        from uocciny import app
         mid = self.tmdb_id if self.tmdb_id is not None else self.imdb_id
         app.logger.debug('looking for movie id %s...' % str(mid))
         res = tmdb.Movies(mid).info(language='en', append_to_response='credits')
@@ -46,7 +47,7 @@ class Movie(Base):
         self.updated.python_type = datetime.now()
 
 
-def get_movies(tmdb_id=None, imdb_id=None, title=None, watchlist=None, collected=None, watched=None):
+def get_movie(tmdb_id=None, imdb_id=None):
 
     from uocciny import app, get_db
     MAX_AGE = app.config.get('MAX_AGE_MOVIES', 1000 * 60 * 60 * 24 * 30) ## default 30 giorni
@@ -55,21 +56,25 @@ def get_movies(tmdb_id=None, imdb_id=None, title=None, watchlist=None, collected
     res = []
 
     if tmdb_id is not None:
-        lm = Movie.query.filter(Movie.tmdb_id == tmdb_id).first()
-        if lm is None:
-            lm = Movie(tmdb_id = tmdb_id)
-        res.append(lm)
+        m = Movie.query.filter(Movie.tmdb_id == tmdb_id).first()
+        if m is None:
+            m = Movie(tmdb_id = tmdb_id)
+            m.update_from_tmdb()
+        res.append(m)
 
     elif imdb_id is not None:
-        lm = Movie.query.filter(Movie.imdb_id == imdb_id).first()
-        if lm is None:
-            lm = Movie(imdb_id = imdb_id)
-        res.append(lm)
-        
-        
-        
+        m = Movie.query.filter(Movie.imdb_id == imdb_id).first()
+        if m is None:
+            m = Movie(imdb_id = imdb_id)
+            m.update_from_tmdb()
+        res.append(m)
 
     return res
+
+
+def get_movies(watchlist=None, collected=None, watched=None):
+    pass
+
 
 def check_and_update(movie, max_age):
     if movie.tmdb_id is None or movie.imdb_id is None or movie.released is None or movie.older_than(max_age):

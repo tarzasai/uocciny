@@ -103,7 +103,6 @@ def view_movies():
     res = get_movies(
         tmdb_id=request.args.get('tmdb_id', None),
         imdb_id=request.args.get('imdb_id', None),
-        title=request.args.get('title', None),
         watchlist=request.args.get('watchlist', None),
         collected=request.args.get('collected', None),
         watched=request.args.get('watched', None),
