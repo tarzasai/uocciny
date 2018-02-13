@@ -4,12 +4,10 @@ import sys
 import json
 import logging
 from logging.handlers import RotatingFileHandler
-from functools import wraps
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 
-from database import connect_db, Series, Episode
-from movies import get_movies
+########################################################################################################################
 
 # questa classe serve solo in IIS
 class PrefixMiddleware(object):
@@ -30,7 +28,7 @@ class PrefixMiddleware(object):
 app = Flask(__name__)
 
 # la configurazione può essere definita in tanti modi
-app.config.from_object('config')
+#app.config.from_object('config')
 app.config.from_envvar('UOCCINY', silent=True)
 app.config.update(UOCCINY_DB=os.environ.get("UOCCINY_DB"))
 app.config.update(UOCCIN_PATH=os.environ.get("UOCCIN_PATH"))
@@ -47,6 +45,7 @@ if 'ISS_VIRTUALFOLDER' in app.config:
 CORS(app, resources=r'/*')
 logging.getLogger('flask_cors').level = logging.DEBUG
 
+########################################################################################################################
 
 def get_uf():
     uf = getattr(g, '_uoccinfile', None)
@@ -55,17 +54,13 @@ def get_uf():
             uf = g._uoccinfile = json.load(f)
     return uf
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = connect_db(os.environ.get("UOCCINY_DB"))
-    return db
-
 @app.teardown_appcontext
 def teardown_db(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
+########################################################################################################################
 
 @app.before_request
 def before_request():
@@ -74,7 +69,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     if response.status_code == 200:
-        app.logger.debug(response.data)
+        pass #app.logger.debug(response.data)
     else:
         app.logger.warning(response)
     return response
@@ -85,8 +80,17 @@ def handle_internal_error(err):
     return jsonify({'status': 500, 'result': str(err)}), 200
 
 ########################################################################################################################
-## VIEWS
-########################################################################################################################
+
+from movies import get_movie, get_movies
+
+def get_flag(args, name):
+    if name not in args:
+        return None
+    if args[name] == '1':
+        return True
+    if args[name] == '0':
+        return False
+    raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
 
 @app.route('/')
 def index():
@@ -98,14 +102,11 @@ def view_uof():
 
 @app.route('/movies', methods=['GET', 'OPTIONS'])
 def view_movies():
-    get_db()  ## ???
-
-    res = get_movies(
-        tmdb_id=request.args.get('tmdb_id', None),
-        imdb_id=request.args.get('imdb_id', None),
-        watchlist=request.args.get('watchlist', None),
-        collected=request.args.get('collected', None),
-        watched=request.args.get('watched', None),
+    mid = request.args.get('tmdb_id', request.args.get('imdb_id', None))
+    res = get_movie(mid) if mid is not None else get_movies(
+        watchlist=get_flag(request.args, 'watchlist'),
+        collected=get_flag(request.args, 'collected'),
+        watched=get_flag(request.args, 'watched'),
     )
     return jsonify({'status': 200, 'result': res})
 
