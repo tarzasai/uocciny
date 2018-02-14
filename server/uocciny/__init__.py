@@ -81,7 +81,8 @@ def handle_internal_error(err):
 
 ########################################################################################################################
 
-from movies import get_movie, get_movies
+from movies import get_movie, get_movie_list
+from series import get_series, get_series_list
 
 def get_flag(args, name):
     if name not in args:
@@ -102,8 +103,8 @@ def view_uof():
 
 @app.route('/movies', methods=['GET', 'OPTIONS'])
 def view_movies():
-    mid = request.args.get('tmdb_id', request.args.get('imdb_id', None))
-    res = get_movie(mid) if mid is not None else get_movies(
+    imdb_id = request.args.get('imdb_id', None)
+    res = get_movie(imdb_id) if imdb_id is not None else get_movie_list(
         watchlist=get_flag(request.args, 'watchlist'),
         collected=get_flag(request.args, 'collected'),
         watched=get_flag(request.args, 'watched'),
@@ -112,8 +113,11 @@ def view_movies():
 
 @app.route('/series', methods=['GET', 'OPTIONS'])
 def view_series():
-    res = None
-    ##
+    tvdb_id = request.args.get('tvdb_id', None)
+    res = get_series(tvdb_id) if tvdb_id is not None else get_series_list(
+        watchlist=get_flag(request.args, 'watchlist'),
+        collected=get_flag(request.args, 'collected'),
+    )
     return jsonify({'status': 200, 'result': res})
 
 @app.route('/episodes', methods=['GET', 'OPTIONS'])

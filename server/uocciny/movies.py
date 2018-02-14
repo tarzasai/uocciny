@@ -37,21 +37,23 @@ class Movie(Base):
             exists = self.updated is not None
             res = tmdb.Movies(self.imdb_id).info(language='en', append_to_response='credits')
             self.tmdb_id = res['id']
-            self.imdb_id = res['imdb_id']
-            self.name = res['title']
-            self.plot = res['overview']
-            self.poster = res['poster_path']
+            self.name = res['title'] if res['title'] else None
+            self.plot = res['overview'] if res['overview'] else None
+            self.poster = res['poster_path'] if res['poster_path'] else None
+            reld = res.get('release_date', '')
+            self.released = datetime.strptime(reld, '%Y-%m-%d') if reld else None
+            # actors
             cast = res['credits']['cast']
             self.actors = ', '.join([a['name'] for a in cast if a['gender'] > 0])
+            # director(s)
             crew = res['credits']['crew']
             self.director = ', '.join([c['name'] for c in crew if c['job'] == 'Director'])
-            reld = res.get('release_date', '')
-            self.released = datetime.strptime(reld, '%Y-%m-%d') if reld != '' else None
+            # done
             self.updated = datetime.now()
             if not exists:
                 session.add(self)
             session.commit()
-            app.logger.info('saved metadata for movie %s (%s)' % (self.imdb_id, res['title']))
+            app.logger.info('saved metadata for movie %s (%s)' % (self.imdb_id, self.name))
         except Exception as err:
             app.logger.error('update failed for movie %s: %s' % (self.imdb_id, str(err)))
             self.name = 'Update error'
@@ -71,13 +73,13 @@ def fill_metadata(lst):
 
 def get_movie(imdb_id):
     app.logger.debug('get_movie: imdb_id=%s' % imdb_id)
-    um = get_uf().get('movies', {}).get(imdb_id, None)
-    if um is None:
+    obj = get_uf().get('movies', {}).get(imdb_id, None)
+    if obj is None:
         return []
-    return fill_metadata([dict({'imdb_id': imdb_id}, **um)])
+    return fill_metadata([dict({'imdb_id': imdb_id}, **obj)])
 
-def get_movies(watchlist=None, collected=None, watched=None):
-    app.logger.debug('get_movies: watchlist=%s, collected=%s, watched=%s' % (watchlist, collected, watched))
+def get_movie_list(watchlist=None, collected=None, watched=None):
+    app.logger.debug('get_movie_list: watchlist=%s, collected=%s, watched=%s' % (watchlist, collected, watched))
     lst = get_uf().get('movies', {})
     res = []
     for mid in lst.keys():

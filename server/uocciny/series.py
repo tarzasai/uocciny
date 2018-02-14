@@ -12,7 +12,7 @@ MAX_AGE = app.config.get('MAX_AGE_SERIES', 30) ## default 30 giorni
 class Series(Base):
     __tablename__ = 'series'
 
-    tvdb_id = Column(Integer, primary_key=True)
+    tvdb_id = Column(String, primary_key=True)
     imdb_id = Column(String, unique=True)
     name = Column(String, nullable=False)
     plot = Column(String)
@@ -34,28 +34,33 @@ class Series(Base):
         return self.updated is None or (datetime.now() - self.updated).days > max_age
     
     def update_from_tvdb(self, session):
-        app.logger.info('updating metadata for series %d...' % self.tvdb_id)
+        app.logger.info('updating metadata for series %s...' % self.tvdb_id)
         try:
             exists = self.updated is not None
-            res = tvdb.Series(self.tvdb_id).info(language='en') #, append_to_response='credits')
-            self.tmdb_id = res['id']
-            self.tvdb_id = res['tvdb_id']
-            self.name = res['title']
-            self.plot = res['overview']
-            self.poster = res['poster_path']
-            cast = res['credits']['cast']
-            self.actors = ', '.join([a['name'] for a in cast if a['gender'] > 0])
-            crew = res['credits']['crew']
-            self.director = ', '.join([c['name'] for c in crew if c['job'] == 'Director'])
-            reld = res.get('release_date', '')
-            self.released = datetime.strptime(reld, '%Y-%m-%d') if reld != '' else None
+            show = tvdb.Series(self.tvdb_id)
+            res = show.info(language='en')
+            self.imdb_id = res['imdbId'] if res['imdbId'] else None
+            self.name = res['seriesName']
+            self.plot = res['overview'] if res['overview'] else None
+            self.banner = res['banner'] if res['banner'] else None
+            reld = res.get('firstAired', '')
+            self.released = datetime.strptime(reld, '%Y-%m-%d') if reld else None
+            # actors
+            res = show.actors(language='en')
+            self.actors = ', '.join([a['name'] for a in res]) if res else None
+            # poster
+            res = tvdb.Series_Images(self.tvdb_id).poster(language='en')
+            if res:
+                res.sort(key=lambda x: x['ratingsInfo']['count'], reverse=True)
+            self.poster = res[0]['fileName'] if res else None
+            # done
             self.updated = datetime.now()
             if not exists:
                 session.add(self)
             session.commit()
-            app.logger.info('saved metadata for series %d (%s)' % (self.tvdb_id, res['title']))
+            app.logger.info('saved metadata for series %s (%s)' % (self.tvdb_id, self.name))
         except Exception as err:
-            app.logger.error('update failed for series %d: %s' % (self.tvdb_id, str(err)))
+            app.logger.error('update failed for series %s: %s' % (self.tvdb_id, str(err)))
             self.name = 'Update error'
             self.plot = str(err)
 
@@ -70,3 +75,21 @@ def fill_metadata(lst):
             rec.update_from_tvdb(db)
         itm.update(row2dict(rec))
     return lst
+
+def get_series(tvdb_id):
+    app.logger.debug('get_series: tvdb_id=%s' % tvdb_id)
+    obj = get_uf().get('series', {}).get(tvdb_id, None)
+    if obj is None:
+        return []
+    return fill_metadata([dict({'tvdb_id': tvdb_id}, **obj)])
+
+def get_series_list(watchlist=None, collected=None):
+    app.logger.debug('get_series_list: watchlist=%s, collected=%s' % (watchlist, collected))
+    lst = get_uf().get('series', {})
+    res = []
+    for sid in lst.keys():
+        itm = lst[sid]
+        if ((watchlist is None or itm['watchlist'] == watchlist) and
+            (collected is None or itm['collected'])):
+            res.append(dict({'tvdb_id': sid}, **itm))
+    return fill_metadata(res)
