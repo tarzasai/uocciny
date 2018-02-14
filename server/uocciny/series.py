@@ -1,6 +1,6 @@
 # encoding: utf-8
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, Boolean
+from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import tvdbsimple as tvdb
 
@@ -43,8 +43,10 @@ class Series(Base):
             self.name = res['seriesName']
             self.plot = res['overview'] if res['overview'] else None
             self.banner = res['banner'] if res['banner'] else None
+            self.network = res['network'] if res['network'] else None
+            self.status = res['status'] if res['status'] else None
             reld = res.get('firstAired', '')
-            self.released = datetime.strptime(reld, '%Y-%m-%d') if reld else None
+            self.firstAired = datetime.strptime(reld, '%Y-%m-%d') if reld else None
             # actors
             res = show.actors(language='en')
             self.actors = ', '.join([a['name'] for a in res]) if res else None

@@ -1,6 +1,6 @@
 # encoding: utf-8
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, Boolean
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import tmdbsimple as tmdb
 

@@ -8,6 +8,7 @@ setup(
         'flask',
         'flask_cors',
         'sqlalchemy',
-        'tmdbsimple'
+        'tmdbsimple',
+        'tvdbsimple'
     ],
 )

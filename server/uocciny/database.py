@@ -27,23 +27,3 @@ def row2dict(row):
         d[column.name] = unicode(getattr(row, column.name))
     return d
 '''
-
-'''
-class Episode(Base):
-    __tablename__ = 'episode'
-    tvdb_id = Column(Integer, primary_key=True)
-    imdb_id = Column(String, unique=True)
-    series = Column(Integer, ForeignKey('series.tvdb_id'), nullable=False)
-    season = Column(Integer, nullable=False)
-    episode = Column(Integer, nullable=False)
-    title = Column(String)
-    plot = Column(String)
-    thumb = Column(String)
-    width = Column(Integer)
-    height = Column(Integer)
-    firstAired = Column(DateTime)
-    updated = Column(DateTime)
-
-    def __repr__(self):
-        return '<Episode S%02dE%02d>' % (self.season, self.episode)
-'''

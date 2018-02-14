@@ -1,6 +1,6 @@
 # encoding: utf-8
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 import tvdbsimple as tvdb
 
@@ -46,9 +46,32 @@ class Episode(Base):
             if not exists:
                 session.add(self)
             session.commit()
-            app.logger.info('saved metadata for series %s (%s)' % (self.tvdb_id, self.name))
+            app.logger.info('saved metadata for episode %s (%s)' % (self.tvdb_id, self.name))
         except Exception as err:
-            app.logger.error('update failed for series %s: %s' % (self.tvdb_id, str(err)))
+            app.logger.error('update failed for episode %s: %s' % (self.tvdb_id, str(err)))
             self.name = 'Update error'
             self.plot = str(err)
+
+def fill_metadata(lst):
+    '''db = get_db()
+    for itm in lst:
+        sid = itm['tvdb_id']
+        rec = db.query(Series).filter(Series.tvdb_id == sid).first()
+        if rec is None:
+            rec = Series(sid)
+        if rec.older_than(MAX_AGE):
+            rec.update_from_tvdb(db)
+        itm.update(row2dict(rec))'''
+    return lst
+
+def get_episode(tvdb_id):
+    app.logger.debug('get_episode: tvdb_id=%s' % tvdb_id)
+    # ...
+    return None
+
+def get_episode_list(series=None, season=None, episode=None, collected=None, watched=None):
+    app.logger.debug('get_episode_list: series=%s, season=%s, episode=%s, collected=%s, watched=%s' %
+        (series, season, episode, collected, watched))
+    # ...
+    return None
 
