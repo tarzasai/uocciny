@@ -32,6 +32,8 @@ app = Flask(__name__)
 app.config.from_envvar('UOCCINY', silent=True)
 app.config.update(UOCCINY_DB=os.environ.get("UOCCINY_DB"))
 app.config.update(UOCCIN_PATH=os.environ.get("UOCCIN_PATH"))
+app.config.update(TVDB_API_KEY=os.environ.get("TVDB_API_KEY"))
+app.config.update(TMDB_API_KEY=os.environ.get("TMDB_API_KEY"))
 
 # di solito non mi interessa fare debug dal browser
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False

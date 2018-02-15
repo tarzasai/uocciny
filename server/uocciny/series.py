@@ -1,9 +1,9 @@
 # encoding: utf-8
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from tvdb_client import ApiV2Client as tvdb
+from tvdb_client import ApiV2Client
 
 from uocciny import app, get_uf
 from database import Base, get_db, row2dict
@@ -84,24 +84,28 @@ class Episode(Base):
         series = get_uf().get('series', {}).get(self.series, None)
         return series is not None and self.aired() and not (self.collected() or self.watched())
 
+Index('idx_episode_sse', Episode.series, Episode.season, Episode.episode)
+
 
 def update_from_tvdb(series):
     app.logger.info('updating metadata for series %s...' % series.tvdb_id)
+    exists = series.updated is not None
     try:
         db = get_db()
-        exists = series.updated is not None
-        show = tvdb.Series(series.tvdb_id)
-        res = show.info(language='en')
-        series.imdb_id = res['imdbId'] if res['imdbId'] else None
-        series.name = res['seriesName']
-        series.plot = res['overview'] if res['overview'] else None
-        series.network = res['network'] if res['network'] else None
-        series.status = res['status'] if res['status'] else None
-        series.banner = res['banner'] if res['banner'] else None
-        series.firstAired = datetime.strptime(res['firstAired'], '%Y-%m-%d') if res['firstAired'] else None
-        act = show.actors(language='en')
+        tvdb = ApiV2Client(None, app.config['TVDB_API_KEY'], None, language='en')
+        tvdb.login()
+        sid = int(series.tvdb_id)
+        show = tvdb.get_series(sid)['data']
+        series.imdb_id = show['imdbId'] if show['imdbId'] else None
+        series.name = show['seriesName']
+        series.plot = show['overview'] if show['overview'] else None
+        series.network = show['network'] if show['network'] else None
+        series.status = show['status'] if show['status'] else None
+        series.banner = show['banner'] if show['banner'] else None
+        series.firstAired = datetime.strptime(show['firstAired'], '%Y-%m-%d') if show['firstAired'] else None
+        act = tvdb.get_series_actors(sid)['data']
         series.actors = ', '.join([a['name'] for a in act]) if act else None
-        pst = tvdb.Series_Images(series.tvdb_id).poster(language='en')
+        pst = tvdb.get_series_images(sid, image_type='poster')['data']
         if pst:
             pst.sort(key=lambda x: x['ratingsInfo']['count'], reverse=True)
         series.poster = pst[0]['fileName'] if pst else None
@@ -110,32 +114,39 @@ def update_from_tvdb(series):
             db.add(series)
         # episodes
         db.query(Episode).filter(Episode.series == series.tvdb_id).delete()
-        for ep in show.Episodes.all():
-            if ep['airedSeason'] == 0 or ep['airedEpisodeNumber'] == 0:
-                continue
-            episode = Episode()
-            episode.series = series.tvdb_id
-            episode.tvdb_id = ep['id'] # tvdb_id
-            episode.season = ep['airedSeason']
-            episode.episode = ep['airedEpisodeNumber']
-            episode.title = ep['episodeName'] if ep['episodeName'] else None
-            episode.plot = ep['overview'] if ep['overview'] else None
-            episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
-            db.add(episode)
-            try:
-                ep = tvdb.Episode(episode.tvdb_id).info(language='en')
-                episode.imdb_id = ep['imdbId'] if ep['imdbId'] else None
-                episode.writers = ', '.join(ep['writers']) if ep['writers'] else None
-                episode.director = ep['director'] if ep['director'] else None
-                episode.guestStars = ', '.join(ep['guestStars']) if ep['guestStars'] else None
-                episode.thumbnail = ep['filename'] if ep['filename'] else None
-                episode.thumbwidth = int(ep['thumbWidth']) if ep['thumbWidth'] else None
-                episode.thumbheight = int(ep['thumbHeight']) if ep['thumbHeight'] else None
-                episode.updated = datetime.now()
-                app.logger.debug('updated metadata for episode %s (S%02dE%02d)' %
-                    (episode.tvdb_id, episode.season, episode.episode))
-            except Exception as err:
-                app.logger.error('update failed for episode %s: %s' % (episode.tvdb_id, str(err)))
+        eps = tvdb.get_series_episodes(sid)
+        while eps['data']:
+            for ep in eps['data']:
+                eid = int(ep['id'])
+                if ep['airedSeason'] == 0 or ep['airedEpisodeNumber'] == 0:
+                    continue
+                episode = Episode()
+                episode.series = series.tvdb_id
+                episode.tvdb_id = ep['id'] # tvdb_id
+                episode.season = ep['airedSeason']
+                episode.episode = ep['airedEpisodeNumber']
+                episode.title = ep['episodeName'] if ep['episodeName'] else None
+                episode.plot = ep['overview'] if ep['overview'] else None
+                episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
+                db.add(episode)
+                try:
+                    ep = tvdb.get_episode(eid)['data']
+                    episode.imdb_id = ep['imdbId'] if ep['imdbId'] else None
+                    episode.writers = ', '.join(ep['writers']) if ep['writers'] else None
+                    episode.director = ep['director'] if ep['director'] else None
+                    episode.guestStars = ', '.join(ep['guestStars']) if ep['guestStars'] else None
+                    episode.thumbnail = ep['filename'] if ep['filename'] else None
+                    episode.thumbwidth = int(ep['thumbWidth']) if ep['thumbWidth'] else None
+                    episode.thumbheight = int(ep['thumbHeight']) if ep['thumbHeight'] else None
+                    episode.updated = datetime.now()
+                    app.logger.debug('updated metadata for episode %s (S%02dE%02d)' %
+                        (episode.tvdb_id, episode.season, episode.episode))
+                except Exception as err:
+                    app.logger.error('update failed for episode %s: %s' % (episode.tvdb_id, str(err)))
+            if eps['links']['next']:
+                eps = tvdb.get_series_episodes(sid, page=eps['links']['next'])
+            else:
+                break
         # done
         db.commit()
         app.logger.info('updated metadata for series %s (%s)' % (series.tvdb_id, series.name))
@@ -183,7 +194,6 @@ def get_metadata(series):
                     series['episodes']['available'] = ejson
         elif series['episodes']['upcoming'] is None:
             series['episodes']['upcoming'] = ejson
-
     return series
 
 
