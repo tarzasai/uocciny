@@ -2581,9 +2581,10 @@
             "watchlist": false
         },
         "tt0974015": {
-            "collected": true,
+            "collected": false,
             "name": "Justice League",
-            "watched": false,
+            "rating": 4,
+            "watched": true,
             "watchlist": false
         },
         "tt0985694": {
@@ -4095,6 +4096,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt3496992": {
+            "collected": false,
+            "name": "Knights of the Roundtable: King Arthur",
+            "watched": false,
+            "watchlist": true
+        },
         "tt3498820": {
             "collected": false,
             "name": "Captain America: Civil War",
@@ -4645,11 +4652,7 @@
             "watchlist": true
         },
         "247897": {
-            "collected": {
-                "7": {
-                    "1": []
-                }
-            },
+            "collected": {},
             "name": "Homeland",
             "rating": 4,
             "tags": [
@@ -4739,6 +4742,9 @@
                     10,
                     11,
                     12
+                ],
+                "7": [
+                    1
                 ]
             },
             "watchlist": true
@@ -4967,7 +4973,11 @@
             "watchlist": true
         },
         "254834": {
-            "collected": {},
+            "collected": {
+                "5": {
+                    "2": []
+                }
+            },
             "name": "Endeavour",
             "rating": 4,
             "tags": [
@@ -5114,7 +5124,11 @@
             "watchlist": true
         },
         "261109": {
-            "collected": {},
+            "collected": {
+                "4": {
+                    "1": []
+                }
+            },
             "name": "Shetland",
             "rating": 4,
             "tags": [
@@ -7202,11 +7216,15 @@
                         "ita"
                     ],
                     "13": [
-                        "eng"
+                        "eng",
+                        "ita"
                     ],
                     "14": [
                         "eng",
                         "ita"
+                    ],
+                    "15": [
+                        "eng"
                     ]
                 }
             },
@@ -7448,6 +7466,16 @@
             "watched": {},
             "watchlist": false
         },
+        "338798": {
+            "collected": {
+                "1": {
+                    "1": []
+                }
+            },
+            "name": "Here and Now (2018)",
+            "watched": {},
+            "watchlist": false
+        },
         "339137": {
             "collected": {
                 "1": {
@@ -7465,6 +7493,36 @@
                 }
             },
             "name": "Kiri",
+            "watched": {},
+            "watchlist": false
+        },
+        "341913": {
+            "collected": {
+                "1": {
+                    "1": []
+                }
+            },
+            "name": "Bliss (2018)",
+            "watched": {},
+            "watchlist": false
+        },
+        "342301": {
+            "collected": {
+                "1": {
+                    "1": []
+                }
+            },
+            "name": "Trauma (2018)",
+            "watched": {},
+            "watchlist": false
+        },
+        "342733": {
+            "collected": {
+                "1": {
+                    "1": []
+                }
+            },
+            "name": "Model Squad",
             "watched": {},
             "watchlist": false
         },

@@ -83,8 +83,7 @@ def handle_internal_error(err):
 
 
 from movies import get_movie, get_movie_list
-from series import get_series, get_series_list
-from episodes import get_episode, get_episode_list
+from series import get_series, get_series_list, get_episode, get_episode_list
 
 
 def get_flag(args, name):
