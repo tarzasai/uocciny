@@ -72,7 +72,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     if response.status_code == 200:
-        pass  # app.logger.debug(response.data)
+        app.logger.debug(response.data)
     else:
         app.logger.warning(response)
     return response
@@ -88,16 +88,6 @@ from movies import get_movie, get_movie_list
 from series import get_series, get_series_list, get_episode, get_episode_list
 
 
-def get_flag(args, name):
-    if name not in args:
-        return None
-    if args[name] == '1':
-        return True
-    if args[name] == '0':
-        return False
-    raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
-
-
 @app.route('/')
 def index():
     return 'Uocciny server'
@@ -107,9 +97,9 @@ def index():
 def view_movies():
     imdb_id = request.args.get('imdb_id', None)
     res = get_movie(imdb_id) if imdb_id else get_movie_list(
-        watchlist=get_flag(request.args, 'watchlist'),
-        collected=get_flag(request.args, 'collected'),
-        watched=get_flag(request.args, 'watched'),
+        watchlist=prm2bool(request.args, 'watchlist'),
+        collected=prm2bool(request.args, 'collected'),
+        watched=prm2bool(request.args, 'watched'),
     )
     return jsonify({'status': 200, 'result': res})
 
@@ -118,8 +108,10 @@ def view_movies():
 def view_series():
     tvdb_id = request.args.get('tvdb_id', None)
     res = get_series(tvdb_id) if tvdb_id else get_series_list(
-        watchlist=get_flag(request.args, 'watchlist'),
-        collected=get_flag(request.args, 'collected'),
+        watchlist=prm2bool(request.args, 'watchlist'),
+        collected=prm2bool(request.args, 'collected'),
+        missing=prm2bool(request.args, 'missing'),
+        available=prm2bool(request.args, 'available'),
     )
     return jsonify({'status': 200, 'result': res})
 
@@ -128,11 +120,11 @@ def view_series():
 def view_episodes():
     tvdb_id = request.args.get('tvdb_id', None)
     res = get_episode(tvdb_id) if tvdb_id else get_episode_list(
-        series=request.args.get('series', None),
-        season=request.args.get('season', None),
-        episode=request.args.get('episode', None),
-        collected=get_flag(request.args, 'collected'),
-        watched=get_flag(request.args, 'watched'),
+        request.args['series'], ## obbligatorio
+        season=prm2int(request.args, 'season'),
+        episode=prm2int(request.args, 'episode'),
+        watched=prm2bool(request.args, 'watched'),
+        collected=prm2bool(request.args, 'collected'),
     )
     return jsonify({'status': 200, 'result': res})
 
@@ -140,6 +132,25 @@ def view_episodes():
 @app.route('/uoccinfile', methods=['GET', 'OPTIONS'])
 def view_uof():
     return jsonify({'status': 200, 'result': get_uf()})
+
+
+def prm2bool(args, name):
+    if name not in args:
+        return None
+    if args[name] == '1':
+        return True
+    if args[name] == '0':
+        return False
+    raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
+
+
+def prm2int(args, name):
+    if name not in args:
+        return None
+    try:
+        return int(args[name])
+    except Exception:
+        raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
 
 
 if __name__ == '__main__':

@@ -17,22 +17,25 @@ class Movie(Base):
     name = Column(String, nullable=False)
     plot = Column(String)
     poster = Column(String)
+    genres = Column(String)
     actors = Column(String)
     director = Column(String)
+    language = Column(String)
     released = Column(DateTime)
+    runtime = Column(Integer)
     updated = Column(DateTime)
 
     def __init__(self, imdb_id):
         self.imdb_id = imdb_id
 
     def __repr__(self):
-        return '<Movie %r>' % (self.name)
+        return '<Movie %s - %s>' % (self.imdb_id, self.name if self.name else 'N/A')
     
     def older_than(self, max_age):
         return self.updated is None or (datetime.now() - self.updated).days > max_age
     
     def update_from_tmdb(self, session):
-        app.logger.info('updating metadata for movie %s...' % self.imdb_id)
+        app.logger.info('updating %r...' % self)
         try:
             exists = self.updated is not None
             res = tmdb.Movies(self.imdb_id).info(language='en', append_to_response='credits')
@@ -40,22 +43,20 @@ class Movie(Base):
             self.name = res['title'] if res['title'] else None
             self.plot = res['overview'] if res['overview'] else None
             self.poster = res['poster_path'] if res['poster_path'] else None
-            reld = res.get('release_date', '')
-            self.released = datetime.strptime(reld, '%Y-%m-%d') if reld else None
-            # actors
-            cast = res['credits']['cast']
-            self.actors = ', '.join([a['name'] for a in cast if a['gender'] > 0])
-            # director(s)
-            crew = res['credits']['crew']
-            self.director = ', '.join([c['name'] for c in crew if c['job'] == 'Director'])
+            self.genres = ', '.join([g['name'] for g in res['genres']]) if res['genres'] else None
+            self.language = res['original_language'] if res['original_language'] else None
+            self.released = datetime.strptime(res['release_date'], '%Y-%m-%d') if res['release_date'] != '' else None
+            self.runtime = res['runtime'] if res['runtime'] else None
+            self.actors = ', '.join([a['name'] for a in res['credits']['cast'] if a['gender'] > 0])
+            self.director = ', '.join([c['name'] for c in res['credits']['crew'] if c['job'] == 'Director'])
             # done
             self.updated = datetime.now()
             if not exists:
                 session.add(self)
             session.commit()
-            app.logger.info('saved metadata for movie %s (%s)' % (self.imdb_id, self.name))
+            app.logger.info('updated %r' % self)
         except Exception as err:
-            app.logger.error('update failed for movie %s: %s' % (self.imdb_id, str(err)))
+            app.logger.error('update failed for %r: %s' % (self, str(err)))
             self.name = 'Update error'
             self.plot = str(err)
 
@@ -80,10 +81,8 @@ def get_movie(imdb_id):
 
 def get_movie_list(watchlist=None, collected=None, watched=None):
     app.logger.debug('get_movie_list: watchlist=%s, collected=%s, watched=%s' % (watchlist, collected, watched))
-    lst = get_uf().get('movies', {})
     res = []
-    for mid in lst.keys():
-        itm = lst[mid]
+    for mid, itm in get_uf().get('movies', {}).iteritems():
         if ((watchlist is None or itm['watchlist'] == watchlist) and
             (collected is None or itm['collected'] == collected) and
             (watched is None or itm['watched'] == watched)):

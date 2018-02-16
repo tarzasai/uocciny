@@ -24,13 +24,14 @@ class Series(Base):
     firstAired = Column(DateTime)
     poster = Column(String)
     banner = Column(String)
+    genres = Column(String)
     updated = Column(DateTime)
     episodes = relationship('Episode', backref="parent", passive_deletes=True)
 
     def __repr__(self):
-        return '<Series %r>' % (self.tvdb_id)
+        return '<Series %s - %s>' % (self.tvdb_id, self.name if self.name else 'N/A')
     
-    def outdated(self):
+    def is_old(self):
         if self.updated is None:
             return True
         age = (datetime.now() - self.updated).days
@@ -42,7 +43,7 @@ class Series(Base):
             return age > 180
         return age > 30
     
-    def brandnew(self):
+    def is_new(self):
         return self.updated is not None and (self.firstAired is None or (datetime.now() - self.firstAired).days <= 30)
 
 
@@ -66,7 +67,7 @@ class Episode(Base):
     updated = Column(DateTime)
 
     def __repr__(self):
-        return '<Episode %s.S%02dE%02d>' % (self.series, self.season, self.episode)
+        return '<Episode %s - %s.S%02dE%02d>' % (self.tvdb_id, self.series, self.season, self.episode)
     
     def aired(self):
         return self.firstAired is not None and (datetime.now() - self.firstAired).days > 0
@@ -88,7 +89,7 @@ Index('idx_episode_sse', Episode.series, Episode.season, Episode.episode)
 
 
 def update_from_tvdb(series):
-    app.logger.info('updating metadata for series %s...' % series.tvdb_id)
+    app.logger.info('updating %r...' % series)
     exists = series.updated is not None
     try:
         db = get_db()
@@ -102,6 +103,7 @@ def update_from_tvdb(series):
         series.network = show['network'] if show['network'] else None
         series.status = show['status'] if show['status'] else None
         series.banner = show['banner'] if show['banner'] else None
+        series.genres = ', '.join([g for g in show['genre']]) if show['genre'] else None
         series.firstAired = datetime.strptime(show['firstAired'], '%Y-%m-%d') if show['firstAired'] else None
         act = tvdb.get_series_actors(sid)['data']
         series.actors = ', '.join([a['name'] for a in act]) if act else None
@@ -130,6 +132,7 @@ def update_from_tvdb(series):
                 episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
                 db.add(episode)
                 try:
+                    app.logger.info('updating %r...' % (episode))
                     ep = tvdb.get_episode(eid)['data']
                     episode.imdb_id = ep['imdbId'] if ep['imdbId'] else None
                     episode.writers = ', '.join(ep['writers']) if ep['writers'] else None
@@ -139,19 +142,18 @@ def update_from_tvdb(series):
                     episode.thumbwidth = int(ep['thumbWidth']) if ep['thumbWidth'] else None
                     episode.thumbheight = int(ep['thumbHeight']) if ep['thumbHeight'] else None
                     episode.updated = datetime.now()
-                    app.logger.debug('updated metadata for episode %s (S%02dE%02d)' %
-                        (episode.tvdb_id, episode.season, episode.episode))
+                    app.logger.debug('%r updated.' % (episode))
                 except Exception as err:
-                    app.logger.error('update failed for episode %s: %s' % (episode.tvdb_id, str(err)))
+                    app.logger.error('update failed for %r: %s' % (episode, str(err)))
             if eps['links']['next']:
                 eps = tvdb.get_series_episodes(sid, page=eps['links']['next'])
             else:
                 break
         # done
         db.commit()
-        app.logger.info('updated metadata for series %s (%s)' % (series.tvdb_id, series.name))
+        app.logger.info('%r updated.' % (series))
     except Exception as err:
-        app.logger.error('update failed for series %s: %s' % (series.tvdb_id, str(err)))
+        app.logger.error('update failed for %r: %s' % (series, str(err)))
         db.rollback()
         series.name = 'Update error'
         series.plot = str(err)
@@ -163,9 +165,10 @@ def get_metadata(series):
     if rec is None:
         rec = Series()
         rec.tvdb_id = sid
-    if rec.outdated():
+    if rec.is_old():
         update_from_tvdb(rec)
     series.update(row2dict(rec))
+    series['new'] = rec.is_new()
     # episodes
     series['episodes'] = {
         'summary': {
@@ -178,22 +181,23 @@ def get_metadata(series):
         'missing': None,
         'available': None,
     }
-    eplist = get_db().query(Episode).filter(Episode.series == sid).order_by(Episode.season, Episode.episode).all()
-    for ep in eplist:
-        ejson = row2dict(ep)
-        if ep.aired():
+    for rec in get_db().query(Episode).filter(Episode.series == sid).order_by(Episode.season, Episode.episode).all():
+        ep = row2dict(rec)
+        ep['collected'] = rec.collected()
+        ep['watched'] = rec.watched()
+        if rec.aired():
             series['episodes']['summary']['aired'] += 1
-            series['episodes']['lastAired'] = ejson
-            if ep.missing():
+            series['episodes']['lastAired'] = ep
+            if rec.missing():
                 series['episodes']['summary']['missing'] += 1
                 if series['episodes']['missing'] is None:
-                    series['episodes']['missing'] = ejson
-            elif ep.collected() and not ep.watched():
+                    series['episodes']['missing'] = ep
+            elif rec.collected() and not rec.watched():
                 series['episodes']['summary']['available'] += 1
                 if series['episodes']['available'] is None:
-                    series['episodes']['available'] = ejson
+                    series['episodes']['available'] = ep
         elif series['episodes']['upcoming'] is None:
-            series['episodes']['upcoming'] = ejson
+            series['episodes']['upcoming'] = ep
     return series
 
 
@@ -205,26 +209,34 @@ def get_series(tvdb_id):
     return [get_metadata(dict({'tvdb_id': tvdb_id}, **obj))]
 
 
-def get_series_list(watchlist=None, collected=None):
-    app.logger.debug('get_series_list: watchlist=%s, collected=%s' % (watchlist, collected))
-    lst = get_uf().get('series', {})
+def get_series_list(watchlist=None, collected=None, missing=None, available=None):
+    app.logger.debug('get_series_list: watchlist=%s, collected=%s, missing=%s, available=%s' %
+        (watchlist, collected, missing, available))
+    if available == True:
+        collected = True
     res = []
-    for sid in lst.keys():
-        itm = lst[sid]
-        if ((watchlist is None or itm['watchlist'] == watchlist) and
-            (collected is None or itm['collected'])):
-            res.append(get_metadata(dict({'tvdb_id': sid}, **itm)))
+    for sid, itm in get_uf().get('series', {}).iteritems():
+        if ((watchlist is None or watchlist == itm['watchlist']) and
+            (collected is None or collected == (len(itm['collected']) > 0))):
+            obj = get_metadata(dict({'tvdb_id': sid}, **itm))
+            if ((missing is None or missing == (obj['episodes']['summary']['missing'] > 0)) and
+                (available is None or available == (obj['episodes']['summary']['available'] > 0))):
+                res.append(obj)
     return res
 
 
 def get_episode(tvdb_id):
     app.logger.debug('get_episode: tvdb_id=%s' % tvdb_id)
-    # ...
-    return None
+    rec = get_db().query(Episode).filter(Episode.tvdb_id == tvdb_id).first()
+    return dict({'collected':rec.collected(), 'watched':rec.watched()}, **row2dict(rec))
 
 
-def get_episode_list(series=None, season=None, episode=None, collected=None, watched=None):
+def get_episode_list(series, season=None, episode=None, collected=None, watched=None):
     app.logger.debug('get_episode_list: series=%s, season=%s, episode=%s, collected=%s, watched=%s' %
         (series, season, episode, collected, watched))
-    # ...
-    return None
+    res = []
+    for rec in get_db().query(Episode).filter(Episode.series == series).order_by(Episode.season, Episode.episode).all():
+        if (season is None or (rec.season == season and (episode is None or rec.episode == episode))) and\
+            (collected is None or rec.collected() == collected) and (watched is None or rec.watched() == watched):
+            res.append(dict({'collected':rec.collected(), 'watched':rec.watched()}, **row2dict(rec)))
+    return res
