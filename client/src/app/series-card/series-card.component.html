@@ -3,25 +3,52 @@
         <img src="{{series.poster}}" width="100%"/>
     </div>
     <div class="details">
+
         <div class="section title">
             <div class="icon"><i class="fa fa-television"></i></div>
             <div class="text">{{series.name}}</div>
         </div>
-        <div class="section ep-info">
-            <div class="icon"><i class="fa" [ngClass]="{
-                'fa-rss': preview == EpisodePreview.aired,
-                'fa-eye-slash': preview == EpisodePreview.missing,
-                'fa-hdd-o': preview == EpisodePreview.available
-            }"></i></div>
-            <div class="text">{{series.year + ' - ' + series.data.genres.toLocaleLowerCase()}}</div>
-        </div>
-        <div class="section plot">
-            <div class="icon"><i class="fa fa-quote-left"></i></div>
-            <div class="text">{{series.available.plot}}</div>
-        </div>
-        <!--<div class="section subs" *ngIf="series.data.subtitles.length">
-            <div class="icon"><i class="fa fa-cc"></i></div>
-            <div class="text">{{series.data.subtitles.join(', ')}}</div>
-        </div>-->
+
+        <ng-container *ngIf="preview == EpisodePreview.aired">
+            <div class="section info">
+                <div class="icon"><i class="fa fa-rss" ></i></div>
+                <div class="text">{{series.year + ' - ' + series.data.genres}}</div>
+            </div>
+            <div class="section plot">
+                <div class="icon"><i class="fa fa-quote-left"></i></div>
+                <div class="text">{{series.aired.plot}}</div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="preview == EpisodePreview.missing">
+            <div class="section info">
+                <div class="icon"><i class="fa fa-eye-slash"></i></div>
+                <div class="text">{{series.year + ' - ' + series.data.genres}}</div>
+            </div>
+            <div class="section plot">
+                <div class="icon"><i class="fa fa-quote-left"></i></div>
+                <div class="text">{{series.missing.plot}}</div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="preview == EpisodePreview.available">
+            <div class="section info">
+                <div class="icon"><i class="fa fa-hdd-o"></i></div>
+                <div class="text">{{series.available.eid +
+                    (series.summary.available > 1 ? ' (+' + (series.summary.available-1) + ')' : '') +
+                    ': ' + series.available.title}}</div>
+            </div>
+            <div class="section plot">
+                <div class="icon"><i class="fa fa-quote-left"></i></div>
+                <div class="text">{{series.available.plot}}</div>
+            </div>
+            <div class="section subs" *ngIf="series.available.subs">
+                <div class="icon"><i class="fa fa-cc"></i></div>
+                <div class="text">{{series.available.subs}}</div>
+            </div>
+        </ng-container>
+
+        <!---->
     </div>
 </div>
+

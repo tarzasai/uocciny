@@ -9,7 +9,7 @@
     border-radius: 3px;
     margin: 15px;
     padding: 0;
-    height: 200px;
+    height: 156px;
     width: 450px;
 }
 
@@ -69,7 +69,7 @@
 }
 
 .card .section.title {
-    max-height: 40px;
+    height: 20px;
 }
 
 .card .section.title div.text {

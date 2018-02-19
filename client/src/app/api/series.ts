@@ -24,7 +24,15 @@ export class Series extends Title {
             this.available = new Episode(this.data.episodes.available);
     }
 
+    get genres() {
+        return this.data.genres ? this.data.genres.toLocaleLowerCase() : null;
+    }
+
     get poster() {
         return 'https://www.thetvdb.com/banners/' + this.data.poster; // 680 x 1000
+    }
+
+    get summary() {
+        return this.data.episodes.summary;
     }
 }

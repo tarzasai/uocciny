@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Title, Movie, Series, TitleType, EpisodePreview } from '../api/title';
+import { Title, TitleType } from '../api/title';
+import { Movie } from '../api/movie';
+import { Series, EpisodePreview } from '../api/series';
 import { DataService, RequestType } from '../api/data.service';
 
 @Component({

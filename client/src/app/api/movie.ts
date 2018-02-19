@@ -13,6 +13,14 @@ export class Movie extends Title {
         // 780 x 1170
     }
 
+    get director() {
+        return this.data.director;
+    }
+
+    get plot() {
+        return this.data.plot;
+    }
+
     get year() {
         return this.data.released ? moment(this.data.released).year() : 'N/A';
     }

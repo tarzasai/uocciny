@@ -1,8 +1,17 @@
 .card.series .poster {
-    /* 680 : 1000 = 136 : 200 */
-    width: 136px;
+    /* 680 : 1000 = 136 : 156 */
+    width: 106px;
+}
+
+.info {
+    height: 20px;
+}
+
+.info .text {
+    opacity: 0.6;
+    font-weight: bold;
 }
 
 .plot {
-    max-height: 52px;
+    height: 68px;
 }

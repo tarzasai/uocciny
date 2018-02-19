@@ -87,6 +87,10 @@ class Episode(Base):
     def missing(self):
         series = self.__uoccin_series_data__()
         return series is not None and self.aired() and not (self.collected() or self.watched())
+    
+    def subtitles(self):
+        series = self.__uoccin_series_data__()
+        return series['collected'].get(str(self.season), {}).get(str(self.episode), []) if series else None
 
 Index('idx_episode_sse', Episode.series, Episode.season, Episode.episode)
 
@@ -197,6 +201,7 @@ def get_metadata(series):
             elif rec.collected() and not rec.watched():
                 series['episodes']['summary']['available'] += 1
                 if series['episodes']['available'] is None:
+                    ep['subtitles'] = rec.subtitles()
                     series['episodes']['available'] = ep
         elif series['episodes']['upcoming'] is None:
             series['episodes']['upcoming'] = ep

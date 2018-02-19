@@ -8,12 +8,16 @@
             <div class="text">{{movie.name}}</div>
         </div>
         <div class="section info">
-            <div class="icon"><!--<i class="fa fa-info-circle"></i>--></div>
-            <div class="text">{{movie.year + ' - ' + movie.data.genres.toLocaleLowerCase()}}</div>
+            <div class="icon"><i class="fa" [ngClass]="{
+                'fa-eye': movie.watched,
+                'fa-hdd-o': movie.collected,
+                'fa-heart': movie.watchlist
+            }"></i></div>
+            <div class="text">{{movie.year + (movie.director ? ' by ' + movie.director : '')}}</div>
         </div>
         <div class="section cast">
-            <div class="icon"><i class="fa fa-user"></i></div>
-            <div class="text">{{movie.data.actors}}</div>
+            <div class="icon"><i class="fa fa-quote-left"></i></div>
+            <div class="text">{{movie.plot}}</div>
         </div>
         <div class="section subs" *ngIf="movie.data.subtitles.length">
             <div class="icon"><i class="fa fa-cc"></i></div>
