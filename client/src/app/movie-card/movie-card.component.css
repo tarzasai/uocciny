@@ -1,0 +1,16 @@
+.card.movie .poster {
+    /* 780 : 1170 = 133 : 200 */
+    width: 133px;
+}
+
+.cast {
+    max-height: 52px;
+}
+
+.plot {
+    height: 100px;
+}
+
+.subs {
+    height: 20px;
+}

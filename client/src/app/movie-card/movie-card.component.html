@@ -1,0 +1,23 @@
+<div class="card movie">
+    <div class="poster">
+        <img src="{{movie.poster}}" width="100%"/>
+    </div>
+    <div class="details">
+        <div class="section title">
+            <div class="icon"><i class="fa fa-film"></i></div>
+            <div class="text">{{movie.name}}</div>
+        </div>
+        <div class="section info">
+            <div class="icon"><!--<i class="fa fa-info-circle"></i>--></div>
+            <div class="text">{{movie.year + ' - ' + movie.data.genres.toLocaleLowerCase()}}</div>
+        </div>
+        <div class="section cast">
+            <div class="icon"><i class="fa fa-user"></i></div>
+            <div class="text">{{movie.data.actors}}</div>
+        </div>
+        <div class="section subs" *ngIf="movie.data.subtitles.length">
+            <div class="icon"><i class="fa fa-cc"></i></div>
+            <div class="text">{{movie.data.subtitles.join(', ')}}</div>
+        </div>
+    </div>
+</div>

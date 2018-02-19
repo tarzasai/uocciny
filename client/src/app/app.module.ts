@@ -13,6 +13,8 @@ import { ConfigService } from './utils/config.service';
 import { DataService } from './api/data.service';
 import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { MovieCardComponent } from './movie-card/movie-card.component';
+import { SeriesCardComponent } from './series-card/series-card.component';
 
 /* */
 export function loadConfig(configService: ConfigService) {
@@ -23,6 +25,8 @@ export function loadConfig(configService: ConfigService) {
     declarations: [
         AppComponent,
         DashboardComponent,
+        MovieCardComponent,
+        SeriesCardComponent,
     ],
     imports: [
         BrowserModule,

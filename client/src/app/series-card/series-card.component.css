@@ -1,0 +1,8 @@
+.card.series .poster {
+    /* 680 : 1000 = 136 : 200 */
+    width: 136px;
+}
+
+.plot {
+    max-height: 52px;
+}

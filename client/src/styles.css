@@ -1,1 +1,77 @@
-/* You can add global styles to this file, and also import other style files */
+.card {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: row;
+    background-color: white;
+    box-shadow: 5px 5px 5px darkgray;
+    border: 1px solid darkgrey;
+    border-radius: 3px;
+    margin: 15px;
+    padding: 0;
+    height: 200px;
+    width: 450px;
+}
+
+.card .poster,
+.card .details {
+    display: flex;
+    flex-grow: 0;
+}
+
+.card .poster {
+    flex-shrink: 0;
+    /* 780 : 1170 = 133 : 200 */
+    width: 133px;
+}
+
+.card .details {
+    flex-shrink: 1;
+    flex-direction: column;
+    padding: 5px 5px 5px 10px;
+    color: darkslategray;
+}
+
+.card .section {
+    margin: 2px 0;
+}
+
+.card .section {
+    display: flex;
+    flex-direction: row;
+    vertical-align: top;
+    white-space: normal;
+    overflow: hidden;
+}
+
+.card .section div {
+    display: flex;
+    min-height: 18px;
+}
+
+.card .section div.icon {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 20px;
+}
+
+.card .section div.icon .fa {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card .section div.text {
+    font-size: 90%;
+    line-height: 17px;
+    margin-left: 5px;
+}
+
+.card .section.title {
+    max-height: 40px;
+}
+
+.card .section.title div.text {
+    font-weight: bold;
+}

@@ -1,22 +1,10 @@
 <div class="title-grid">
     <div *ngFor="let title of titles">
-        <div class="title-item" [ngClass]="{
-            'movie': title.type == TitleType.movie,
-            'series': title.type == TitleType.series
-        }">
-            <div class="poster">
-                <img src="{{title.poster}}" width="100%"/>
-            </div>
-            <div class="details">
-                <div class="item-title">
-                    <i class="fa" [ngClass]="{
-                        'fa-film': title.type == TitleType.movie,
-                        'fa-television': title.type == TitleType.series
-                    }"></i>
-                    {{title.name}}
-                </div>
-                <div class="item-plot">{{title.data.plot}}</div>
-            </div>
-        </div>
+        <app-movie-card *ngIf="title.type == TitleType.movie"
+            [movie]="title">
+        </app-movie-card>
+        <app-series-card *ngIf="title.type == TitleType.series"
+            [series]="title" [preview]="EpisodePreview.available">
+        </app-series-card>
     </div>
 </div>

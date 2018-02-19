@@ -1,0 +1,27 @@
+<div class="card series">
+    <div class="poster">
+        <img src="{{series.poster}}" width="100%"/>
+    </div>
+    <div class="details">
+        <div class="section title">
+            <div class="icon"><i class="fa fa-television"></i></div>
+            <div class="text">{{series.name}}</div>
+        </div>
+        <div class="section ep-info">
+            <div class="icon"><i class="fa" [ngClass]="{
+                'fa-rss': preview == EpisodePreview.aired,
+                'fa-eye-slash': preview == EpisodePreview.missing,
+                'fa-hdd-o': preview == EpisodePreview.available
+            }"></i></div>
+            <div class="text">{{series.year + ' - ' + series.data.genres.toLocaleLowerCase()}}</div>
+        </div>
+        <div class="section plot">
+            <div class="icon"><i class="fa fa-quote-left"></i></div>
+            <div class="text">{{series.available.plot}}</div>
+        </div>
+        <!--<div class="section subs" *ngIf="series.data.subtitles.length">
+            <div class="icon"><i class="fa fa-cc"></i></div>
+            <div class="text">{{series.data.subtitles.join(', ')}}</div>
+        </div>-->
+    </div>
+</div>

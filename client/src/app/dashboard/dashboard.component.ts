@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Title, Movie, Series, TitleType } from '../api/title';
+import { Title, Movie, Series, TitleType, EpisodePreview } from '../api/title';
 import { DataService, RequestType } from '../api/data.service';
 
 @Component({
@@ -10,6 +10,7 @@ import { DataService, RequestType } from '../api/data.service';
 })
 export class DashboardComponent implements OnInit {
     TitleType = TitleType;
+    EpisodePreview = EpisodePreview;
 
     titles: Title[];
 
@@ -27,12 +28,18 @@ export class DashboardComponent implements OnInit {
             watched: 0
         }).subscribe(result => {
             console.log(result);
+            result.sort(function(m1, m2) {
+                return m1.released.localeCompare(m2.released);
+            });
             result.forEach(function(itm) {
                 cmp.titles.push(new Movie(itm));
             });
             this.data.fetch(RequestType.series, {
                 available: 1
             }).subscribe(result => {
+                result.sort(function(s1, s2) {
+                    return s1.name.localeCompare(s2.name);
+                });
                 result.forEach(function(itm) {
                     cmp.titles.push(new Series(itm));
                 });
