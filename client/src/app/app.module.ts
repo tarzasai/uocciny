@@ -8,9 +8,11 @@ import 'rxjs/add/operator/map';
 
 /* */
 import { AppComponent } from './app.component';
-import { TitlesComponent } from './titles/titles.component';
 import { MessageService } from './utils/message.service';
 import { ConfigService } from './utils/config.service';
+import { DataService } from './api/data.service';
+import { AppRoutingModule } from './/app-routing.module';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 /* */
 export function loadConfig(configService: ConfigService) {
@@ -20,16 +22,18 @@ export function loadConfig(configService: ConfigService) {
 @NgModule({
     declarations: [
         AppComponent,
-        TitlesComponent,
+        DashboardComponent,
     ],
     imports: [
         BrowserModule,
         HttpModule,
-        HttpClientModule
+        HttpClientModule,
+        AppRoutingModule
     ],
     providers: [
         ConfigService,
         MessageService,
+        DataService,
 		{
 			provide: APP_INITIALIZER,
 			useFactory: loadConfig,

@@ -72,7 +72,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     if response.status_code == 200:
-        app.logger.debug(response.data)
+        app.logger.debug(len(response.data))
     else:
         app.logger.warning(response)
     return response
@@ -96,36 +96,39 @@ def index():
 @app.route('/movies', methods=['GET', 'OPTIONS'])
 def view_movies():
     imdb_id = request.args.get('imdb_id', None)
-    res = get_movie(imdb_id) if imdb_id else get_movie_list(
-        watchlist=prm2bool(request.args, 'watchlist'),
-        collected=prm2bool(request.args, 'collected'),
-        watched=prm2bool(request.args, 'watched'),
-    )
+    res = get_movie(imdb_id) if imdb_id\
+        else get_movie_list(
+            watchlist=prm2bool(request.args, 'watchlist'),
+            collected=prm2bool(request.args, 'collected'),
+            watched=prm2bool(request.args, 'watched'),
+        )
     return jsonify({'status': 200, 'result': res})
 
 
 @app.route('/series', methods=['GET', 'OPTIONS'])
 def view_series():
-    tvdb_id = request.args.get('tvdb_id', None)
-    res = get_series(tvdb_id) if tvdb_id else get_series_list(
-        watchlist=prm2bool(request.args, 'watchlist'),
-        collected=prm2bool(request.args, 'collected'),
-        missing=prm2bool(request.args, 'missing'),
-        available=prm2bool(request.args, 'available'),
-    )
+    tvdb_id = prm2int(request.args, 'tvdb_id')
+    res = get_series(tvdb_id) if tvdb_id\
+        else get_series_list(
+            watchlist=prm2bool(request.args, 'watchlist'),
+            collected=prm2bool(request.args, 'collected'),
+            missing=prm2bool(request.args, 'missing'),
+            available=prm2bool(request.args, 'available'),
+        )
     return jsonify({'status': 200, 'result': res})
 
 
 @app.route('/episodes', methods=['GET', 'OPTIONS'])
 def view_episodes():
-    tvdb_id = request.args.get('tvdb_id', None)
-    res = get_episode(tvdb_id) if tvdb_id else get_episode_list(
-        request.args['series'], ## obbligatorio
-        season=prm2int(request.args, 'season'),
-        episode=prm2int(request.args, 'episode'),
-        watched=prm2bool(request.args, 'watched'),
-        collected=prm2bool(request.args, 'collected'),
-    )
+    tvdb_id = prm2int(request.args, 'tvdb_id')
+    res = get_episode(tvdb_id) if tvdb_id\
+        else get_episode_list(
+            int(request.args['series']), ## obbligatorio
+            season=prm2int(request.args, 'season'),
+            episode=prm2int(request.args, 'episode'),
+            watched=prm2bool(request.args, 'watched'),
+            collected=prm2bool(request.args, 'collected'),
+        )
     return jsonify({'status': 200, 'result': res})
 
 

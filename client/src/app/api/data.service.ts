@@ -8,40 +8,47 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
 
+export enum RequestType {
+    movies = 'movies',
+    series = 'series',
+    episodes = 'episodes'
+}
+
 export class ServerResult {
-    status: string;
-    result: any;
+    status = 0;
+    result = [];
 
     get isError() {
-        return this.status != 'success';
+        return this.status != 200;
     }
 }
 
 @Injectable()
 export class DataService {
 
-    private _data: any = {};
-
     constructor(private config: ConfigService, private messages: MessageService,
         private http: HttpClient) { }
 
-    reset() {
-        this._data = {};
-    }
-
-    get data(): Observable<any> {
-        return Object.keys(this._data).length ? of(this._data) : this.http
-            .get<ServerResult>(this.config.apiHost + '/data')
+    fetch(what: RequestType, args: any): Observable<any> {
+        var url = this.config.apiHost + '/' + RequestType[what];
+        return this.http
+            .get<ServerResult>([url, this.args2uri(args)].join('?'))
             .pipe(
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    this._data = res.result;
                     this.messages.addInfo("fetched data");
-                    return this._data;
+                    return res.result;
                 }),
-                catchError(this.handleError('getData', this._data || {}))
+                catchError(this.handleError('fetch', []))
             );
+    }
+
+    private args2uri(dict) {
+        var str = [];
+        for (var p in (dict || {}))
+            str.push([encodeURIComponent(p), encodeURIComponent(dict[p])].join('='));
+        return str.join("&");
     }
 
     private handleError<T>(operation = 'operation', result?: T) {
@@ -51,5 +58,4 @@ export class DataService {
             return of(result as T);
         };
     }
-
 }

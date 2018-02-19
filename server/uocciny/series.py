@@ -14,7 +14,7 @@ MAX_AGE = app.config.get('MAX_AGE_SERIES', 30) ## default 30 giorni
 class Series(Base):
     __tablename__ = 'series'
 
-    tvdb_id = Column(String, primary_key=True)
+    tvdb_id = Column(Integer, primary_key=True)
     imdb_id = Column(String, unique=True)
     name = Column(String, nullable=False)
     plot = Column(String)
@@ -29,7 +29,7 @@ class Series(Base):
     episodes = relationship('Episode', backref="parent", passive_deletes=True)
 
     def __repr__(self):
-        return '<Series %s - %s>' % (self.tvdb_id, self.name if self.name else 'N/A')
+        return '<Series %d - %s>' % (self.tvdb_id, self.name if self.name else 'N/A')
     
     def is_old(self):
         if self.updated is None:
@@ -50,8 +50,8 @@ class Series(Base):
 class Episode(Base):
     __tablename__ = 'episodes'
     
-    series = Column(String, ForeignKey('series.tvdb_id', ondelete='CASCADE'), nullable=False)
-    tvdb_id = Column(String, primary_key=True)
+    series = Column(Integer, ForeignKey('series.tvdb_id', ondelete='CASCADE'), nullable=False)
+    tvdb_id = Column(Integer, primary_key=True)
     imdb_id = Column(String, unique=True)
     season = Column(Integer, nullable=False)
     episode = Column(Integer, nullable=False)
@@ -67,22 +67,25 @@ class Episode(Base):
     updated = Column(DateTime)
 
     def __repr__(self):
-        return '<Episode %s - %s.S%02dE%02d>' % (self.tvdb_id, self.series, self.season, self.episode)
+        return '<Episode %d.S%02dE%02d (%d)>' % (self.series, self.season, self.episode, self.tvdb_id)
+    
+    def __uoccin_series_data__(self):
+        return get_uf().get('series', {}).get(str(self.series), None)
     
     def aired(self):
         return self.firstAired is not None and (datetime.now() - self.firstAired).days > 0
     
     def collected(self):
-        series = get_uf().get('series', {}).get(self.series, None)
+        series = self.__uoccin_series_data__()
         return series is not None\
             and series['collected'].get(str(self.season), {}).get(str(self.episode), None) is not None
     
     def watched(self):
-        series = get_uf().get('series', {}).get(self.series, None)
+        series = self.__uoccin_series_data__()
         return series is not None and self.aired() and (self.episode in series['watched'].get(str(self.season), []))
     
     def missing(self):
-        series = get_uf().get('series', {}).get(self.series, None)
+        series = self.__uoccin_series_data__()
         return series is not None and self.aired() and not (self.collected() or self.watched())
 
 Index('idx_episode_sse', Episode.series, Episode.season, Episode.episode)
@@ -95,19 +98,18 @@ def update_from_tvdb(series):
         db = get_db()
         tvdb = ApiV2Client(None, app.config['TVDB_API_KEY'], None, language='en')
         tvdb.login()
-        sid = int(series.tvdb_id)
-        show = tvdb.get_series(sid)['data']
+        show = tvdb.get_series(series.tvdb_id)['data']
         series.imdb_id = show['imdbId'] if show['imdbId'] else None
         series.name = show['seriesName']
         series.plot = show['overview'] if show['overview'] else None
-        series.network = show['network'] if show['network'] else None
         series.status = show['status'] if show['status'] else None
         series.banner = show['banner'] if show['banner'] else None
         series.genres = ', '.join([g for g in show['genre']]) if show['genre'] else None
+        series.network = show['network'] if show['network'] else None
         series.firstAired = datetime.strptime(show['firstAired'], '%Y-%m-%d') if show['firstAired'] else None
-        act = tvdb.get_series_actors(sid)['data']
+        act = tvdb.get_series_actors(series.tvdb_id)['data']
         series.actors = ', '.join([a['name'] for a in act]) if act else None
-        pst = tvdb.get_series_images(sid, image_type='poster')['data']
+        pst = tvdb.get_series_images(series.tvdb_id, image_type='poster')['data']
         if pst:
             pst.sort(key=lambda x: x['ratingsInfo']['count'], reverse=True)
         series.poster = pst[0]['fileName'] if pst else None
@@ -116,7 +118,7 @@ def update_from_tvdb(series):
             db.add(series)
         # episodes
         db.query(Episode).filter(Episode.series == series.tvdb_id).delete()
-        eps = tvdb.get_series_episodes(sid)
+        eps = tvdb.get_series_episodes(series.tvdb_id)
         while eps['data']:
             for ep in eps['data']:
                 eid = int(ep['id'])
@@ -124,7 +126,7 @@ def update_from_tvdb(series):
                     continue
                 episode = Episode()
                 episode.series = series.tvdb_id
-                episode.tvdb_id = ep['id'] # tvdb_id
+                episode.tvdb_id = ep['id'] ## tvdb_id
                 episode.season = ep['airedSeason']
                 episode.episode = ep['airedEpisodeNumber']
                 episode.title = ep['episodeName'] if ep['episodeName'] else None
@@ -132,7 +134,7 @@ def update_from_tvdb(series):
                 episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
                 db.add(episode)
                 try:
-                    app.logger.info('updating %r...' % (episode))
+                    app.logger.info('updating %r...' % episode)
                     ep = tvdb.get_episode(eid)['data']
                     episode.imdb_id = ep['imdbId'] if ep['imdbId'] else None
                     episode.writers = ', '.join(ep['writers']) if ep['writers'] else None
@@ -142,16 +144,16 @@ def update_from_tvdb(series):
                     episode.thumbwidth = int(ep['thumbWidth']) if ep['thumbWidth'] else None
                     episode.thumbheight = int(ep['thumbHeight']) if ep['thumbHeight'] else None
                     episode.updated = datetime.now()
-                    app.logger.debug('%r updated.' % (episode))
+                    app.logger.debug('%r updated.' % episode)
                 except Exception as err:
                     app.logger.error('update failed for %r: %s' % (episode, str(err)))
             if eps['links']['next']:
-                eps = tvdb.get_series_episodes(sid, page=eps['links']['next'])
+                eps = tvdb.get_series_episodes(series.tvdb_id, page=eps['links']['next'])
             else:
                 break
         # done
         db.commit()
-        app.logger.info('%r updated.' % (series))
+        app.logger.info('%r updated.' % series)
     except Exception as err:
         app.logger.error('update failed for %r: %s' % (series, str(err)))
         db.rollback()
@@ -218,7 +220,7 @@ def get_series_list(watchlist=None, collected=None, missing=None, available=None
     for sid, itm in get_uf().get('series', {}).iteritems():
         if ((watchlist is None or watchlist == itm['watchlist']) and
             (collected is None or collected == (len(itm['collected']) > 0))):
-            obj = get_metadata(dict({'tvdb_id': sid}, **itm))
+            obj = get_metadata(dict({'tvdb_id': int(sid)}, **itm))
             if ((missing is None or missing == (obj['episodes']['summary']['missing'] > 0)) and
                 (available is None or available == (obj['episodes']['summary']['available'] > 0))):
                 res.append(obj)
@@ -226,7 +228,7 @@ def get_series_list(watchlist=None, collected=None, missing=None, available=None
 
 
 def get_episode(tvdb_id):
-    app.logger.debug('get_episode: tvdb_id=%s' % tvdb_id)
+    app.logger.debug('get_episode: tvdb_id=%d' % tvdb_id)
     rec = get_db().query(Episode).filter(Episode.tvdb_id == tvdb_id).first()
     return dict({'collected':rec.collected(), 'watched':rec.watched()}, **row2dict(rec))
 

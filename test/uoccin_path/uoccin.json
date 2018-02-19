@@ -4973,11 +4973,7 @@
             "watchlist": true
         },
         "254834": {
-            "collected": {
-                "5": {
-                    "2": []
-                }
-            },
+            "collected": {},
             "name": "Endeavour",
             "rating": 4,
             "tags": [
@@ -5009,7 +5005,8 @@
                     4
                 ],
                 "5": [
-                    1
+                    1,
+                    2
                 ]
             },
             "watchlist": true
@@ -5124,11 +5121,7 @@
             "watchlist": true
         },
         "261109": {
-            "collected": {
-                "4": {
-                    "1": []
-                }
-            },
+            "collected": {},
             "name": "Shetland",
             "rating": 4,
             "tags": [
@@ -5155,6 +5148,9 @@
                     4,
                     5,
                     6
+                ],
+                "4": [
+                    1
                 ]
             },
             "watchlist": true
