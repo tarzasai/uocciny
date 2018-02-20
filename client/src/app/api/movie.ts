@@ -17,23 +17,7 @@ export class Movie extends Title {
         return this.data.director;
     }
 
-    get plot() {
-        return this.data.plot;
-    }
-
     get year() {
         return this.data.released ? moment(this.data.released).year() : 'N/A';
-    }
-
-    get watchlist():boolean {
-        return this.data.watchlist;
-    }
-
-    get collected():boolean {
-        return this.data.collected;
-    }
-
-    get watched():boolean {
-        return this.data.watched;
     }
 }

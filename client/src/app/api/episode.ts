@@ -7,12 +7,6 @@ export class Episode extends Title {
     constructor(data: any) {
         super(data);
         this.type = TitleType.episode;
-        var s = (this.data.subtitles || []);
-        s.find(function(itm, idx, lst) {
-            if (itm === 'und')
-                lst[idx] = 'unknown';
-        });
-        s.sort();
     }
 
     get eid() {
@@ -22,13 +16,5 @@ export class Episode extends Title {
 
     get title() {
         return this.data.title || 'N/A';
-    }
-
-    get plot() {
-        return this.data.plot;
-    }
-
-    get subs() {
-        return this.data.subtitles ? this.data.subtitles.join(', ') : null;
     }
 }

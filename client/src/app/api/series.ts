@@ -24,6 +24,13 @@ export class Series extends Title {
             this.available = new Episode(this.data.episodes.available);
     }
 
+    preview(type: EpisodePreview) {
+        return type === EpisodePreview.aired ? this.aired :
+            type === EpisodePreview.missing ? this.missing :
+            type === EpisodePreview.available ? this.available :
+            null;
+    }
+
     get genres() {
         return this.data.genres ? this.data.genres.toLocaleLowerCase() : null;
     }

@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
 
 /* */
 import 'rxjs/add/operator/map';
@@ -32,7 +33,8 @@ export function loadConfig(configService: ConfigService) {
         BrowserModule,
         HttpModule,
         HttpClientModule,
-        AppRoutingModule
+        AppRoutingModule,
+        ButtonsModule.forRoot(),
     ],
     providers: [
         ConfigService,

@@ -1,12 +1,16 @@
 <div class="card movie">
+
     <div class="poster">
         <img src="{{movie.poster}}" width="100%"/>
     </div>
+
     <div class="details">
+
         <div class="section title">
             <div class="icon"><i class="fa fa-film"></i></div>
-            <div class="text">{{movie.name}}</div>
+            <div class="text">{{movie.title}}</div>
         </div>
+
         <div class="section info">
             <div class="icon"><i class="fa" [ngClass]="{
                 'fa-eye': movie.watched,
@@ -15,13 +19,47 @@
             }"></i></div>
             <div class="text">{{movie.year + (movie.director ? ' by ' + movie.director : '')}}</div>
         </div>
-        <div class="section cast">
+
+        <div class="section plot">
             <div class="icon"><i class="fa fa-quote-left"></i></div>
             <div class="text">{{movie.plot}}</div>
         </div>
-        <div class="section subs" *ngIf="movie.data.subtitles.length">
+
+        <div class="section subs" *ngIf="movie.data.subtitles">
             <div class="icon"><i class="fa fa-cc"></i></div>
-            <div class="text">{{movie.data.subtitles.join(', ')}}</div>
+            <div class="text">{{movie.subtitles}}</div>
         </div>
+
+        <div class="tools">
+            <div class="btn-group" role="group">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="openIni()">
+                        <i class="fa fa-lg fa-eye" [ngClass]="{'false': !movie.watched}"></i>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="openIni()">
+                        <i class="fa fa-lg fa-hdd-o" [ngClass]="{'false': !movie.collected}"></i>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="openIni()">
+                        <i class="fa fa-lg fa-heart" [ngClass]="{'false': !movie.watchlist}"></i>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
+                        <i class="fa fa-lg fa-imdb"></i>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
+                        <i class="fa fa-lg fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
+
 </div>

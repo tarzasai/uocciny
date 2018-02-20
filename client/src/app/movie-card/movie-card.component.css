@@ -2,24 +2,3 @@
     /* 780 : 1170 = 133 : 156 */
     width: 104px;
 }
-
-.info {
-    height: 20px;
-}
-
-.info .text {
-    opacity: 0.6;
-    font-weight: bold;
-}
-
-.cast {
-    height: 68px;
-}
-
-.plot {
-    height: 68px;
-}
-
-.subs {
-    height: 20px;
-}
