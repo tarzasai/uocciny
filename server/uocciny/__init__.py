@@ -7,6 +7,8 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 
+#from throttle import throttle
+
 
 # questa classe serve solo in IIS
 class PrefixMiddleware(object):
@@ -57,6 +59,13 @@ def get_uf():
     return uf
 
 
+###@throttle(10)
+
+def save_uf():
+    with open(os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json'), 'w+') as f:
+        json.dump(get_uf(), f, indent=4, separators=(',', ': '), sort_keys=True)
+
+
 @app.teardown_appcontext
 def teardown_db(exception):
     db = getattr(g, '_database', None)
@@ -84,8 +93,8 @@ def handle_internal_error(err):
     return jsonify({'status': 500, 'result': str(err)}), 200
 
 
-from movies import get_movie, get_movie_list
-from series import get_series, get_series_list, get_episode, get_episode_list
+from movies import get_movie, get_movie_list, set_movie
+from series import get_series, get_series_list, get_episode, get_episode_list, set_series, set_season, set_episode
 
 
 @app.route('/')
@@ -135,6 +144,55 @@ def view_episodes():
 @app.route('/uoccinfile', methods=['GET', 'OPTIONS'])
 def view_uof():
     return jsonify({'status': 200, 'result': get_uf()})
+
+
+@app.route('/movie', methods=['POST'])
+def upd_movie():
+    prms = json.loads(request.data) ## arriva come stringa.
+    set_movie(
+        int(prms['imdb_id']),
+        watchlist=prm2bool(prms, 'watchlist'),
+        collected=prm2bool(prms, 'collected'),
+        watched=prm2bool(prms, 'watched'),
+        rating=prm2int(prms, 'rating')
+    )
+    return jsonify({'status': 200, 'result': 'OK'})
+
+
+@app.route('/series', methods=['POST'])
+def upd_series():
+    prms = json.loads(request.data) ## arriva come stringa.
+    set_series(
+        int(prms['tvdb_id']),
+        watchlist=prm2bool(prms, 'watchlist'),
+        rating=prm2int(prms, 'rating')
+    )
+    return jsonify({'status': 200, 'result': 'OK'})
+
+
+@app.route('/season', methods=['POST'])
+def upd_season():
+    prms = json.loads(request.data) ## arriva come stringa.
+    set_season(
+        int(prms['tvdb_id']),
+        int(prms['season']),
+        collected=prm2bool(prms, 'collected'),
+        watched=prm2bool(prms, 'watched')
+    )
+    return jsonify({'status': 200, 'result': 'OK'})
+
+
+@app.route('/episode', methods=['POST'])
+def upd_episode():
+    prms = json.loads(request.data) ## arriva come stringa.
+    set_episode(
+        int(prms['tvdb_id']),
+        int(prms['season']),
+        int(prms['episode']),
+        collected=prm2bool(prms, 'collected'),
+        watched=prm2bool(prms, 'watched')
+    )
+    return jsonify({'status': 200, 'result': 'OK'})
 
 
 def prm2bool(args, name):

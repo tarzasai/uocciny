@@ -1,1 +1,23 @@
+<div id="MsgBox">
+    <div>
+        <!-- quello interno serve per allineare in basso -->
+        <div class="alert alert-dismissable" *ngFor="let msg of messages.list; let i = index" [ngClass]="{
+            'alert-info': msg.type === MessageType.info,
+            'alert-warning': msg.type === MessageType.warning,
+            'alert-danger': msg.type === MessageType.error
+        }">
+            <i class="fa fa-lg" [ngClass]="{
+                'fa-info-circle': msg.type === MessageType.info,
+                'fa-exclamation-triangle': msg.type === MessageType.warning,
+                'fa-exclamation-circle': msg.type === MessageType.error
+            }"></i>
+            <a class="close" (click)="messages.del(i)">&times;</a>
+            <strong *ngIf="msg.title">{{msg.title}}:</strong>
+            <span>{{msg.text}}</span>
+        </div>
+    </div>
+</div>
+<div class="overlay" *ngIf="config.locked">
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw" *ngIf="!config.confirmPrompt"></i>
+</div>
 <router-outlet></router-outlet>

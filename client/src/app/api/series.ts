@@ -31,6 +31,10 @@ export class Series extends Title {
             null;
     }
 
+    get tvdb_id() {
+        return this.data.tvdb_id;
+    }
+
     get genres() {
         return this.data.genres ? this.data.genres.toLocaleLowerCase() : null;
     }

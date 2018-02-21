@@ -5,10 +5,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from tvdb_client import ApiV2Client
 
-from uocciny import app, get_uf
+from uocciny import app, get_uf, save_uf
 from database import Base, get_db, row2dict
-
-MAX_AGE = app.config.get('MAX_AGE_SERIES', 30) ## default 30 giorni
 
 
 class Series(Base):
@@ -69,30 +67,39 @@ class Episode(Base):
     def __repr__(self):
         return '<Episode %d.S%02dE%02d (%d)>' % (self.series, self.season, self.episode, self.tvdb_id)
     
-    def __uoccin_series_data__(self):
-        return get_uf().get('series', {}).get(str(self.series), None)
-    
     def aired(self):
         return self.firstAired is not None and (datetime.now() - self.firstAired).days > 0
     
     def collected(self):
-        series = self.__uoccin_series_data__()
+        series = read_from_uoccin(self.series)
         return series is not None\
             and series['collected'].get(str(self.season), {}).get(str(self.episode), None) is not None
     
     def watched(self):
-        series = self.__uoccin_series_data__()
+        series = read_from_uoccin(self.series)
         return series is not None and self.aired() and (self.episode in series['watched'].get(str(self.season), []))
     
     def missing(self):
-        series = self.__uoccin_series_data__()
+        series = read_from_uoccin(self.series)
         return series is not None and self.aired() and not (self.collected() or self.watched())
     
     def subtitles(self):
-        series = self.__uoccin_series_data__()
+        series = read_from_uoccin(self.series)
         return series['collected'].get(str(self.season), {}).get(str(self.episode), []) if series else None
 
 Index('idx_episode_sse', Episode.series, Episode.season, Episode.episode)
+
+    
+def read_from_uoccin(series):
+    return get_uf().get('series', {}).get(str(series), None)
+
+
+def read_from_tvdb(tvdb_id):
+    tvdb = ApiV2Client(None, app.config['TVDB_API_KEY'], None, language='en')
+    tvdb.login()
+    show = tvdb.get_series(tvdb_id)
+    app.logger.debug('find_series: ' + (show['data']['seriesName'] if 'data' in show else show['message']))
+    return tvdb, show.get('data', None)
 
 
 def update_from_tvdb(series):
@@ -100,9 +107,9 @@ def update_from_tvdb(series):
     exists = series.updated is not None
     try:
         db = get_db()
-        tvdb = ApiV2Client(None, app.config['TVDB_API_KEY'], None, language='en')
-        tvdb.login()
-        show = tvdb.get_series(series.tvdb_id)['data']
+        tvdb, show = read_from_tvdb(series.tvdb_id)
+        if show is None:
+            raise Exception('series %s not found on TVDB' % series.tvdb_id)
         series.imdb_id = show['imdbId'] if show['imdbId'] else None
         series.name = show['seriesName']
         series.plot = show['overview'] if show['overview'] else None
@@ -210,7 +217,7 @@ def get_metadata(series):
 
 def get_series(tvdb_id):
     app.logger.debug('get_series: tvdb_id=%s' % tvdb_id)
-    obj = get_uf().get('series', {}).get(tvdb_id, None)
+    obj = read_from_uoccin(tvdb_id)
     if obj is None:
         return []
     return [get_metadata(dict({'tvdb_id': tvdb_id}, **obj))]
@@ -247,3 +254,43 @@ def get_episode_list(series, season=None, episode=None, collected=None, watched=
             (collected is None or rec.collected() == collected) and (watched is None or rec.watched() == watched):
             res.append(dict({'collected':rec.collected(), 'watched':rec.watched()}, **row2dict(rec)))
     return res
+
+
+def set_series(tvdb_id, watchlist=None, rating=None):
+    app.logger.debug('set_series: watchlist=%s, rating=%s' % (watchlist, rating))
+    series = read_from_uoccin(tvdb_id)
+    exists = series is not None
+    uf = get_uf()
+    if rating is not None and rating < 0: ## ban&trash
+        uf.setdefault('banned', []).append(tvdb_id)
+        if exists:
+            del uf['series'][str(tvdb_id)]
+            save_uf()
+        return
+    if not exists:
+        dummy, data = read_from_tvdb(tvdb_id)
+        if data is None:
+            raise Exception('ID %d not found on TVDB' % tvdb_id)
+        series = uf.setdefault('series', {}).setdefault(tvdb_id, {
+            'name': data['seriesName'],
+            'watchlist': False,
+            'collected': {},
+            'watched': {}
+        })
+    if watchlist is not None:
+        series['watchlist'] = watchlist
+    if rating > 0:
+        series['rating'] = max(rating, 5)
+    if not series['watchlist'] and not series['collected'] and not series['watched']:
+        del uf['series'][str(tvdb_id)]
+    save_uf()
+
+
+def set_season(series, season, collected=None, watched=None):
+    app.logger.debug('set_season: series=%s, season=%s, collected=%s, watched=%s' %
+        (series, season, collected, watched))
+
+
+def set_episode(series, season, episode, collected=None, watched=None):
+    app.logger.debug('set_episode: series=%s, season=%s, episode=%s, collected=%s, watched=%s' %
+        (series, season, episode, collected, watched))

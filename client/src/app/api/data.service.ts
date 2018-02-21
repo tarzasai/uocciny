@@ -8,10 +8,17 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
 
-export enum RequestType {
+export enum RetrieveType {
     movies = 'movies',
     series = 'series',
     episodes = 'episodes'
+}
+
+export enum UpdateType {
+    movie = 'movie',
+    series = 'series',
+    season = 'season',
+    episode = 'episode'
 }
 
 export class ServerResult {
@@ -29,8 +36,8 @@ export class DataService {
     constructor(private config: ConfigService, private messages: MessageService,
         private http: HttpClient) { }
 
-    fetch(what: RequestType, args: any): Observable<any> {
-        var url = this.config.apiHost + '/' + RequestType[what];
+    retrieve(what: RetrieveType, args: any): Observable<any> {
+        var url = this.config.apiHost + '/' + RetrieveType[what];
         return this.http
             .get<ServerResult>([url, this.args2uri(args)].join('?'))
             .pipe(
@@ -40,7 +47,22 @@ export class DataService {
                     this.messages.addInfo("fetched data");
                     return res.result;
                 }),
-                catchError(this.handleError('fetch', []))
+                catchError(this.handleError('retrieve', []))
+            );
+    }
+
+    update(what: UpdateType, args: any): Observable<any> {
+        var url = this.config.apiHost + '/' + UpdateType[what];
+        return this.http
+            .post<ServerResult>(url, args)
+            .pipe(
+                map(res => {
+                    if (res.isError)
+                        throw res.result;
+                    this.messages.addInfo("updated data");
+                    return true;
+                }),
+                catchError(this.handleError('update', false))
             );
     }
 

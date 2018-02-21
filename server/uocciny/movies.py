@@ -7,7 +7,6 @@ import tmdbsimple as tmdb
 from uocciny import app, get_uf
 from database import Base, get_db, row2dict
 
-MAX_AGE = app.config.get('MAX_AGE_MOVIES', 30) ## default 30 giorni
 
 class Movie(Base):
     __tablename__ = 'movies'
@@ -31,8 +30,17 @@ class Movie(Base):
     def __repr__(self):
         return '<Movie %s - %s>' % (self.imdb_id, self.name if self.name else 'N/A')
     
-    def older_than(self, max_age):
-        return self.updated is None or (datetime.now() - self.updated).days > max_age
+    def is_old(self):
+        if self.updated is None:
+            return True
+        age = (datetime.now() - self.updated).days
+        if self.released is None:
+            return age > 15
+        if (datetime.now() - self.released).days <= 30:
+            return age > 30
+        if (datetime.now() - self.released).days > (15 * 365):
+            return age > 180
+        return age > 45
     
     def update_from_tmdb(self, session):
         app.logger.info('updating %r...' % self)
@@ -60,6 +68,7 @@ class Movie(Base):
             self.name = 'Update error'
             self.plot = str(err)
 
+
 def fill_metadata(lst):
     db = get_db()
     for itm in lst:
@@ -67,10 +76,11 @@ def fill_metadata(lst):
         rec = db.query(Movie).filter(Movie.imdb_id == mid).first()
         if rec is None:
             rec = Movie(mid)
-        if rec.older_than(MAX_AGE):
+        if rec.is_old():
             rec.update_from_tmdb(db)
         itm.update(row2dict(rec))
     return lst
+
 
 def get_movie(imdb_id):
     app.logger.debug('get_movie: imdb_id=%s' % imdb_id)
@@ -78,6 +88,7 @@ def get_movie(imdb_id):
     if obj is None:
         return []
     return fill_metadata([dict({'imdb_id': imdb_id}, **obj)])
+
 
 def get_movie_list(watchlist=None, collected=None, watched=None):
     app.logger.debug('get_movie_list: watchlist=%s, collected=%s, watched=%s' % (watchlist, collected, watched))
@@ -88,3 +99,8 @@ def get_movie_list(watchlist=None, collected=None, watched=None):
             (watched is None or itm['watched'] == watched)):
             res.append(dict({'imdb_id': mid}, **itm))
     return fill_metadata(res)
+
+
+def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None):
+    app.logger.debug('get_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s' %
+        (imdb_id, watchlist, collected, watched, rating))

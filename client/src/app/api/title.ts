@@ -14,7 +14,7 @@ export class Title {
         this.data = data;
         if (this.data.subtitles) {
             this.data.subtitles.sort();
-            this.data.subtitles.find(function(itm, idx, lst) {
+            this.data.subtitles.find(function (itm, idx, lst) {
                 if (itm === 'und')
                     lst[idx] = '<?>';
             });
@@ -33,19 +33,23 @@ export class Title {
         return this.data.plot;
     }
 
-    get subtitles() {
-        return this.data.subtitles ? this.data.subtitles.join(', ') : null;
-    }
-
-    get watchlist():boolean {
+    get watchlist() {
         return this.data.watchlist;
     }
 
-    get collected():boolean {
+    get collected() {
         return this.data.collected;
     }
 
-    get watched():boolean {
+    get watched() {
         return this.data.watched;
+    }
+
+    get rating() {
+        return this.data.rating;
+    }
+
+    get subtitles() {
+        return this.data.subtitles ? this.data.subtitles.join(', ') : null;
     }
 }

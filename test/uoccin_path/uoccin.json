@@ -1,4 +1,11 @@
 {
+    "banned": [
+        338510,
+        332525,
+        339137,
+        338451,
+        334824
+    ],
     "movies": {
         "tt0032553": {
             "collected": false,
@@ -7336,16 +7343,6 @@
             "watched": {},
             "watchlist": false
         },
-        "332525": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Black Lightning",
-            "watched": {},
-            "watchlist": false
-        },
         "334075": {
             "collected": {
                 "1": {
@@ -7353,16 +7350,6 @@
                 }
             },
             "name": "McMafia",
-            "watched": {},
-            "watchlist": false
-        },
-        "334824": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "DARK",
             "watched": {},
             "watchlist": false
         },
@@ -7451,28 +7438,6 @@
             "watched": {},
             "watchlist": false
         },
-        "338451": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Coastal Railways with Julie Walters",
-            "watched": {},
-            "watchlist": false
-        },
-        "338510": {
-            "collected": {
-                "1": {
-                    "1": [
-                        "eng"
-                    ]
-                }
-            },
-            "name": "Bancroft",
-            "watched": {},
-            "watchlist": false
-        },
         "338798": {
             "collected": {
                 "1": {
@@ -7480,16 +7445,6 @@
                 }
             },
             "name": "Here and Now (2018)",
-            "watched": {},
-            "watchlist": false
-        },
-        "339137": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Corporate",
             "watched": {},
             "watchlist": false
         },

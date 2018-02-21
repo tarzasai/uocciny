@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
+import { ConfigService } from '../utils/config.service';
+import { MessageService } from '../utils/message.service';
 import { Title, TitleType } from '../api/title';
 import { Movie } from '../api/movie';
 import { Series, EpisodePreview } from '../api/series';
-import { DataService, RequestType } from '../api/data.service';
+import { DataService, RetrieveType } from '../api/data.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -16,7 +18,7 @@ export class DashboardComponent implements OnInit {
 
     titles: Title[];
 
-    constructor(private data: DataService) { }
+    constructor(private api: DataService) { }
 
     ngOnInit() {
         this.getData();
@@ -25,18 +27,17 @@ export class DashboardComponent implements OnInit {
     getData() {
         var cmp = this;
         this.titles = [];
-        this.data.fetch(RequestType.movies, {
+        this.api.retrieve(RetrieveType.movies, {
             collected: 1,
             watched: 0
         }).subscribe(result => {
-            console.log(result);
             result.sort(function(m1, m2) {
                 return m1.released.localeCompare(m2.released);
             });
             result.forEach(function(itm) {
                 cmp.titles.push(new Movie(itm));
             });
-            this.data.fetch(RequestType.series, {
+            this.api.retrieve(RetrieveType.series, {
                 available: 1
             }).subscribe(result => {
                 result.sort(function(s1, s2) {
