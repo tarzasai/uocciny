@@ -11,7 +11,18 @@
             <div class="text">{{series.title}}</div>
         </div>
 
-        <ng-container *ngIf="preview == EpisodePreview.aired">
+        <div class="status" [ngClass]="{'ended': series.ended}">
+            {{series.ended ? 'Ended' : series.data.network}}
+        </div>
+
+        <ng-container *ngIf="series.error">
+            <div class="section plot">
+                <div class="icon" style="color:darkred;"><i class="fa fa-exclamation-triangle"></i></div>
+                <div class="text">{{series.error}}</div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!series.error && preview == EpisodePreview.aired && series.aired">
             <div class="section info">
                 <div class="icon"><i class="fa fa-rss" ></i></div>
                 <div class="text">{{series.aired.eid + ': ' + series.aired.title}}</div>
@@ -22,11 +33,11 @@
             </div>
         </ng-container>
 
-        <ng-container *ngIf="preview == EpisodePreview.missing">
+        <ng-container *ngIf="!series.error && preview == EpisodePreview.missing && series.missing">
             <div class="section info">
                 <div class="icon"><i class="fa fa-eye-slash"></i></div>
                 <div class="text">{{series.missing.eid +
-                        (series.summary.missing > 1 ? ' (+' + (series.summary.missing-1) + ')' : '') +
+                        (series.episodes.missing > 1 ? ' (+' + (series.episodes.missing-1) + ')' : '') +
                         ': ' + series.missing.title}}</div>
             </div>
             <div class="section plot">
@@ -35,11 +46,11 @@
             </div>
         </ng-container>
 
-        <ng-container *ngIf="preview == EpisodePreview.available">
+        <ng-container *ngIf="!series.error && preview == EpisodePreview.available && series.available">
             <div class="section info">
                 <div class="icon"><i class="fa fa-hdd-o"></i></div>
                 <div class="text">{{series.available.eid +
-                    (series.summary.available > 1 ? '(+' + (series.summary.available-1) + ')' : '') +
+                    (series.episodes.available > 1 ? '(+' + (series.episodes.available-1) + ')' : '') +
                     ': ' + series.available.title}}</div>
             </div>
             <div class="section plot">
@@ -55,34 +66,34 @@
         <div class="tools">
             <div class="btn-group" role="group">
                 <div class="btn-group" *ngIf="!series.watchlist">
-                    <button type="button" class="btn btn-sm btn-danger" (click)="trashIt()">
+                    <button type="button" class="btn btn-sm btn-danger" (click)="trashSeries()">
                         <i class="fa fa-lg fa-ban"></i>
                     </button>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-primary" (click)="setWatchlist(!series.watchlist)">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="toggleWatchlist()">
                         <i class="fa fa-lg fa-heart" [ngClass]="{'false': !series.watchlist}"></i>
                     </button>
                 </div>
                 <div class="btn-group" *ngIf="series.imdb">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
+                    <button type="button" class="btn btn-sm btn-success" (click)="openIMDB()">
                         <i class="fa fa-lg fa-imdb"></i>
                     </button>
                 </div>
                 <div class="btn-group" title="Series">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
+                    <button type="button" class="btn btn-sm btn-success" (click)="openInfo()">
                         <i class="fa fa-lg fa-info-circle"></i>
                     </button>
                 </div>
             </div>
-            <div class="btn-group" role="group">
+            <div class="btn-group" role="group" *ngIf="series.preview(preview)">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-primary" (click)="openIni()">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="toggleWatched()">
                         <i class="fa fa-lg fa-eye" [ngClass]="{'false': !series.preview(preview).watched}"></i>
                     </button>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-primary" (click)="openIni()">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="toggleCollected()">
                         <i class="fa fa-lg fa-hdd-o" [ngClass]="{'false': !series.preview(preview).collected}"></i>
                     </button>
                 </div>

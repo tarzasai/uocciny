@@ -65,8 +65,7 @@ class Movie(Base):
             app.logger.info('updated %r' % self)
         except Exception as err:
             app.logger.error('update failed for %r: %s' % (self, str(err)))
-            self.name = 'Update error'
-            self.plot = str(err)
+            self.error = str(err)
 
 
 def fill_metadata(lst):
@@ -104,3 +103,4 @@ def get_movie_list(watchlist=None, collected=None, watched=None):
 def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None):
     app.logger.debug('get_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s' %
         (imdb_id, watchlist, collected, watched, rating))
+    return []

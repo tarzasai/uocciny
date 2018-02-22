@@ -118,9 +118,9 @@ def update_from_tvdb(series):
         series.genres = ', '.join([g for g in show['genre']]) if show['genre'] else None
         series.network = show['network'] if show['network'] else None
         series.firstAired = datetime.strptime(show['firstAired'], '%Y-%m-%d') if show['firstAired'] else None
-        act = tvdb.get_series_actors(series.tvdb_id)['data']
+        act = tvdb.get_series_actors(series.tvdb_id).get('data', [])
         series.actors = ', '.join([a['name'] for a in act]) if act else None
-        pst = tvdb.get_series_images(series.tvdb_id, image_type='poster')['data']
+        pst = tvdb.get_series_images(series.tvdb_id, image_type='poster').get('data', [])
         if pst:
             pst.sort(key=lambda x: x['ratingsInfo']['count'], reverse=True)
         series.poster = pst[0]['fileName'] if pst else None
@@ -168,8 +168,7 @@ def update_from_tvdb(series):
     except Exception as err:
         app.logger.error('update failed for %r: %s' % (series, str(err)))
         db.rollback()
-        series.name = 'Update error'
-        series.plot = str(err)
+        series.error = str(err)
 
 
 def get_metadata(series):
@@ -212,6 +211,13 @@ def get_metadata(series):
                     series['episodes']['available'] = ep
         elif series['episodes']['upcoming'] is None:
             series['episodes']['upcoming'] = ep
+    if series['collected'] and series['episodes']['summary']['available'] <= 0:
+        n = 0
+        for s in series['collected']:
+            for e in series['collected'][s]:
+                if int(e) not in series.get('watched', {}).get(s, []):
+                    n += 1
+        series['episodes']['summary']['available'] = n
     return series
 
 
@@ -258,39 +264,71 @@ def get_episode_list(series, season=None, episode=None, collected=None, watched=
 
 def set_series(tvdb_id, watchlist=None, rating=None):
     app.logger.debug('set_series: watchlist=%s, rating=%s' % (watchlist, rating))
-    series = read_from_uoccin(tvdb_id)
-    exists = series is not None
     uf = get_uf()
-    if rating is not None and rating < 0: ## ban&trash
+    obj = read_from_uoccin(tvdb_id)
+    exists = obj is not None
+    # ban&trash
+    if rating is not None and rating < 0:
         uf.setdefault('banned', []).append(tvdb_id)
         if exists:
             del uf['series'][str(tvdb_id)]
-            save_uf()
-        return
+            save_uf(uf)
+        return []
     if not exists:
-        dummy, data = read_from_tvdb(tvdb_id)
-        if data is None:
-            raise Exception('ID %d not found on TVDB' % tvdb_id)
-        series = uf.setdefault('series', {}).setdefault(tvdb_id, {
-            'name': data['seriesName'],
+        obj = {
             'watchlist': False,
             'collected': {},
             'watched': {}
-        })
+        }
+    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
+    obj['name'] = rec['name']
     if watchlist is not None:
-        series['watchlist'] = watchlist
+        obj['watchlist'] = watchlist
     if rating > 0:
-        series['rating'] = max(rating, 5)
-    if not series['watchlist'] and not series['collected'] and not series['watched']:
-        del uf['series'][str(tvdb_id)]
-    save_uf()
+        obj['rating'] = max(rating, 5)
+    uf.setdefault('series', {})[str(tvdb_id)] = obj
+    save_uf(uf)
+    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
+    return [rec]
 
 
-def set_season(series, season, collected=None, watched=None):
-    app.logger.debug('set_season: series=%s, season=%s, collected=%s, watched=%s' %
-        (series, season, collected, watched))
+def set_season(tvdb_id, season, collected=None, watched=None):
+    app.logger.debug('set_season: tvdb_id=%s, season=%s, collected=%s, watched=%s' %
+        (tvdb_id, season, collected, watched))
+    return []
 
 
-def set_episode(series, season, episode, collected=None, watched=None):
-    app.logger.debug('set_episode: series=%s, season=%s, episode=%s, collected=%s, watched=%s' %
-        (series, season, episode, collected, watched))
+def set_episode(tvdb_id, season, episode, collected=None, watched=None):
+    app.logger.debug('set_episode: tvdb_id=%s, season=%s, episode=%s, collected=%s, watched=%s' %
+        (tvdb_id, season, episode, collected, watched))
+    uf = get_uf()
+    obj = read_from_uoccin(tvdb_id)
+    exists = obj is not None
+    if not exists:
+        obj = {
+            'watchlist': False,
+            'collected': {},
+            'watched': {}
+        }
+    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
+    obj['name'] = rec['name']
+    chk = get_db().query(Episode).filter(Episode.series == tvdb_id, Episode.season == season,
+        Episode.episode == episode).first()
+    if chk is None:
+        raise Exception('Episode %dx%d does not exists.' % (season, episode))
+    if collected is not None:
+        coll = obj['collected'].setdefault(str(season), {})
+        if collected == True:
+            coll.setdefault(str(episode), [])
+        elif str(episode) in coll:
+            del coll[str(episode)]
+    if watched is not None:
+        seen = obj['watched'].setdefault(str(season), [])
+        if watched == True:
+            seen.append(episode)
+        elif episode in seen:
+            seen.remove(episode)
+    uf.setdefault('series', {})[str(tvdb_id)] = obj
+    save_uf(uf)
+    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
+    return [rec]

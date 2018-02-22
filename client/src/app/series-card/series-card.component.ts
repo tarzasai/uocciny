@@ -21,15 +21,15 @@ export class SeriesCardComponent implements OnInit {
     ngOnInit() {
     }
 
-    setWatchlist(value) {
+    trashSeries() {
         this.config.lockScreen();
         this.api.update(UpdateType.series, {
             tvdb_id: this.series.tvdb_id,
-            watchlist: (value === true ? 1 : 0)
+            rating: -1
         }).subscribe(result => {
+            if (result.length > 0)
+                this.series.load(result[0]);
             this.config.unlockScreen();
-            if (result)
-                this.series.data.watchlist = value;
         });
     }
 
@@ -39,20 +39,51 @@ export class SeriesCardComponent implements OnInit {
             tvdb_id: this.series.tvdb_id,
             rating: value
         }).subscribe(result => {
+            if (result.length > 0)
+                this.series.load(result[0]);
             this.config.unlockScreen();
-            if (result)
-                this.series.data.rating = value;
         });
     }
 
-    trashIt() {
+    toggleWatchlist() {
         this.config.lockScreen();
         this.api.update(UpdateType.series, {
             tvdb_id: this.series.tvdb_id,
-            rating: -1
+            watchlist: (!this.series.watchlist ? 1 : 0)
         }).subscribe(result => {
+            if (result.length > 0)
+                this.series.load(result[0]);
             this.config.unlockScreen();
-            // boh
+        });
+    }
+
+    toggleCollected() {
+        var ep = this.series.preview(this.preview);
+        this.config.lockScreen();
+        this.api.update(UpdateType.episode, {
+            tvdb_id: this.series.tvdb_id,
+            season: ep.season,
+            episode: ep.episode,
+            collected: (!ep.collected ? 1 : 0)
+        }).subscribe(result => {
+            if (result.length > 0)
+                this.series.load(result[0]);
+            this.config.unlockScreen();
+        });
+    }
+
+    toggleWatched() {
+        var ep = this.series.preview(this.preview);
+        this.config.lockScreen();
+        this.api.update(UpdateType.episode, {
+            tvdb_id: this.series.tvdb_id,
+            season: ep.season,
+            episode: ep.episode,
+            watched: (!ep.watched ? 1 : 0)
+        }).subscribe(result => {
+            if (result.length > 0)
+                this.series.load(result[0]);
+            this.config.unlockScreen();
         });
     }
 }

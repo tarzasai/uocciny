@@ -1,13 +1,12 @@
 # encoding: utf-8
 import os
 import sys
+import time
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
-
-#from throttle import throttle
 
 
 # questa classe serve solo in IIS
@@ -52,18 +51,23 @@ logging.getLogger('flask_cors').level = logging.DEBUG
 
 
 def get_uf():
+    fn = os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json')
+    ft = time.ctime(os.path.getmtime(fn))
     uf = getattr(g, '_uoccinfile', None)
-    if uf is None:
-        with open(os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json')) as f:
+    if uf is None or ft > g._uoccintime:
+        g._uoccintime = ft
+        with open(fn) as f:
             uf = g._uoccinfile = json.load(f)
+        app.logger.debug('reloaded ' + fn)
     return uf
 
 
-###@throttle(10)
-
-def save_uf():
-    with open(os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json'), 'w+') as f:
-        json.dump(get_uf(), f, indent=4, separators=(',', ': '), sort_keys=True)
+def save_uf(data):
+    fn = os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json')
+    with open(fn, 'w+') as f:
+        json.dump(data, f, indent=4, separators=(',', ': '), sort_keys=True)
+    g._uoccinfile = data
+    g._uoccintime = time.ctime(os.path.getmtime(fn))
 
 
 @app.teardown_appcontext
@@ -149,60 +153,63 @@ def view_uof():
 @app.route('/movie', methods=['POST'])
 def upd_movie():
     prms = json.loads(request.data) ## arriva come stringa.
-    set_movie(
+    res = set_movie(
         int(prms['imdb_id']),
         watchlist=prm2bool(prms, 'watchlist'),
         collected=prm2bool(prms, 'collected'),
         watched=prm2bool(prms, 'watched'),
         rating=prm2int(prms, 'rating')
     )
-    return jsonify({'status': 200, 'result': 'OK'})
+    return jsonify({'status': 200, 'result': res})
 
 
 @app.route('/series', methods=['POST'])
 def upd_series():
     prms = json.loads(request.data) ## arriva come stringa.
-    set_series(
+    res = set_series(
         int(prms['tvdb_id']),
         watchlist=prm2bool(prms, 'watchlist'),
         rating=prm2int(prms, 'rating')
     )
-    return jsonify({'status': 200, 'result': 'OK'})
+    return jsonify({'status': 200, 'result': res})
 
 
 @app.route('/season', methods=['POST'])
 def upd_season():
     prms = json.loads(request.data) ## arriva come stringa.
-    set_season(
+    res = set_season(
         int(prms['tvdb_id']),
         int(prms['season']),
         collected=prm2bool(prms, 'collected'),
         watched=prm2bool(prms, 'watched')
     )
-    return jsonify({'status': 200, 'result': 'OK'})
+    return jsonify({'status': 200, 'result': res})
 
 
 @app.route('/episode', methods=['POST'])
 def upd_episode():
     prms = json.loads(request.data) ## arriva come stringa.
-    set_episode(
+    res = set_episode(
         int(prms['tvdb_id']),
         int(prms['season']),
         int(prms['episode']),
         collected=prm2bool(prms, 'collected'),
         watched=prm2bool(prms, 'watched')
     )
-    return jsonify({'status': 200, 'result': 'OK'})
+    return jsonify({'status': 200, 'result': res})
 
 
 def prm2bool(args, name):
     if name not in args:
         return None
-    if args[name] == '1':
-        return True
-    if args[name] == '0':
-        return False
-    raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
+    try:
+        if int(args[name]) == 1:
+            return True
+        if int(args[name]) == 0:
+            return False
+        raise Exception('asd')
+    except Exception:
+        raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
 
 
 def prm2int(args, name):

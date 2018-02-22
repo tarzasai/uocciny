@@ -1,10 +1,31 @@
 {
     "banned": [
+        337907,
         338510,
         332525,
-        339137,
+        341913,
         338451,
-        334824
+        339137,
+        337302,
+        334824,
+        328361,
+        341235,
+        338798,
+        339642,
+        330494,
+        323608,
+        311901,
+        338215,
+        334075,
+        342733,
+        336157,
+        334900,
+        328690,
+        336602,
+        337664,
+        328569,
+        342301,
+        337749
     ],
     "movies": {
         "tt0032553": {
@@ -4660,12 +4681,7 @@
         },
         "247897": {
             "collected": {
-                "7": {
-                    "2": [
-                        "eng",
-                        "und"
-                    ]
-                }
+                "7": {}
             },
             "name": "Homeland",
             "rating": 4,
@@ -4987,11 +5003,7 @@
             "watchlist": true
         },
         "254834": {
-            "collected": {
-                "5": {
-                    "3": []
-                }
-            },
+            "collected": {},
             "name": "Endeavour",
             "rating": 4,
             "tags": [
@@ -5024,7 +5036,8 @@
                 ],
                 "5": [
                     1,
-                    2
+                    2,
+                    3
                 ]
             },
             "watchlist": true
@@ -5139,7 +5152,11 @@
             "watchlist": true
         },
         "261109": {
-            "collected": {},
+            "collected": {
+                "4": {
+                    "2": []
+                }
+            },
             "name": "Shetland",
             "rating": 4,
             "tags": [
@@ -6972,16 +6989,6 @@
             },
             "watchlist": true
         },
-        "311901": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Marlon",
-            "watched": {},
-            "watchlist": false
-        },
         "314995": {
             "collected": {
                 "2": {
@@ -7062,19 +7069,6 @@
                 ]
             },
             "watchlist": true
-        },
-        "323608": {
-            "collected": {
-                "1": {
-                    "1": [
-                        "eng",
-                        "ita"
-                    ]
-                }
-            },
-            "name": "Knightfall",
-            "watched": {},
-            "watchlist": false
         },
         "325720": {
             "collected": {
@@ -7166,28 +7160,6 @@
             },
             "watchlist": true
         },
-        "328361": {
-            "collected": {
-                "1": {
-                    "1": [
-                        "eng"
-                    ]
-                }
-            },
-            "name": "Happy!",
-            "watched": {},
-            "watchlist": false
-        },
-        "328569": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "The Resident",
-            "watched": {},
-            "watchlist": false
-        },
         "328650": {
             "collected": {},
             "name": "Get Shorty",
@@ -7207,16 +7179,6 @@
                 ]
             },
             "watchlist": true
-        },
-        "328690": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "The Alienist",
-            "watched": {},
-            "watchlist": false
         },
         "328711": {
             "collected": {
@@ -7335,158 +7297,11 @@
         },
         "332331": {
             "collected": {
-                "1": {
-                    "1": []
-                }
+                "1": {}
             },
             "name": "Altered Carbon",
             "watched": {},
-            "watchlist": false
-        },
-        "334075": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "McMafia",
-            "watched": {},
-            "watchlist": false
-        },
-        "334900": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Next Of Kin (2018)",
-            "watched": {},
-            "watchlist": false
-        },
-        "336157": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Mosaic",
-            "watched": {},
-            "watchlist": false
-        },
-        "336602": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "The Chi",
-            "watched": {},
-            "watchlist": false
-        },
-        "337302": {
-            "collected": {
-                "1": {
-                    "1": [
-                        "und",
-                        "ita"
-                    ]
-                }
-            },
-            "name": "Counterpart",
-            "watched": {},
-            "watchlist": false
-        },
-        "337664": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "The Indian Detective",
-            "watched": {},
-            "watchlist": false
-        },
-        "337749": {
-            "collected": {
-                "1": {
-                    "1": [
-                        "eng"
-                    ]
-                }
-            },
-            "name": "Waco",
-            "watched": {},
-            "watchlist": false
-        },
-        "337907": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "9-1-1",
-            "watched": {},
-            "watchlist": false
-        },
-        "338215": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Mary Berry's Country House Secrets",
-            "watched": {},
-            "watchlist": false
-        },
-        "338798": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Here and Now (2018)",
-            "watched": {},
-            "watchlist": false
-        },
-        "339642": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Kiri",
-            "watched": {},
-            "watchlist": false
-        },
-        "341913": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Bliss (2018)",
-            "watched": {},
-            "watchlist": false
-        },
-        "342301": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Trauma (2018)",
-            "watched": {},
-            "watchlist": false
-        },
-        "342733": {
-            "collected": {
-                "1": {
-                    "1": []
-                }
-            },
-            "name": "Model Squad",
-            "watched": {},
-            "watchlist": false
+            "watchlist": true
         },
         "73388": {
             "collected": {},
@@ -8233,7 +8048,9 @@
                     10,
                     11,
                     12,
-                    13
+                    13,
+                    14,
+                    15
                 ],
                 "2": [
                     1,

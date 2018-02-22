@@ -14,6 +14,14 @@ export class Episode extends Title {
         return sprintf('%dx%d', this.data.season, this.data.episode);
     }
 
+    get season() {
+        return this.data.season;
+    }
+
+    get episode() {
+        return this.data.episode;
+    }
+
     get title() {
         return this.data.title || 'N/A';
     }

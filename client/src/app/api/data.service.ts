@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
+import { Subject } from 'rxjs/Subject';
 
 export enum RetrieveType {
     movies = 'movies',
@@ -32,6 +33,7 @@ export class ServerResult {
 
 @Injectable()
 export class DataService {
+    onUpdate: Subject<any> = new Subject();
 
     constructor(private config: ConfigService, private messages: MessageService,
         private http: HttpClient) { }
@@ -59,10 +61,11 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
+                    this.onUpdate.next({type:what, input:args, output:res.result});
                     this.messages.addInfo("updated data");
-                    return true;
+                    return res.result;
                 }),
-                catchError(this.handleError('update', false))
+                catchError(this.handleError('update', []))
             );
     }
 

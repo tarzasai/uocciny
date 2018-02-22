@@ -1,9 +1,14 @@
+#MainBox {
+    overflow-y: auto;
+}
+
 .title-grid {
     display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
-    align-content: center;
+    align-self: flex-start;
     justify-content: center;
     background-color: #F2F2F2;
     padding: 10px;

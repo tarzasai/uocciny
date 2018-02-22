@@ -11,7 +11,11 @@ export class Title {
     data: any;
 
     constructor(data: any) {
-        this.data = data;
+        this.load(data);
+    }
+
+    load(value:any) {
+        this.data = value;
         if (this.data.subtitles) {
             this.data.subtitles.sort();
             this.data.subtitles.find(function (itm, idx, lst) {
@@ -21,12 +25,16 @@ export class Title {
         }
     }
 
+    get error() {
+        return this.data.error;
+    }
+
     get imdb() {
         return this.data.imdb_id && this.data.imdb_id != '' ? 'http://www.imdb.com/title/' + this.data.imdb_id : null;
     }
 
     get title() {
-        return this.data.name;
+        return this.data.name || 'N/A';
     }
 
     get plot() {
