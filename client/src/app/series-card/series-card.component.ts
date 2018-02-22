@@ -86,4 +86,8 @@ export class SeriesCardComponent implements OnInit {
             this.config.unlockScreen();
         });
     }
+
+    openLink(url) {
+        window.open(url, '_blank');
+    }
 }

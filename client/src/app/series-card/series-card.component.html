@@ -75,8 +75,8 @@
                         <i class="fa fa-lg fa-heart" [ngClass]="{'false': !series.watchlist}"></i>
                     </button>
                 </div>
-                <div class="btn-group" *ngIf="series.imdb">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openIMDB()">
+                <div class="btn-group" *ngIf="series.imdbUrl">
+                    <button type="button" class="btn btn-sm btn-success" (click)="openLink(series.imdbUrl)">
                         <i class="fa fa-lg fa-imdb"></i>
                     </button>
                 </div>
@@ -97,8 +97,9 @@
                         <i class="fa fa-lg fa-hdd-o" [ngClass]="{'false': !series.preview(preview).collected}"></i>
                     </button>
                 </div>
-                <div class="btn-group" *ngIf="series.preview(preview).imdb">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
+                <div class="btn-group" *ngIf="series.preview(preview).imdbUrl">
+                    <button type="button" class="btn btn-sm btn-success"
+                        (click)="openLink(series.preview(preview).imdbUrl)">
                         <i class="fa fa-lg fa-imdb"></i>
                     </button>
                 </div>

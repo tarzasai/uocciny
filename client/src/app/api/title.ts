@@ -29,7 +29,7 @@ export class Title {
         return this.data.error;
     }
 
-    get imdb() {
+    get imdbUrl() {
         return this.data.imdb_id && this.data.imdb_id != '' ? 'http://www.imdb.com/title/' + this.data.imdb_id : null;
     }
 
