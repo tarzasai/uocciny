@@ -105,8 +105,8 @@ def read_from_tvdb(tvdb_id):
 def update_from_tvdb(series):
     app.logger.info('updating %r...' % series)
     exists = series.updated is not None
+    db = get_db()
     try:
-        db = get_db()
         tvdb, show = read_from_tvdb(series.tvdb_id)
         if show is None:
             raise Exception('series %s not found on TVDB' % series.tvdb_id)

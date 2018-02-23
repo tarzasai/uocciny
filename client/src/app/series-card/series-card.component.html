@@ -12,7 +12,7 @@
         </div>
 
         <div class="status" [ngClass]="{'ended': series.ended}">
-            {{series.ended ? 'Ended' : series.data.network}}
+            <div>{{series.network}}</div><i class="fa fa-rss" *ngIf="!series.ended"></i>
         </div>
 
         <ng-container *ngIf="series.error">
@@ -25,7 +25,10 @@
         <ng-container *ngIf="!series.error && preview == EpisodePreview.aired && series.aired">
             <div class="section info">
                 <div class="icon"><i class="fa fa-rss" ></i></div>
-                <div class="text">{{series.aired.eid + ': ' + series.aired.title}}</div>
+                <div class="text">
+                    <span style="font-weight: bold;">{{series.aired.eid}}</span>
+                    <span>{{': ' + series.aired.title}}</span>
+                </div>
             </div>
             <div class="section plot">
                 <div class="icon"><i class="fa fa-quote-left"></i></div>
@@ -36,9 +39,11 @@
         <ng-container *ngIf="!series.error && preview == EpisodePreview.missing && series.missing">
             <div class="section info">
                 <div class="icon"><i class="fa fa-eye-slash"></i></div>
-                <div class="text">{{series.missing.eid +
-                        (series.episodes.missing > 1 ? ' (+' + (series.episodes.missing-1) + ')' : '') +
-                        ': ' + series.missing.title}}</div>
+                <div class="text">
+                    <span style="font-weight: bold;">{{series.missing.eid}}</span>
+                    <span *ngIf="series.episodes.missing > 1">{{'(+' + (series.episodes.missing-1) + ')'}}</span>
+                    <span>{{': ' + series.missing.title}}</span>
+                </div>
             </div>
             <div class="section plot">
                 <div class="icon"><i class="fa fa-quote-left"></i></div>
@@ -49,9 +54,11 @@
         <ng-container *ngIf="!series.error && preview == EpisodePreview.available && series.available">
             <div class="section info">
                 <div class="icon"><i class="fa fa-hdd-o"></i></div>
-                <div class="text">{{series.available.eid +
-                    (series.episodes.available > 1 ? '(+' + (series.episodes.available-1) + ')' : '') +
-                    ': ' + series.available.title}}</div>
+                <div class="text">
+                    <span style="font-weight: bold;">{{series.available.eid}}</span>
+                    <span *ngIf="series.episodes.available > 1">{{'(+' + (series.episodes.available-1) + ')'}}</span>
+                    <span>{{': ' + series.available.title}}</span>
+                </div>
             </div>
             <div class="section plot">
                 <div class="icon"><i class="fa fa-quote-left"></i></div>

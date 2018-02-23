@@ -54,6 +54,10 @@ export class Series extends Title {
         return this.data.status.sameAs('ended');
     }
 
+    get network() {
+        return this.ended ? 'Ended' : this.data.network;
+    }
+
     get episodes() {
         return this.data.episodes.summary;
     }

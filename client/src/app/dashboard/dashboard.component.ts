@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
         this.getData();
         this.api.onUpdate.subscribe(args => {
-            console.log('DashboardComponent.onUpdate', args);
+            //console.log('DashboardComponent.onUpdate', args);
             if (args.output.length <= 0) {
                 var i = this.titles.findIndex(function(itm) {
                     return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === args.input.imdb_id) ||
@@ -52,8 +52,7 @@ export class DashboardComponent implements OnInit {
 
     getData() {
         this.config.lockScreen();
-        var cmp = this;
-        this.titles = [];
+        var lst = [];
         this.api.retrieve(RetrieveType.movies, {
             collected: 1,
             watched: 0
@@ -62,7 +61,7 @@ export class DashboardComponent implements OnInit {
                 return m1.released.localeCompare(m2.released);
             });
             result.forEach(function(itm) {
-                cmp.titles.push(new Movie(itm));
+                lst.push(new Movie(itm));
             });
             this.api.retrieve(RetrieveType.series, {
                 available: 1
@@ -71,8 +70,9 @@ export class DashboardComponent implements OnInit {
                     return s1.name.localeCompare(s2.name);
                 });
                 result.forEach(function(itm) {
-                    cmp.titles.push(new Series(itm));
+                    lst.push(new Series(itm));
                 });
+                this.titles = lst;
                 this.config.unlockScreen();
             })
         });

@@ -154,7 +154,7 @@ def view_uof():
 def upd_movie():
     prms = json.loads(request.data) ## arriva come stringa.
     res = set_movie(
-        int(prms['imdb_id']),
+        prms['imdb_id'],
         watchlist=prm2bool(prms, 'watchlist'),
         collected=prm2bool(prms, 'collected'),
         watched=prm2bool(prms, 'watched'),

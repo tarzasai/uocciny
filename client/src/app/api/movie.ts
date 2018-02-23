@@ -1,4 +1,5 @@
 import { Title, TitleType } from './title';
+import { sprintf } from 'sprintf';
 import * as moment from 'moment';
 
 export class Movie extends Title {
@@ -19,5 +20,17 @@ export class Movie extends Title {
 
     get year() {
         return this.data.released ? moment(this.data.released).year() : 'N/A';
+    }
+
+    get runtime() {
+        if (!this.data.runtime)
+            return null;
+        var d = moment.duration(this.data.runtime, 'minutes'),
+            l = [];
+        if (d.hours() > 0)
+            l.push(sprintf('%dh', d.hours()));
+        if (d.minutes() > 0)
+            l.push(sprintf('%dm', d.minutes()));
+        return l.join(' e ');
     }
 }

@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import tmdbsimple as tmdb
 
-from uocciny import app, get_uf
+from uocciny import app, get_uf, save_uf
 from database import Base, get_db, row2dict
 
 
@@ -41,52 +41,67 @@ class Movie(Base):
         if (datetime.now() - self.released).days > (15 * 365):
             return age > 180
         return age > 45
+
     
-    def update_from_tmdb(self, session):
-        app.logger.info('updating %r...' % self)
-        try:
-            exists = self.updated is not None
-            res = tmdb.Movies(self.imdb_id).info(language='en', append_to_response='credits')
-            self.tmdb_id = res['id']
-            self.name = res['title'] if res['title'] else None
-            self.plot = res['overview'] if res['overview'] else None
-            self.poster = res['poster_path'] if res['poster_path'] else None
-            self.genres = ', '.join([g['name'] for g in res['genres']]) if res['genres'] else None
-            self.language = res['original_language'] if res['original_language'] else None
-            self.released = datetime.strptime(res['release_date'], '%Y-%m-%d') if res['release_date'] != '' else None
-            self.runtime = res['runtime'] if res['runtime'] else None
-            self.actors = ', '.join([a['name'] for a in res['credits']['cast'] if a['gender'] > 0])
-            self.director = ', '.join([c['name'] for c in res['credits']['crew'] if c['job'] == 'Director'])
-            # done
-            self.updated = datetime.now()
-            if not exists:
-                session.add(self)
-            session.commit()
-            app.logger.info('updated %r' % self)
-        except Exception as err:
-            app.logger.error('update failed for %r: %s' % (self, str(err)))
-            self.error = str(err)
+def read_from_uoccin(imdb_id):
+    return get_uf().get('movies', {}).get(imdb_id, None)
 
 
-def fill_metadata(lst):
+def read_from_imdb(imdb_id):
+    try:
+        return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits')
+    except Exception as err:
+        app.logger.debug('read_from_imdb: ' + str(err))
+        return None
+
+    
+def update_from_tmdb(movie):
+    app.logger.info('updating %r...' % movie)
+    exists = movie.updated is not None
     db = get_db()
-    for itm in lst:
-        mid = itm['imdb_id']
-        rec = db.query(Movie).filter(Movie.imdb_id == mid).first()
-        if rec is None:
-            rec = Movie(mid)
-        if rec.is_old():
-            rec.update_from_tmdb(db)
-        itm.update(row2dict(rec))
-    return lst
+    try:
+        obj = read_from_imdb(movie.imdb_id)
+        if obj is None:
+            raise Exception('IMDB error or movie not found')
+        movie.tmdb_id = obj['id']
+        movie.name = obj['title'] if obj['title'] else None
+        movie.plot = obj['overview'] if obj['overview'] else None
+        movie.poster = obj['poster_path'] if obj['poster_path'] else None
+        movie.genres = ', '.join([g['name'] for g in obj['genres']]) if obj['genres'] else None
+        movie.language = obj['original_language'] if obj['original_language'] else None
+        movie.released = datetime.strptime(obj['release_date'], '%Y-%m-%d') if obj['release_date'] != '' else None
+        movie.runtime = obj['runtime'] if obj['runtime'] else None
+        movie.actors = ', '.join([a['name'] for a in obj['credits']['cast'] if a['gender'] > 0])
+        movie.director = ', '.join([c['name'] for c in obj['credits']['crew'] if c['job'] == 'Director'])
+        # done
+        movie.updated = datetime.now()
+        if not exists:
+            db.add(movie)
+        db.commit()
+        app.logger.info('updated %r' % movie)
+    except Exception as err:
+        app.logger.error('update failed for %r: %s' % (movie, str(err)))
+        db.rollback()
+        movie.error = str(err)
+
+
+def get_metadata(movie):
+    mid = movie['imdb_id']
+    rec = get_db().query(Movie).filter(Movie.imdb_id == mid).first()
+    if rec is None:
+        rec = Movie(mid)
+    if rec.is_old():
+        update_from_tmdb(rec)
+    movie.update(row2dict(rec))
+    return movie
 
 
 def get_movie(imdb_id):
     app.logger.debug('get_movie: imdb_id=%s' % imdb_id)
-    obj = get_uf().get('movies', {}).get(imdb_id, None)
+    obj = read_from_uoccin(imdb_id)
     if obj is None:
         return []
-    return fill_metadata([dict({'imdb_id': imdb_id}, **obj)])
+    return [get_metadata(dict({'imdb_id': imdb_id}, **obj))]
 
 
 def get_movie_list(watchlist=None, collected=None, watched=None):
@@ -96,11 +111,33 @@ def get_movie_list(watchlist=None, collected=None, watched=None):
         if ((watchlist is None or itm['watchlist'] == watchlist) and
             (collected is None or itm['collected'] == collected) and
             (watched is None or itm['watched'] == watched)):
-            res.append(dict({'imdb_id': mid}, **itm))
-    return fill_metadata(res)
+            res.append(get_metadata(dict({'imdb_id': mid}, **itm)))
+    return res
 
 
 def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None):
-    app.logger.debug('get_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s' %
+    app.logger.debug('set_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s' %
         (imdb_id, watchlist, collected, watched, rating))
-    return []
+    uf = get_uf()
+    obj = read_from_uoccin(imdb_id)
+    exists = obj is not None
+    if not exists:
+        obj = {
+            'watchlist': False,
+            'collected': {},
+            'watched': {}
+        }
+    rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
+    obj['name'] = rec['name']
+    if watchlist is not None:
+        obj['watchlist'] = watchlist
+    if collected is not None:
+        obj['collected'] = collected
+    if watched is not None:
+        obj['watched'] = watched
+    if rating > 0:
+        obj['rating'] = max(rating, 5)
+    uf.setdefault('movies', {})[imdb_id] = obj
+    save_uf(uf)
+    rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
+    return [rec]

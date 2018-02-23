@@ -30,7 +30,11 @@ export class Title {
     }
 
     get imdbUrl() {
-        return this.data.imdb_id && this.data.imdb_id != '' ? 'http://www.imdb.com/title/' + this.data.imdb_id : null;
+        return this.imdb_id && this.imdb_id != '' ? 'http://www.imdb.com/title/' + this.imdb_id : null;
+    }
+
+    get imdb_id() {
+        return this.data.imdb_id;
     }
 
     get title() {
