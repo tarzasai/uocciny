@@ -11,7 +11,7 @@ export class Episode extends Title {
 
     get eid() {
         //return sprintf('S%02dE%02d', this.data.season, this.data.episode);
-        return sprintf('%dx%d', this.data.season, this.data.episode);
+        return sprintf('%d%s%d', this.data.season, '&#8226;', this.data.episode);
     }
 
     get season() {

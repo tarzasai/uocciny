@@ -55,7 +55,9 @@
             <div class="section info">
                 <div class="icon"><i class="fa fa-hdd-o"></i></div>
                 <div class="text">
-                    <span style="font-weight: bold;">{{series.available.eid}}</span>
+                    <span style="font-weight: bold;">{{series.available.season}}</span>
+                    <span>&#8226;</span>
+                    <span style="font-weight: bold;">{{series.available.episode}}</span>
                     <span *ngIf="series.episodes.available > 1">{{'(+' + (series.episodes.available-1) + ')'}}</span>
                     <span>{{': ' + series.available.title}}</span>
                 </div>
