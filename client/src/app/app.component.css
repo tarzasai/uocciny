@@ -1,3 +1,50 @@
+#LinkBar {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    margin-top: 50px;
+    left: 0;
+    z-index: 10;
+}
+
+#LinkBar .btn {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row-reverse;
+    vertical-align: middle;
+    font-size: 180%;
+    margin-top: 10px;
+    /*left: -2px;*/
+    left: -135px;
+    transition: left 0.35s;
+    box-shadow: 2px 2px 10px darkgray;
+    width: 190px;
+}
+
+#LinkBar .btn:hover {
+    left: -2px;
+}
+
+#LinkBar .btn * {
+    display: flex;
+    flex-shrink: 0;
+    flex-grow: 0;
+    position: relative;
+    vertical-align: middle;
+}
+
+#LinkBar .btn div {
+    margin: auto 0 auto 10px;
+    width: 32px;
+}
+
+#LinkBar .btn .fa {
+    font-size: 110%;
+    margin: auto;
+}
+
 #MsgBox {
     display: flex;
     flex: 2 1 auto;

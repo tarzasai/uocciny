@@ -28,7 +28,12 @@ class Movie(Base):
         self.imdb_id = imdb_id
 
     def __repr__(self):
-        return '<Movie %s - %s>' % (self.imdb_id, self.name if self.name else 'N/A')
+        name = ''
+        try:
+            name = self.name if self.name else 'N/A'
+        except Exception as err:
+            name = str(err)
+        return '<Movie %s - %s>' % (self.imdb_id, name)
     
     def is_old(self):
         if self.updated is None:
@@ -80,7 +85,8 @@ def update_from_tmdb(movie):
         db.commit()
         app.logger.info('updated %r' % movie)
     except Exception as err:
-        app.logger.error('update failed for %r: %s' % (movie, str(err)))
+        #app.logger.error('update failed for %r: %s' % (movie, str(err)))
+        app.logger.error('update failed for %r: %r' % (movie, err))
         db.rollback()
         movie.error = str(err)
 
@@ -93,6 +99,8 @@ def get_metadata(movie):
     if rec.is_old():
         update_from_tmdb(rec)
     movie.update(row2dict(rec))
+    movie['missing'] = movie['watchlist'] and rec.released is not None and not movie['collected']\
+        and not movie['watched'] and datetime.now() > rec.released
     return movie
 
 
@@ -104,14 +112,17 @@ def get_movie(imdb_id):
     return [get_metadata(dict({'imdb_id': imdb_id}, **obj))]
 
 
-def get_movie_list(watchlist=None, collected=None, watched=None):
-    app.logger.debug('get_movie_list: watchlist=%s, collected=%s, watched=%s' % (watchlist, collected, watched))
+def get_movie_list(watchlist=None, collected=None, missing=None, watched=None):
+    app.logger.debug('get_movie_list: watchlist=%s, collected=%s, missing=%s, watched=%s' %
+        (watchlist, collected, missing, watched))
     res = []
     for mid, itm in get_uf().get('movies', {}).iteritems():
         if ((watchlist is None or itm['watchlist'] == watchlist) and
             (collected is None or itm['collected'] == collected) and
             (watched is None or itm['watched'] == watched)):
-            res.append(get_metadata(dict({'imdb_id': mid}, **itm)))
+            obj = get_metadata(dict({'imdb_id': mid}, **itm))
+            if (missing is None or obj['missing'] == missing):
+                res.append(obj)
     return res
 
 

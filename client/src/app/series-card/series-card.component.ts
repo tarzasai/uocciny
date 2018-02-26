@@ -4,6 +4,7 @@ import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
 import { Series, EpisodePreview } from '../api/series';
 import { DataService, UpdateType } from '../api/data.service';
+import { Episode } from '../api/episode';
 
 @Component({
     selector: 'app-series-card',
@@ -14,11 +15,14 @@ export class SeriesCardComponent implements OnInit {
     @Input() series: Series;
     @Input() preview: EpisodePreview;
 
+    episode: Episode;
+
     EpisodePreview = EpisodePreview;
 
     constructor(private config: ConfigService, private messages: MessageService, private api: DataService) { }
 
     ngOnInit() {
+        this.episode = this.series.preview(this.preview);
     }
 
     trashSeries() {
@@ -58,13 +62,12 @@ export class SeriesCardComponent implements OnInit {
     }
 
     toggleCollected() {
-        var ep = this.series.preview(this.preview);
         this.config.lockScreen();
         this.api.update(UpdateType.episode, {
             tvdb_id: this.series.tvdb_id,
-            season: ep.season,
-            episode: ep.episode,
-            collected: (!ep.collected ? 1 : 0)
+            season: this.episode.season,
+            episode: this.episode.episode,
+            collected: (!this.episode.collected ? 1 : 0)
         }).subscribe(result => {
             if (result.length > 0)
                 this.series.load(result[0]);
@@ -73,13 +76,12 @@ export class SeriesCardComponent implements OnInit {
     }
 
     toggleWatched() {
-        var ep = this.series.preview(this.preview);
         this.config.lockScreen();
         this.api.update(UpdateType.episode, {
             tvdb_id: this.series.tvdb_id,
-            season: ep.season,
-            episode: ep.episode,
-            watched: (!ep.watched ? 1 : 0)
+            season: this.episode.season,
+            episode: this.episode.episode,
+            watched: (!this.episode.watched ? 1 : 0)
         }).subscribe(result => {
             if (result.length > 0)
                 this.series.load(result[0]);
@@ -89,5 +91,17 @@ export class SeriesCardComponent implements OnInit {
 
     openLink(url) {
         window.open(url, '_blank');
+    }
+
+    get episodeIcon() {
+        if (this.episode.watched)
+            return 'fa-eye';
+        if (this.episode.collected)
+            return 'fa-hdd-o';
+        if (this.episode.missing)
+            return 'fa-eye-slash';
+        if (!this.episode.firstAired || this.episode.upcoming)
+            return this.episode.airsToday ? 'fa-clock' : 'fa-calendar';
+        return 'fa-rss';
     }
 }

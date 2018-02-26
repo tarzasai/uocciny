@@ -25,6 +25,18 @@ export class Title {
         }
     }
 
+    get isMovie() {
+        return this.type === TitleType.movie;
+    }
+
+    get isSeries() {
+        return this.type === TitleType.series;
+    }
+
+    get isEpisode() {
+        return this.type === TitleType.episode;
+    }
+
     get error() {
         return this.data.error;
     }

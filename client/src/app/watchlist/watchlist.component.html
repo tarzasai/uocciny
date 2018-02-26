@@ -1,0 +1,12 @@
+<div id="MainBox">
+    <div class="title-grid">
+        <div *ngFor="let title of titles">
+            <app-movie-card *ngIf="title.type == TitleType.movie"
+                [movie]="title">
+            </app-movie-card>
+            <app-series-card *ngIf="title.type == TitleType.series"
+                [series]="title" [preview]="EpisodePreview.any">
+            </app-series-card>
+        </div>
+    </div>
+</div>

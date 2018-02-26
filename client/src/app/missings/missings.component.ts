@@ -8,11 +8,11 @@ import { Series, EpisodePreview } from '../api/series';
 import { DataService, RetrieveType, UpdateType } from '../api/data.service';
 
 @Component({
-    selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.css']
+    selector: 'app-missings',
+    templateUrl: './missings.component.html',
+    styleUrls: ['./missings.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class MissingsComponent implements OnInit {
     TitleType = TitleType;
     EpisodePreview = EpisodePreview;
 
@@ -55,17 +55,16 @@ export class DashboardComponent implements OnInit {
         var ml = [],
             sl = [];
         this.api.retrieve(RetrieveType.movies, {
-            collected: 1,
-            watched: 0
+            missing: 1
         }).subscribe(result => {
             result.sort(function (m1, m2) {
-                return m1.released.localeCompare(m2.released);
+                return (m1.released || 'ZZZZ').localeCompare(m2.released);
             });
             result.forEach(function (itm) {
                 ml.push(new Movie(itm));
             });
             this.api.retrieve(RetrieveType.series, {
-                available: 1
+                missing: 1
             }).subscribe(result => {
                 result.sort(function (s1, s2) {
                     return s1.name.localeCompare(s2.name);

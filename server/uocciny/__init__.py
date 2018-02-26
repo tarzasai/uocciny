@@ -113,6 +113,7 @@ def view_movies():
         else get_movie_list(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),
+            missing=prm2bool(request.args, 'missing'),
             watched=prm2bool(request.args, 'watched'),
         )
     return jsonify({'status': 200, 'result': res})

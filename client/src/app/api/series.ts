@@ -3,14 +3,17 @@ import { Episode } from './episode';
 import * as moment from 'moment';
 
 export enum EpisodePreview {
+    any,
     aired,
     missing,
+    upcoming,
     available
 }
 
 export class Series extends Title {
     aired: Episode;
     missing: Episode;
+    upcoming: Episode;
     available: Episode;
 
     constructor(data: any) {
@@ -26,16 +29,24 @@ export class Series extends Title {
         this.missing = null;
         if (this.data.episodes.missing && Object.keys(this.data.episodes.missing).length)
             this.missing = new Episode(this.data.episodes.missing);
+        this.upcoming = null;
+        if (this.data.episodes.upcoming && Object.keys(this.data.episodes.upcoming).length)
+            this.upcoming = new Episode(this.data.episodes.upcoming);
         this.available = null;
         if (this.data.episodes.available && Object.keys(this.data.episodes.available).length)
             this.available = new Episode(this.data.episodes.available);
     }
 
     preview(type: EpisodePreview): Episode {
-        return type === EpisodePreview.aired ? this.aired :
-            type === EpisodePreview.missing ? this.missing :
-            type === EpisodePreview.available ? this.available :
-            null;
+        if (type === EpisodePreview.available)
+            return this.available || this.aired;
+        if (type === EpisodePreview.upcoming)
+            return this.upcoming || this.aired;
+        if (type === EpisodePreview.missing)
+            return this.missing || this.aired;
+        if (type === EpisodePreview.any)
+            return this.missing || this.available || this.upcoming || this.aired;
+        return this.aired;
     }
 
     get tvdb_id() {

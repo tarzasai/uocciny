@@ -3,6 +3,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
 /* */
 import 'rxjs/add/operator/map';
@@ -16,6 +17,9 @@ import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { SeriesCardComponent } from './series-card/series-card.component';
+import { WatchlistComponent } from './watchlist/watchlist.component';
+import { MissingsComponent } from './missings/missings.component';
+import { EverythingComponent } from './everything/everything.component';
 
 /* */
 export function loadConfig(configService: ConfigService) {
@@ -28,6 +32,9 @@ export function loadConfig(configService: ConfigService) {
         DashboardComponent,
         MovieCardComponent,
         SeriesCardComponent,
+        WatchlistComponent,
+        MissingsComponent,
+        EverythingComponent,
     ],
     imports: [
         BrowserModule,
@@ -35,6 +42,7 @@ export function loadConfig(configService: ConfigService) {
         HttpClientModule,
         AppRoutingModule,
         ButtonsModule.forRoot(),
+        TabsModule.forRoot()
     ],
     providers: [
         ConfigService,

@@ -72,12 +72,11 @@ class Episode(Base):
     
     def collected(self):
         series = read_from_uoccin(self.series)
-        return series is not None\
-            and series['collected'].get(str(self.season), {}).get(str(self.episode), None) is not None
+        return series is not None and (str(self.episode) in series.get('collected', {}).get(str(self.season), {}))
     
     def watched(self):
         series = read_from_uoccin(self.series)
-        return series is not None and self.aired() and (self.episode in series['watched'].get(str(self.season), []))
+        return series is not None and (self.episode in series['watched'].get(str(self.season), []))
     
     def missing(self):
         series = read_from_uoccin(self.series)
@@ -197,7 +196,7 @@ def get_metadata(series):
         ep = row2dict(rec)
         ep['collected'] = rec.collected()
         ep['watched'] = rec.watched()
-        if rec.aired():
+        if rec.aired() or rec.collected():
             series['episodes']['summary']['aired'] += 1
             series['episodes']['lastAired'] = ep
             if rec.missing():
@@ -239,7 +238,7 @@ def get_series_list(watchlist=None, collected=None, missing=None, available=None
         if ((watchlist is None or watchlist == itm['watchlist']) and
             (collected is None or collected == (len(itm['collected']) > 0))):
             obj = get_metadata(dict({'tvdb_id': int(sid)}, **itm))
-            if ((missing is None or missing == (obj['episodes']['summary']['missing'] > 0)) and
+            if ((missing is None or (obj['watchlist'] and missing == (obj['episodes']['summary']['missing'] > 0))) and
                 (available is None or available == (obj['episodes']['summary']['available'] > 0))):
                 res.append(obj)
     return res

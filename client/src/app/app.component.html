@@ -1,6 +1,17 @@
+<div id="LinkBar">
+    <div class="btn-group" *ngFor="let link of LINKS">
+        <button type="button" class="btn" [ngClass]="{
+            'btn-primary': link.url != activeUrl,
+            'btn-success': link.url === activeUrl
+        }" (click)="router.navigateByUrl(link.url);">
+            <div><i class="fa {{link.btn}}"></i></div>
+            <span>{{link.lbl}}</span>
+        </button>
+    </div>
+</div>
 <div id="MsgBox">
+    <!-- quello interno serve per allineare in basso -->
     <div>
-        <!-- quello interno serve per allineare in basso -->
         <div class="alert alert-dismissable" *ngFor="let msg of messages.list; let i = index" [ngClass]="{
             'alert-info': msg.type === MessageType.info,
             'alert-warning': msg.type === MessageType.warning,

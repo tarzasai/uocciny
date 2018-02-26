@@ -1,7 +1,7 @@
 {
     "banned": [
-        338510,
         337907,
+        338510,
         332525,
         341913,
         338451,
@@ -17,9 +17,10 @@
         311901,
         338215,
         334075,
-        342733,
         336157,
+        342733,
         334900,
+        339552,
         328690,
         336602,
         337664,
@@ -4126,9 +4127,9 @@
         },
         "tt3496992": {
             "collected": false,
-            "name": "Knights of the Roundtable: King Arthur",
+            "name": null,
             "watched": false,
-            "watchlist": true
+            "watchlist": false
         },
         "tt3498820": {
             "collected": false,
@@ -4481,6 +4482,9 @@
                     "8": [
                         "eng",
                         "ita"
+                    ],
+                    "9": [
+                        "eng"
                     ]
                 }
             },
@@ -4680,7 +4684,11 @@
             "watchlist": true
         },
         "247897": {
-            "collected": {},
+            "collected": {
+                "7": {
+                    "3": []
+                }
+            },
             "name": "Homeland",
             "rating": 4,
             "tags": [
@@ -5002,7 +5010,11 @@
             "watchlist": true
         },
         "254834": {
-            "collected": {},
+            "collected": {
+                "5": {
+                    "4": []
+                }
+            },
             "name": "Endeavour",
             "rating": 4,
             "tags": [
@@ -7300,7 +7312,7 @@
             },
             "name": "Altered Carbon",
             "watched": {},
-            "watchlist": true
+            "watchlist": false
         },
         "73388": {
             "collected": {},
