@@ -3,27 +3,13 @@
     width: 104px;
 }
 
-.card.movie .runtime {
-    display: flex;
-    flex: 0 0 auto;
-    flex-direction: row;
-    vertical-align: middle;
-    position: absolute;
-    background-color: white;
-    font-size: 80%;
-    padding: 5px;
-    bottom: 4px;
-    right: 5px;
-    z-index: 50;
-}
-
-.card.movie .runtime > * {
+.card.movie .footr > * {
     display: flex;
     position: relative;
     margin: 0;
     padding: 0;
 }
 
-.card.movie .runtime .fa {
+.card.movie .footr .fa {
     margin: auto 0 auto 5px;
 }

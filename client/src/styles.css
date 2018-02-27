@@ -2,55 +2,9 @@
 
 html,
 body {
-    margin: 0;
-    height: 100%;
+    /*margin: 0;
+    height: 100%;*/
     font-family: 'Roboto Condensed', sans-serif;
-}
-
-/*
-vedi https://stackoverflow.com/a/34643330/28852
- */
-app-root,
-app-watchlist,
-app-missings,
-app-dashboard,
-app-everything {
-    display: flex;
-    position: absolute;
-    flex-direction: column;
-    align-items: center;
-    flex: 1 1 auto;
-    width: 100%;
-    height: 100%;
-}
-
-#MainBox {
-    display: flex;
-    position: absolute;
-    flex-direction: column;
-    background-color: #eee;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-}
-
-#MainBox .title-grid {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 1;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-self: flex-start;
-    align-items: flex-start;
-    justify-content: center;
-    background-color: #F2F2F2;
-    padding: 10px;
-}
-
-#MainBox .title-grid > div {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
 }
 
 ::-webkit-input-placeholder {
@@ -64,6 +18,87 @@ app-everything {
 ::-moz-placeholder {
     color: #bdbdbd;
 }
+
+/*
+vedi https://stackoverflow.com/a/34643330/28852
+ */
+app-root,
+app-watchlist,
+app-missings,
+app-dashboard,
+app-everything {
+    /*display: flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 auto;*/
+    width: 100%;
+    height: 100%;
+}
+
+/*
+#MainBox {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    position: absolute;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-self: flex-start;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: #F2F2F2;
+    padding: 10px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+#MainBox > div {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 186px;
+    width: 480px;
+}
+
+#MainBox > div.invisible > * {
+    display: none !important;
+}
+*/
+
+
+/* per far funzionare la agGrid in un layout flexbox */
+#borderLayout_eRootPanel {
+    display: flex !important;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+}
+
+ag-grid-angular {
+    display: flex !important;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+}
+
+.ag-bl-full-height {
+    height: unset !important;
+}
+
+.ag-bl-center,
+.ag-bl,
+.ag-root {
+    display: flex !important;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    width: unset !important;
+}
+
 
 /**/
 
@@ -98,14 +133,14 @@ app-everything {
 .card .details {
     flex-shrink: 1;
     flex-direction: column;
-    padding: 5px 5px 5px 10px;
+    padding: 5px 10px 5px 10px;
     color: darkslategray;
     overflow: hidden;
     width: 100%;
 }
 
 .card .section {
-    margin: 2px 0;
+    margin: 3px 0;
 }
 
 .card .section {
@@ -140,16 +175,14 @@ app-everything {
     margin-left: 5px;
 }
 
-.card .section.title {
-    height: 20px;
+.card .section.title .text,
+.card .section.info .text,
+.card .section.footl .text {
+    white-space: nowrap;
 }
 
 .card .section.title div.text {
     font-weight: bold;
-}
-
-.card .section.info {
-    height: 20px;
 }
 
 .card .section.plot {
@@ -158,6 +191,20 @@ app-everything {
 
 .card .section.plot .text {
     opacity: 0.65;
+}
+
+.card .footr {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    vertical-align: middle;
+    position: absolute;
+    background-color: white;
+    font-size: 85%;
+    padding: 4px;
+    bottom: 4px;
+    right: 8px;
+    z-index: 50;
 }
 
 .card .tools {

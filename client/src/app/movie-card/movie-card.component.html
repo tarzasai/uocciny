@@ -12,11 +12,13 @@
         </div>
 
         <div class="section info">
-            <div class="icon"><i class="fa" [ngClass]="{
-                'fa-eye': movie.watched,
-                'fa-hdd-o': movie.collected,
-                'fa-heart': movie.watchlist
-            }"></i></div>
+            <div class="icon">
+                <i class="fa" *ngIf="movie.watched || movie.collected || movie.missing" [ngClass]="{
+                    'fa-check-circle': movie.watched,
+                    'fa-hdd-o': movie.collected,
+                    'fa-eye-slash': movie.missing
+                }"></i>
+            </div>
             <div class="text">{{movie.year + (movie.director ? ' by ' + movie.director : '')}}</div>
         </div>
 
@@ -25,12 +27,12 @@
             <div class="text">{{movie.plot}}</div>
         </div>
 
-        <div class="section subs" *ngIf="movie.data.subtitles">
+        <div class="section footl" *ngIf="movie.data.subtitles">
             <div class="icon"><i class="fa fa-cc"></i></div>
             <div class="text">{{movie.subtitles}}</div>
         </div>
 
-        <div class="runtime" *ngIf="movie.data.runtime">
+        <div class="footr" *ngIf="movie.data.runtime">
             <div>{{movie.runtime}}</div><i class="fa fa-clock-o"></i>
         </div>
 

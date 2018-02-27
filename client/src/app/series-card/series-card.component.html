@@ -11,29 +11,24 @@
             <div class="text">{{series.title}}</div>
         </div>
 
-        <div class="status" [ngClass]="{'ended': series.ended}">
-            <div>{{series.network}}</div><i class="fa fa-rss" *ngIf="!series.ended"></i>
+        <div class="section plot" *ngIf="series.error">
+            <div class="icon" style="color:darkred;"><i class="fa fa-exclamation-triangle"></i></div>
+            <div class="text">{{series.error}}</div>
         </div>
 
-        <ng-container *ngIf="series.error">
-            <div class="section plot">
-                <div class="icon" style="color:darkred;"><i class="fa fa-exclamation-triangle"></i></div>
-                <div class="text">{{series.error}}</div>
-            </div>
-        </ng-container>
-
-        <ng-container *ngIf="!series.error && !episode">
-            <div class="section plot">
-                <div class="icon"><i class="fa fa-quote-left"></i></div>
-                <div class="text">{{series.plot}}</div>
-            </div>
-        </ng-container>
+        <div class="section plot" *ngIf="!series.error && !episode">
+            <div class="icon"><i class="fa fa-quote-left"></i></div>
+            <div class="text">{{series.plot}}</div>
+        </div>
 
         <ng-container *ngIf="!series.error && episode">
-
             <div class="section info">
                 <div class="icon">
-                    <i class="fa {{episodeIcon}}"></i>
+                    <i class="fa" *ngIf="episode.watched || episode.collected || episode.missing" [ngClass]="{
+                        'fa-check-circle': episode.watched,
+                        'fa-hdd-o': episode.collected,
+                        'fa-eye-slash': episode.missing
+                    }"></i>
                 </div>
                 <div class="text">
                     <span style="font-weight: bold;">{{episode.season}}</span>
@@ -48,24 +43,24 @@
                     <span>{{': ' + episode.title}}</span>
                 </div>
             </div>
-
             <div class="section plot">
-                <div class="icon"><i class="fa fa-quote-left"></i></div>
-                <div class="text">{{episode.plot || 'N/A'}}</div>
+                <div class="icon" *ngIf="episode.plot"><i class="fa fa-quote-left"></i></div>
+                <div class="text" *ngIf="episode.plot">{{episode.plot || 'N/A'}}</div>
             </div>
-
-            <div class="section subs" *ngIf="episode.subtitles">
+            <div class="section footl" *ngIf="episode.subtitles">
                 <div class="icon"><i class="fa fa-cc"></i></div>
                 <div class="text">{{episode.subtitles}}</div>
             </div>
-
-            <div class="section subs" *ngIf="!episode.subtitles"
+            <div class="section footl" *ngIf="!episode.subtitles"
                 [style.color]="episode.airsToday ? 'darkred' : !episode.firstAired ? 'lightgray' : null">
                 <div class="icon"><i class="fa fa-clock-o"></i></div>
                 <div class="text">{{episode.airedText(true) || 'unknown'}}</div>
             </div>
-
         </ng-container>
+
+        <div class="footr" [ngClass]="{'ended': series.ended}">
+            <div>{{series.network}}</div><i class="fa fa-rss" *ngIf="!series.ended"></i>
+        </div>
 
         <div class="tools">
             <div class="btn-group" role="group">

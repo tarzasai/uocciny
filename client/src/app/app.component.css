@@ -75,8 +75,8 @@
     background-color: darkgray;
     position: absolute;
     opacity: 0.5;
-    width: 100%;
     height: 100%;
+    width: 100%;
     z-index: 5000;
 }
 
@@ -117,4 +117,13 @@
     50%  { zoom: 130%; }
     75%  { zoom: 70%; }
     100% { zoom: 100%; }
+}
+
+#GridBox {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    margin: 0;
+    height: 100%;
+    width: 100%;
 }

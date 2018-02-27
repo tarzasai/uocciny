@@ -25,7 +25,7 @@ export class WatchlistComponent implements OnInit {
         this.api.onUpdate.subscribe(args => {
             //console.log('DashboardComponent.onUpdate', args);
             if (args.output.length <= 0) {
-                var i = this.titles.findIndex(function(itm) {
+                var i = this.titles.findIndex(function (itm) {
                     return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === args.input.imdb_id) ||
                         (args.type === UpdateType.series && itm.type === TitleType.series && itm.data.tvdb_id === args.input.tvdb_id) ||
                         (itm.type === TitleType.series && itm.data.tvdb_id === args.input.series);
@@ -35,7 +35,7 @@ export class WatchlistComponent implements OnInit {
                 else
                     this.getData();
             } else if (!args.output[0].watchlist) {
-                var i = this.titles.findIndex(function(itm) {
+                var i = this.titles.findIndex(function (itm) {
                     return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === args.output[0].imdb_id) ||
                         (args.type != UpdateType.movie && itm.type === TitleType.series && itm.data.tvdb_id === args.output[0].tvdb_id);
                 });
@@ -52,19 +52,19 @@ export class WatchlistComponent implements OnInit {
         this.api.retrieve(RetrieveType.movies, {
             watchlist: 1
         }).subscribe(result => {
-            result.sort(function(m1, m2) {
-                return (m1.released || '').localeCompare(m2.released);
+            result.sort(function (m1, m2) {
+                return (m1.released || 'ZZZZ').localeCompare(m2.released);
             });
-            result.forEach(function(itm) {
+            result.forEach(function (itm) {
                 ml.push(new Movie(itm));
             });
             this.api.retrieve(RetrieveType.series, {
                 watchlist: 1
             }).subscribe(result => {
-                result.sort(function(s1, s2) {
+                result.sort(function (s1, s2) {
                     return s1.name.localeCompare(s2.name);
                 });
-                result.forEach(function(itm) {
+                result.forEach(function (itm) {
                     sl.push(new Series(itm));
                 });
                 this.titles = sl.concat(ml);

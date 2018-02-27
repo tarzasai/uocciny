@@ -33,4 +33,8 @@ export class Movie extends Title {
             l.push(sprintf('%dm', d.minutes()));
         return l.join(' e ');
     }
+
+    get missing() {
+        return this.data.released && moment(this.data.released).isBefore(moment(), 'day');
+    }
 }

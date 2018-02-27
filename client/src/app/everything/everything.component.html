@@ -1,3 +1,8 @@
-<p>
-  everything works!
-</p>
+<div id="MainBox" (scroll)="onScroll($event)">
+    <div *ngFor="let title of titles; let idx = index" [ngClass]="{ 'invisible': !isVisible(idx) }">
+
+        <app-movie-card *ngIf="title.type == TitleType.movie" [movie]="title"></app-movie-card>
+        <app-series-card *ngIf="title.type == TitleType.series" [series]="title" [preview]="EpisodePreview.any"></app-series-card>
+
+    </div>
+</div>

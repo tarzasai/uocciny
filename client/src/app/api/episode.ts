@@ -35,7 +35,7 @@ export class Episode extends Title {
     }
 
     get upcoming() {
-        return this.firstAired && this.firstAired.isSameOrAfter(moment(), 'day');
+        return !this.firstAired || this.firstAired.isSameOrAfter(moment(), 'day');
     }
 
     get missing() {
