@@ -25,6 +25,10 @@ export class Title {
         }
     }
 
+    hasText(text) {
+        return (this.title || '').toLocaleLowerCase().contains((text || '').toLocaleLowerCase());
+    }
+
     get isMovie() {
         return this.type === TitleType.movie;
     }

@@ -2,7 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { AgGridModule } from "ag-grid-angular/main";
 
 /* */
@@ -14,6 +16,7 @@ import { MessageService } from './utils/message.service';
 import { ConfigService } from './utils/config.service';
 import { DataService } from './api/data.service';
 import { KeysPipe } from './utils/keys.pipe';
+import { ValuesPipe } from './utils/values.pipe';
 import { TitleCellComponent } from './title-cell/title-cell.component';
 import { TitleParentComponent } from './title-parent/title-parent.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
@@ -29,7 +32,9 @@ export function loadConfig(configService: ConfigService) {
         BrowserModule,
         HttpModule,
         HttpClientModule,
+        FormsModule,
         ButtonsModule.forRoot(),
+        ModalModule.forRoot(),
         AgGridModule.withComponents([
             TitleParentComponent
         ]),
@@ -52,6 +57,7 @@ export function loadConfig(configService: ConfigService) {
         MovieCardComponent,
         SeriesCardComponent,
         KeysPipe,
+        ValuesPipe,
     ],
     bootstrap: [
         AppComponent

@@ -36,39 +36,6 @@ app-everything {
     height: 100%;/**/
 }
 
-/*
-#MainBox {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    position: absolute;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-self: flex-start;
-    align-items: flex-start;
-    justify-content: center;
-    background-color: #F2F2F2;
-    padding: 10px;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    overflow-y: auto;
-}
-
-#MainBox > div {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    height: 186px;
-    width: 480px;
-}
-
-#MainBox > div.invisible > * {
-    display: none !important;
-}
-*/
-
 
 /* per far funzionare la agGrid in un layout flexbox */
 #borderLayout_eRootPanel {

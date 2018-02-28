@@ -34,6 +34,10 @@ export class Movie extends Title {
         return l.join(' e ');
     }
 
+    get available() {
+        return this.collected && !this.watched;
+    }
+
     get missing() {
         return this.data.released && moment(this.data.released).isBefore(moment(), 'day');
     }
