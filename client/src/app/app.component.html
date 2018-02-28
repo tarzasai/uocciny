@@ -1,11 +1,11 @@
 <div id="LinkBar">
-    <div class="btn-group" *ngFor="let view of VIEWS">
+    <div class="btn-group" *ngFor="let view of VIEWS | keys">
         <button type="button" class="btn" [ngClass]="{
-            'btn-primary': view.tag != activeView,
-            'btn-success': view.tag === activeView
-        }" (click)="openView(view.tag);">
-            <div><i class="fa {{view.ico}}"></i></div>
-            <span>{{view.lbl}}</span>
+            'btn-primary': view != activeView,
+            'btn-success': view === activeView
+        }" (click)="openView(view);">
+            <div><i class="fa {{VIEWS[view].icon}}"></i></div>
+            <span>{{VIEWS[view].label}}</span>
         </button>
     </div>
 </div>
@@ -30,7 +30,7 @@
 <div class="overlay" *ngIf="config.locked">
     <i class="fa fa-spinner fa-pulse fa-3x fa-fw" *ngIf="!config.confirmPrompt"></i>
 </div>
-<div id="GridBox">
+<div id="GridBox" [style.left]="gridMargin + 'px'">
     <ag-grid-angular id="GridObj" class="ag-theme-fresh"
         [gridOptions]="titleGrid" [rowData]="titleRows" [columnDefs]="titleCols">
     </ag-grid-angular>

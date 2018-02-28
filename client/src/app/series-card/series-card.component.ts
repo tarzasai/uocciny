@@ -13,7 +13,6 @@ import { Episode } from '../api/episode';
 })
 export class SeriesCardComponent implements OnInit {
     @Input() series: Series;
-    @Input() preview: EpisodePreview;
 
     episode: Episode;
 
@@ -22,7 +21,14 @@ export class SeriesCardComponent implements OnInit {
     constructor(private config: ConfigService, private messages: MessageService, private api: DataService) { }
 
     ngOnInit() {
-        this.episode = this.series.preview(this.preview);
+        var ser = this.series;
+        this.episode = (
+            ser.preview === EpisodePreview.available ? (ser.available || ser.aired) :
+            ser.preview === EpisodePreview.upcoming ? (ser.upcoming || ser.aired) :
+            ser.preview === EpisodePreview.missing ? (ser.missing || ser.aired) :
+            ser.preview === EpisodePreview.any ? (ser.missing || ser.available || ser.upcoming || ser.aired) :
+            ser.aired
+        );
     }
 
     trashSeries() {

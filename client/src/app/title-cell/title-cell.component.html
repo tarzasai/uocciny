@@ -1,3 +1,2 @@
-<div>
-
-</div>
+<app-movie-card *ngIf="title && title.type == TitleType.movie" [movie]="title"></app-movie-card>
+<app-series-card *ngIf="title && title.type == TitleType.series" [series]="title"></app-series-card>

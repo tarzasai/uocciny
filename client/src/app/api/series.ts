@@ -15,10 +15,13 @@ export class Series extends Title {
     missing: Episode;
     upcoming: Episode;
     available: Episode;
+    //
+    preview: EpisodePreview;
 
-    constructor(data: any) {
+    constructor(data: any, preview: EpisodePreview = EpisodePreview.any) {
         super(data);
         this.type = TitleType.series;
+        this.preview = preview;
     }
 
     load(value: any) {
@@ -35,18 +38,6 @@ export class Series extends Title {
         this.available = null;
         if (this.data.episodes.available && Object.keys(this.data.episodes.available).length)
             this.available = new Episode(this.data.episodes.available);
-    }
-
-    preview(type: EpisodePreview): Episode {
-        if (type === EpisodePreview.available)
-            return this.available || this.aired;
-        if (type === EpisodePreview.upcoming)
-            return this.upcoming || this.aired;
-        if (type === EpisodePreview.missing)
-            return this.missing || this.aired;
-        if (type === EpisodePreview.any)
-            return this.missing || this.available || this.upcoming || this.aired;
-        return this.aired;
     }
 
     get tvdb_id() {

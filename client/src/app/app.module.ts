@@ -13,16 +13,11 @@ import { AppComponent } from './app.component';
 import { MessageService } from './utils/message.service';
 import { ConfigService } from './utils/config.service';
 import { DataService } from './api/data.service';
+import { KeysPipe } from './utils/keys.pipe';
 import { TitleCellComponent } from './title-cell/title-cell.component';
 import { TitleParentComponent } from './title-parent/title-parent.component';
-/*
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { SeriesCardComponent } from './series-card/series-card.component';
-import { WatchlistComponent } from './watchlist/watchlist.component';
-import { MissingsComponent } from './missings/missings.component';
-import { EverythingComponent } from './everything/everything.component';
-*/
 
 /* */
 export function loadConfig(configService: ConfigService) {
@@ -30,17 +25,6 @@ export function loadConfig(configService: ConfigService) {
 }
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        TitleCellComponent,
-        TitleParentComponent,
-        /*DashboardComponent,
-        MovieCardComponent,
-        SeriesCardComponent,
-        WatchlistComponent,
-        MissingsComponent,
-        EverythingComponent,*/
-    ],
     imports: [
         BrowserModule,
         HttpModule,
@@ -60,6 +44,14 @@ export function loadConfig(configService: ConfigService) {
 			deps: [ ConfigService ],
 			multi: true,
 		}
+    ],
+    declarations: [
+        AppComponent,
+        TitleCellComponent,
+        TitleParentComponent,
+        MovieCardComponent,
+        SeriesCardComponent,
+        KeysPipe,
     ],
     bootstrap: [
         AppComponent

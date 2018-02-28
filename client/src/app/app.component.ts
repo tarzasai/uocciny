@@ -5,6 +5,10 @@ import { ConfigService } from './utils/config.service';
 import { MessageService, MessageType } from './utils/message.service';
 import { TitleParentComponent } from './title-parent/title-parent.component';
 import { TitleCellComponent } from './title-cell/title-cell.component';
+import { Title, TitleType } from './api/title';
+import { Movie } from './api/movie';
+import { Series, EpisodePreview } from './api/series';
+import { DataService, RetrieveType, UpdateType } from './api/data.service';
 
 @Component({
     selector: 'app-root',
@@ -14,54 +18,51 @@ import { TitleCellComponent } from './title-cell/title-cell.component';
 export class AppComponent {
     MessageType = MessageType;
 
-    VIEWS = [
-        {
-            tag: 'watchlist',
-            lbl: 'Watchlist',
-            ico: 'fa-heart',
+    VIEWS = {
+        watchlist: {
+            icon: 'fa-heart',
+            label: 'Watchlist',
+            movies: {
+                watchlist: 1
+            },
+            series: {
+                watchlist: 1
+            },
+            episode: EpisodePreview.upcoming
         },
-        {
-            tag: 'available',
-            lbl: 'Available',
-            ico: 'fa-hdd-o',
-            url: '/dashboard'
+        available: {
+            icon: 'fa-hdd-o',
+            label: 'Available',
+            movies: {
+                collected: 1,
+                watched: 0
+            },
+            series: {
+                available: 1
+            },
+            episode: EpisodePreview.available
         },
-        {
-            tag: 'missing',
-            lbl: 'Missing',
-            ico: 'fa-eye-slash',
+        missing: {
+            icon: 'fa-eye-slash',
+            label: 'Missing',
+            movies: {
+                missing: 1
+            },
+            series: {
+                missing: 1
+            },
+            episode: EpisodePreview.missing
         },
-        {
-            tag: 'everything',
-            lbl: 'Everything',
-            ico: 'fa-pie-chart',
+        everything: {
+            icon: 'fa-pie-chart',
+            label: 'Everything',
+            movies: null,
+            series: null,
+            episode: EpisodePreview.any
         },
-    ];
+    };
     CELL_HEIGHT = 186;
     CELL_WIDTH = 480;
-
-    SAMPLES = [
-        {
-            name: 'uno',
-            data: 'uno-data'
-        },
-        {
-            name: 'due',
-            data: 'due-data'
-        },
-        {
-            name: 'tre',
-            data: 'tre-data'
-        },
-        {
-            name: 'quattro',
-            data: 'quattro-data'
-        },
-        {
-            name: 'cinque',
-            data: 'cinque-data'
-        },
-    ];
 
     activeView: string;
     titleList = [];
@@ -69,10 +70,14 @@ export class AppComponent {
     titleCols = [];
     titleRows = [];
     colCount = 0;
+    gridMargin = 50;
 
-    constructor(private config: ConfigService, public messages: MessageService, private elref: ElementRef) {
+    constructor(private elref: ElementRef, private config: ConfigService, public messages: MessageService,
+        private api: DataService) {
         //
         this.titleGrid = <GridOptions>{
+            headerHeight: 0,
+            rowHeight: this.CELL_HEIGHT,
             rowSelection: 'single',
             rowDeselection: false,
             enableColResize: false,
@@ -81,13 +86,10 @@ export class AppComponent {
 
         /*this.titleCols = [
             {
-                field: 'name',
-                width: 80
-            },
-            {
-                field: 'data',
-                width: 80
-            },
+                field: 'col1',
+                width: this.CELL_WIDTH,
+                cellRendererFramework: TitleParentComponent
+            }
         ];*/
 
         // gli eventi della agGrid di solito hanno l'oggetto GridOptions o la griglia come
@@ -95,35 +97,49 @@ export class AppComponent {
         this.titleGrid.context = this;
     }
 
-
-    //https://www.ag-grid.com/javascript-grid-cell-rendering-components/#angular-cell-render-components
-
-
     ngOnInit() {
-
-        this.titleList = this.SAMPLES;
-
-        this.setColumns(Math.floor((this.elref.nativeElement.clientWidth - 10) / this.CELL_WIDTH));
+        //this.titleList = this.SAMPLES;
+        this.setColumns(this.elref.nativeElement.clientWidth);
         this.openView('available');
+        this.api.onUpdate.subscribe(args => {
+            //console.log('DashboardComponent.onUpdate', args);
+        });
     }
 
     ngOnDestroy() {
         //
     }
 
-    setColumns(tot) {
-        if (tot === this.colCount)
-            return;
-        var cols = [],
-            rows = [];
-        for (var i = 0; i < this.colCount; i++) {
-            cols.push({
-                field: 'col' + i,
-                width: this.CELL_WIDTH,
-                cellRendererFramework: TitleParentComponent
-            });
+    @HostListener('window:resize', ['$event'])
+    onResize(event) {
+        this.setColumns(event.target.innerWidth);
+    }
+
+    onGridReady(params) {
+        // ???
+    }
+
+    setColumns(areaWidth) {
+        var tot = Math.max(1, Math.floor((areaWidth - 124) / this.CELL_WIDTH));
+        if (tot != this.colCount) {
+            this.colCount = tot;
+            var cols = [];
+            for (var i = 0; i < this.colCount; i++) {
+                cols.push({
+                    field: 'col' + i,
+                    width: this.CELL_WIDTH,
+                    cellRendererFramework: TitleParentComponent
+                });
+            }
+            this.titleCols = cols;
+            this.setRows();
         }
-        var n = -1,
+        this.gridMargin = Math.floor((areaWidth - (this.colCount * this.CELL_WIDTH)) / 2);
+    }
+
+    setRows() {
+        var rows = [],
+            n = -1,
             row;
         while (n < this.titleList.length) {
             row = {};
@@ -133,20 +149,35 @@ export class AppComponent {
             }
             rows.push(row);
         }
-        this.titleCols = cols;
         this.titleRows = rows;
-    }
-
-    @HostListener('window:resize', ['$event'])
-    onResize(event) {
-        //this.setColumns(Math.floor((event.target.innerWidth - 10) / this.CELL_WIDTH));
-    }
-
-    onGridReady(params) {
-        //
     }
 
     openView(tag) {
         this.activeView = tag;
+        this.config.lockScreen();
+        var mp = this.VIEWS[tag].movies,
+            sp = this.VIEWS[tag].series,
+            ep = this.VIEWS[tag].episode,
+            ml = [],
+            sl = [];
+        this.api.retrieve(RetrieveType.movies, mp).subscribe(result => {
+            result.sort(function (m1, m2) {
+                return (m1.released || 'Z').localeCompare(m2.released);
+            });
+            result.forEach(function (itm) {
+                ml.push(new Movie(itm));
+            });
+            this.api.retrieve(RetrieveType.series, sp).subscribe(result => {
+                result.sort(function (s1, s2) {
+                    return s1.name.localeCompare(s2.name);
+                });
+                result.forEach(function (itm) {
+                    sl.push(new Series(itm, ep));
+                });
+                this.titleList = sl.concat(ml);
+                this.setRows();
+                this.config.unlockScreen();
+            })
+        });
     }
 }

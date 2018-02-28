@@ -7,10 +7,10 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
     styleUrls: ['./title-parent.component.css']
 })
 export class TitleParentComponent implements ICellRendererAngularComp {
-    private params: any;
+    private title: any = null;
 
     agInit(params: any): void {
-        this.params = params;
+        this.title = params;
     }
 
     refresh(params: any): boolean {

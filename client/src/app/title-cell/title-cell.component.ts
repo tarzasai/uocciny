@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+
+import { TitleType } from '../api/title';
+import { EpisodePreview } from '../api/series';
 
 @Component({
     selector: 'title-cell',
@@ -6,7 +9,10 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./title-cell.component.css']
 })
 export class TitleCellComponent implements OnInit {
-    private params: any;
+    TitleType = TitleType;
+    EpisodePreview = EpisodePreview;
+
+    @Input() title: any = null;
 
     constructor() { }
 
