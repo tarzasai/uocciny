@@ -37,5 +37,5 @@
 </div>
 <div class="form-group form-group-sm title-filter">
     <input class="form-control form-control-sm" placeholder="Search title..."
-        (input)="setRows(null, $event.target.value);" />
+        (input)="titleFltr=$event.target.value;setRows();" />
 </div>

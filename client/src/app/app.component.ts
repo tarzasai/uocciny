@@ -202,11 +202,9 @@ export class AppComponent {
         this.gridMargin = Math.floor((areaWidth - (this.colCount * CELL_WIDTH)) / 2);
     }
 
-    setRows(values = null, filter = null) {
+    setRows(values = null) {
         if (values)
             this.titleList = values;
-        if (filter)
-            this.titleFltr = filter;
         var rows = [],
             n = 0,
             row, j;
