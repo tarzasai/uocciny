@@ -15,7 +15,7 @@ export class Movie extends Title {
     }
 
     get poster() {
-        return 'https://image.tmdb.org/t/p/w780' + this.data.poster;
+        return this.data.poster ? 'https://image.tmdb.org/t/p/w780' + this.data.poster : null;
         // 780 x 1170
     }
 
@@ -44,6 +44,6 @@ export class Movie extends Title {
     }
 
     get missing() {
-        return this.data.released && moment(this.data.released).isBefore(moment(), 'day');
+        return this.data.missing;
     }
 }

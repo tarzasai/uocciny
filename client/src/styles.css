@@ -93,6 +93,26 @@ ag-grid-angular {
     width: 133px;
 }
 
+.card .poster:before {
+    position: absolute;
+    content: "\f03e";
+    font-family: FontAwesome;
+    font-size: 60px;
+    background-color: darkgray;
+    text-align: center;
+    color: white;
+    opacity: 0.2;
+    padding-top: 30px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.card .poster img {
+    z-index: 2;
+}
+
 .card .details {
     flex-shrink: 1;
     flex-direction: column;

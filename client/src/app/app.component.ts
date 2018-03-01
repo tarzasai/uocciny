@@ -122,8 +122,6 @@ export class AppComponent {
                     (this.activeView === VIEW_TYPES.missing && !title.missing) ||
                     (this.activeView === VIEW_TYPES.available && !title.available))
                     this.removeTitle(title);
-                else
-                    this.refreshTitle(title);
             } else {
                 this.getData();
             }
@@ -214,19 +212,20 @@ export class AppComponent {
         this.titleRows = rows;
     }
 
-    refreshTitle(title) {
+    removeTitle(title) {
+        var start = this.titleList.indexOf(title);
+        this.titleList.splice(start, 1);
+        var ctx = this,
+            n = -1,
+            col;
         this.titleGrid.api.forEachNode(function(node) {
-            for (var c = 0; c < this.colCount; c++) {
-                if (node.data['col' + c] == title) {
-                    this.titleGrid.api.refreshCells([node], 'col' + c);
-                    return;
-                }
+            for (var c = 0; c < ctx.colCount; c++) {
+                col = 'col' + c;
+                n++;
+                if (n >= start)
+                    node.setDataValue(col, n < ctx.titleList.length ? ctx.titleList[n] : null);
             }
         });
-    }
-
-    removeTitle(title) {
-        //
     }
 
     importIMDB() {

@@ -14,6 +14,7 @@ export class TitleParentComponent implements ICellRendererAngularComp {
     }
 
     refresh(params: any): boolean {
+        //console.log('TitleParentComponent.refresh()', params);
         return false;
     }
 }

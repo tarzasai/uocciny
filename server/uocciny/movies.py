@@ -144,8 +144,9 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
             return []
         obj = {
             'watchlist': False,
-            'collected': {},
-            'watched': {}
+            'collected': False,
+            'watched': False,
+            'rating': None
         }
     rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
     obj['name'] = rec['name']

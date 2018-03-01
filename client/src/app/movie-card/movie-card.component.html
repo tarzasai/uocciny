@@ -14,7 +14,7 @@
         <div class="section info">
             <div class="icon">
                 <i class="fa" *ngIf="movie.watched || movie.collected || movie.missing" [ngClass]="{
-                    'fa-check-circle': movie.watched,
+                    'fa-eye': movie.watched,
                     'fa-hdd-o': movie.collected,
                     'fa-eye-slash': movie.missing
                 }"></i>
@@ -27,9 +27,16 @@
             <div class="text">{{movie.plot}}</div>
         </div>
 
-        <div class="section footl" *ngIf="movie.data.subtitles">
+        <div class="section footl" *ngIf="movie.collected && movie.data.subtitles">
             <div class="icon"><i class="fa fa-cc"></i></div>
             <div class="text">{{movie.subtitles}}</div>
+        </div>
+
+        <div class="section footl" *ngIf="!movie.collected && movie.watched">
+            <div class="icon"></div>
+            <div class="text" style="font-size: 110%; opacity: 0.8;">
+                <rating [(ngModel)]="movie.rating" [max]="5" [readonly]="true"></rating>
+            </div>
         </div>
 
         <div class="footr" *ngIf="movie.data.runtime">

@@ -53,7 +53,8 @@ export class Series extends Title {
     }
 
     get poster() {
-        return 'https://www.thetvdb.com/banners/' + this.data.poster; // 680 x 1000
+        return this.data.poster ? 'https://www.thetvdb.com/banners/' + this.data.poster : null;
+        // 680 x 1000
     }
 
     get ended() {

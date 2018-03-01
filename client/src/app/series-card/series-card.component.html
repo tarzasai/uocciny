@@ -25,7 +25,7 @@
             <div class="section info">
                 <div class="icon">
                     <i class="fa" *ngIf="episode.watched || episode.collected || episode.missing" [ngClass]="{
-                        'fa-check-circle': episode.watched,
+                        'fa-eye': episode.watched,
                         'fa-hdd-o': episode.collected,
                         'fa-eye-slash': episode.missing
                     }"></i>
@@ -44,8 +44,8 @@
                 </div>
             </div>
             <div class="section plot">
-                <div class="icon" *ngIf="episode.plot"><i class="fa fa-quote-left"></i></div>
-                <div class="text" *ngIf="episode.plot">{{episode.plot || 'N/A'}}</div>
+                <div class="icon"><i class="fa fa-quote-left"></i></div>
+                <div class="text">{{episode.plot || series.plot}}</div>
             </div>
             <div class="section footl" *ngIf="episode.subtitles">
                 <div class="icon"><i class="fa fa-cc"></i></div>

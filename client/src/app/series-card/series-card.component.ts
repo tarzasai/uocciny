@@ -21,6 +21,10 @@ export class SeriesCardComponent implements OnInit {
     constructor(private config: ConfigService, private messages: MessageService, private api: DataService) { }
 
     ngOnInit() {
+        this.setEpisode();
+    }
+
+    setEpisode() {
         var ser = this.series;
         this.episode = (
             ser.preview === EpisodePreview.available ? (ser.available || ser.aired) :
@@ -47,8 +51,10 @@ export class SeriesCardComponent implements OnInit {
             tvdb_id: this.series.tvdb_id,
             rating: value
         }).subscribe(result => {
-            if (result.length > 0)
+            if (result.length > 0) {
                 this.series.load(result[0]);
+                this.setEpisode();
+            }
             this.config.unlockScreen();
         });
     }
@@ -59,8 +65,10 @@ export class SeriesCardComponent implements OnInit {
             tvdb_id: this.series.tvdb_id,
             watchlist: (!this.series.watchlist ? 1 : 0)
         }).subscribe(result => {
-            if (result.length > 0)
+            if (result.length > 0) {
                 this.series.load(result[0]);
+                this.setEpisode();
+            }
             this.config.unlockScreen();
         });
     }
@@ -73,8 +81,10 @@ export class SeriesCardComponent implements OnInit {
             episode: this.episode.episode,
             collected: (!this.episode.collected ? 1 : 0)
         }).subscribe(result => {
-            if (result.length > 0)
+            if (result.length > 0) {
                 this.series.load(result[0]);
+                this.setEpisode();
+            }
             this.config.unlockScreen();
         });
     }
@@ -87,8 +97,10 @@ export class SeriesCardComponent implements OnInit {
             episode: this.episode.episode,
             watched: (!this.episode.watched ? 1 : 0)
         }).subscribe(result => {
-            if (result.length > 0)
+            if (result.length > 0) {
                 this.series.load(result[0]);
+                this.setEpisode();
+            }
             this.config.unlockScreen();
         });
     }

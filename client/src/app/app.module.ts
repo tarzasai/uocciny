@@ -4,6 +4,7 @@ import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { RatingModule } from 'ngx-bootstrap/rating';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { AgGridModule } from "ag-grid-angular/main";
 
@@ -34,6 +35,7 @@ export function loadConfig(configService: ConfigService) {
         HttpClientModule,
         FormsModule,
         ButtonsModule.forRoot(),
+        RatingModule.forRoot(),
         ModalModule.forRoot(),
         AgGridModule.withComponents([
             TitleParentComponent
