@@ -9,6 +9,10 @@ export class Episode extends Title {
         this.type = TitleType.episode;
     }
 
+    sortKey():string {
+        return super.sortKey() + sprintf('%05d-%05d-%05d', this.data.series, this.data.season, this.data.episode);
+    }
+
     get eid() {
         //return sprintf('S%02dE%02d', this.data.season, this.data.episode);
         return sprintf('%dx%d', this.data.season, this.data.episode);

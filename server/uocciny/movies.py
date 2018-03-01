@@ -132,7 +132,16 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
     uf = get_uf()
     obj = read_from_uoccin(imdb_id)
     exists = obj is not None
+    # ban&trash
+    if rating is not None and rating < 0:
+        uf.setdefault('banned', []).append(imdb_id)
+        if exists:
+            del uf['movies'][imdb_id]
+            save_uf(uf)
+        return []
     if not exists:
+        if imdb_id in uf.get('banned', []):
+            return []
         obj = {
             'watchlist': False,
             'collected': {},
@@ -140,14 +149,23 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
         }
     rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
     obj['name'] = rec['name']
-    if watchlist is not None:
-        obj['watchlist'] = watchlist
-    if collected is not None:
-        obj['collected'] = collected
-    if watched is not None:
-        obj['watched'] = watched
     if rating > 0:
         obj['rating'] = max(rating, 5)
+    if watchlist is not None:
+        obj['watchlist'] = watchlist
+        if watchlist:
+            obj['watched'] = False
+            del obj['rating']
+    if collected is not None:
+        obj['collected'] = collected
+        if collected:
+            obj['watchlist'] = False
+    if watched is not None:
+        obj['watched'] = watched
+        if watched:
+            obj['watchlist'] = False
+        else:
+            del obj['rating']
     uf.setdefault('movies', {})[imdb_id] = obj
     save_uf(uf)
     rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))

@@ -18,6 +18,16 @@ export class MovieCardComponent implements OnInit {
     ngOnInit() {
     }
 
+    trashMovie() {
+        this.config.lockScreen();
+        this.api.update(UpdateType.movie, {
+            imdb_id: this.movie.imdb_id,
+            rating: -1
+        }).subscribe(result => {
+            this.config.unlockScreen();
+        });
+    }
+
     setRating(value) {
         this.config.lockScreen();
         this.api.update(UpdateType.movie, {

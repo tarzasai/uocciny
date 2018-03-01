@@ -8,6 +8,7 @@
         339137,
         337302,
         334824,
+        328577,
         328361,
         341235,
         338798,
@@ -17,8 +18,8 @@
         311901,
         338215,
         334075,
-        336157,
         342733,
+        336157,
         334900,
         339552,
         328690,
@@ -26,7 +27,9 @@
         337664,
         328569,
         342301,
-        337749
+        337749,
+        332027,
+        "tt0310775"
     ],
     "movies": {
         "tt0032553": {
@@ -1292,6 +1295,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt0120669": {
+            "collected": {},
+            "name": "Fear and Loathing in Las Vegas",
+            "watched": {},
+            "watchlist": true
+        },
         "tt0120685": {
             "collected": false,
             "name": "Godzilla",
@@ -2125,6 +2134,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt0405094": {
+            "collected": {},
+            "name": "The Lives of Others",
+            "watched": {},
+            "watchlist": true
+        },
         "tt0405296": {
             "collected": false,
             "name": "A Scanner Darkly",
@@ -2722,6 +2737,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt1124037": {
+            "collected": {},
+            "name": "Free State of Jones",
+            "watched": {},
+            "watchlist": true
+        },
         "tt1130884": {
             "collected": false,
             "name": "Shutter Island",
@@ -2735,6 +2756,12 @@
             "rating": 4,
             "watched": true,
             "watchlist": false
+        },
+        "tt1137450": {
+            "collected": {},
+            "name": "Death Wish",
+            "watched": {},
+            "watchlist": true
         },
         "tt1139328": {
             "collected": false,
@@ -3067,6 +3094,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt1365519": {
+            "collected": {},
+            "name": "Tomb Raider",
+            "watched": {},
+            "watchlist": true
+        },
         "tt1371111": {
             "collected": false,
             "name": "Cloud Atlas",
@@ -3220,6 +3253,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt1477834": {
+            "collected": {},
+            "name": "Aquaman",
+            "watched": {},
+            "watchlist": true
+        },
         "tt1483013": {
             "collected": false,
             "name": "Oblivion",
@@ -3264,6 +3303,18 @@
             "rating": 5,
             "watched": true,
             "watchlist": false
+        },
+        "tt1571234": {
+            "collected": {},
+            "name": "Mortal Engines",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt1590193": {
+            "collected": {},
+            "name": "The Commuter",
+            "watched": {},
+            "watchlist": true
         },
         "tt1596363": {
             "collected": false,
@@ -3371,6 +3422,12 @@
             "rating": 4,
             "watched": true,
             "watchlist": false
+        },
+        "tt1677720": {
+            "collected": {},
+            "name": "Ready Player One",
+            "watched": {},
+            "watchlist": true
         },
         "tt1704292": {
             "collected": false,
@@ -3690,6 +3747,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt2078552": {
+            "collected": {},
+            "name": "Blood",
+            "watched": {},
+            "watchlist": true
+        },
         "tt2094766": {
             "collected": false,
             "name": "Assassin's Creed",
@@ -3903,6 +3966,18 @@
             ],
             "watched": true,
             "watchlist": false
+        },
+        "tt2406566": {
+            "collected": {},
+            "name": "Atomic Blonde",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt2436682": {
+            "collected": {},
+            "name": "The Duel",
+            "watched": {},
+            "watchlist": true
         },
         "tt2446042": {
             "collected": false,
@@ -4182,6 +4257,30 @@
             "watched": true,
             "watchlist": false
         },
+        "tt3766354": {
+            "collected": {},
+            "name": "The Equalizer 2",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt3778644": {
+            "collected": {},
+            "name": "Solo: A Star Wars Story",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt3799694": {
+            "collected": {},
+            "name": "The Nice Guys",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt3829266": {
+            "collected": {},
+            "name": "The Predator",
+            "watched": {},
+            "watchlist": true
+        },
         "tt3963816": {
             "collected": true,
             "name": "Marauders",
@@ -4199,6 +4298,12 @@
             "collected": false,
             "name": "Avengers: Infinity War",
             "watched": false,
+            "watchlist": true
+        },
+        "tt4154916": {
+            "collected": {},
+            "name": "Replicas",
+            "watched": {},
             "watchlist": true
         },
         "tt4172430": {
@@ -4225,6 +4330,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt4537896": {
+            "collected": {},
+            "name": "White Boy Rick",
+            "watched": {},
+            "watchlist": true
+        },
         "tt4572514": {
             "collected": false,
             "name": "Patriots Day",
@@ -4235,6 +4346,12 @@
             "watched": true,
             "watchlist": false
         },
+        "tt4633694": {
+            "collected": {},
+            "name": "Spider-Man: Into the Spider-Verse",
+            "watched": {},
+            "watchlist": true
+        },
         "tt4703048": {
             "collected": false,
             "name": "6 Days",
@@ -4244,6 +4361,18 @@
             ],
             "watched": true,
             "watchlist": false
+        },
+        "tt4881806": {
+            "collected": {},
+            "name": "Jurassic World: Fallen Kingdom",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt4912910": {
+            "collected": {},
+            "name": "Mission: Impossible - Fallout",
+            "watched": {},
+            "watchlist": true
         },
         "tt5013056": {
             "collected": false,
@@ -4257,6 +4386,12 @@
             ],
             "watched": true,
             "watchlist": false
+        },
+        "tt5052474": {
+            "collected": {},
+            "name": "Sicario 2: Soldado",
+            "watched": {},
+            "watchlist": true
         },
         "tt5155780": {
             "collected": false,
@@ -4302,6 +4437,18 @@
             "watched": false,
             "watchlist": true
         },
+        "tt5463162": {
+            "collected": {},
+            "name": "The Untitled Deadpool Sequel",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt5466186": {
+            "collected": {},
+            "name": "7 Days in Entebbe",
+            "watched": {},
+            "watchlist": true
+        },
         "tt5519340": {
             "collected": false,
             "name": "Bright",
@@ -4323,6 +4470,24 @@
             ],
             "watched": false,
             "watchlist": false
+        },
+        "tt5968394": {
+            "collected": {},
+            "name": "Captive State",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt6333056": {
+            "collected": {},
+            "name": "City of Ghosts",
+            "watched": {},
+            "watchlist": true
+        },
+        "tt6644200": {
+            "collected": {},
+            "name": "A Quiet Place",
+            "watched": {},
+            "watchlist": true
         }
     },
     "series": {
@@ -4686,7 +4851,11 @@
         "247897": {
             "collected": {
                 "7": {
-                    "3": []
+                    "3": [
+                        "eng",
+                        "und",
+                        "ita"
+                    ]
                 }
             },
             "name": "Homeland",
@@ -5163,7 +5332,11 @@
             "watchlist": true
         },
         "261109": {
-            "collected": {},
+            "collected": {
+                "4": {
+                    "3": []
+                }
+            },
             "name": "Shetland",
             "rating": 4,
             "tags": [
@@ -5418,6 +5591,7 @@
                     "13": [
                         "eng"
                     ],
+                    "14": [],
                     "2": [
                         "ita",
                         "eng"
@@ -7298,21 +7472,13 @@
             },
             "watchlist": true
         },
-        "332027": {
-            "collected": {},
-            "name": "Marvel's Runaways",
-            "watched": {},
-            "watchlist": false
-        },
         "332331": {
             "collected": {
-                "1": {
-                    "1": []
-                }
+                "1": {}
             },
             "name": "Altered Carbon",
             "watched": {},
-            "watchlist": false
+            "watchlist": true
         },
         "73388": {
             "collected": {},

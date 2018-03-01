@@ -40,6 +40,10 @@ export class Series extends Title {
             this.available = new Episode(this.data.episodes.available);
     }
 
+    sortKey():string {
+        return super.sortKey() + (this.data.name || 'zzzzzzzzzz').toLocaleLowerCase();
+    }
+
     get tvdb_id() {
         return this.data.tvdb_id;
     }

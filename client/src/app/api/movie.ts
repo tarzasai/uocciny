@@ -9,6 +9,11 @@ export class Movie extends Title {
         this.type = TitleType.movie;
     }
 
+    sortKey():string {
+        return super.sortKey() + (this.data.released || 'zzzz').substr(0, 4) +
+            (this.data.name || 'zzzzzzzzzz').toLocaleLowerCase();
+    }
+
     get poster() {
         return 'https://image.tmdb.org/t/p/w780' + this.data.poster;
         // 780 x 1170

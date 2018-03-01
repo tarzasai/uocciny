@@ -26,7 +26,11 @@ export class Title {
     }
 
     hasText(text) {
-        return (this.title || '').toLocaleLowerCase().contains((text || '').toLocaleLowerCase());
+        return (this.data.name || '').toLocaleLowerCase().contains((text || '').toLocaleLowerCase());
+    }
+
+    sortKey():string {
+        return this.type === TitleType.series ? '000000' : this.type === TitleType.movie ? '111111' : '222222';
     }
 
     get isMovie() {

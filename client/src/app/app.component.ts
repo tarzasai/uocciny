@@ -79,7 +79,6 @@ export class AppComponent {
     titleRows = [];
     titleFltr = null;
     colCount = 0;
-    gridMargin = 50;
 
     // https://valor-software.com/ngx-bootstrap/#/modals
 
@@ -99,40 +98,34 @@ export class AppComponent {
     }
 
     ngOnInit() {
-        this.setColumns(this.elref.nativeElement.clientWidth);
-        this.getData(VIEW_TYPES[localStorage.getItem('LastView') || 'available']);
         this.updateListener = this.api.onUpdate.subscribe(args => {
             //console.log('DashboardComponent.onUpdate', args);
-            var idx = -1;
             if (args.output.length <= 0) {
-                idx = this.titleList.findIndex(function (itm) {
+                var title = this.titleList.find(function (itm) {
                     return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === args.input.imdb_id) ||
                         (args.type === UpdateType.series && itm.type === TitleType.series && itm.data.tvdb_id === args.input.tvdb_id) ||
                         (itm.type === TitleType.series && itm.data.tvdb_id === args.input.series);
                 });
-                if (idx < 0)
+                if (!title)
                     this.getData();
-                else {
-                    this.titleList.splice(idx, 1);
-                    this.setRows();
-                }
-            } else {
+                else
+                    this.removeTitle(title);
+            } else if (args.output.length === 1) {
                 var res = args.output[0];
-                idx = this.titleList.findIndex(function (itm) {
+                var title = this.titleList.find(function (itm) {
                     return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === res.imdb_id) ||
                         (args.type != UpdateType.movie && itm.type === TitleType.series && itm.data.tvdb_id === res.tvdb_id);
                 });
-                if (idx < 0) {
+                if (!title)
                     this.getData();
-                } else {
-                    var obj = this.titleList[idx];
-                    obj.load(res);
-                    if ((this.activeView === VIEW_TYPES.watchlist && !obj.watchlist) ||
-                        (this.activeView === VIEW_TYPES.missing && !obj.missing) ||
-                        (this.activeView === VIEW_TYPES.available && !obj.available))
-                        this.titleList.splice(idx, 1);
-                    this.setRows();
-                }
+                else if ((this.activeView === VIEW_TYPES.watchlist && !title.watchlist) ||
+                    (this.activeView === VIEW_TYPES.missing && !title.missing) ||
+                    (this.activeView === VIEW_TYPES.available && !title.available))
+                    this.removeTitle(title);
+                else
+                    this.refreshTitle(title);
+            } else {
+                this.getData();
             }
         });
     }
@@ -147,7 +140,10 @@ export class AppComponent {
     }
 
     onGridReady(params) {
-        // ???
+        var grd: any = this,
+            ctx: any = grd.context;
+        ctx.setColumns(ctx.elref.nativeElement.clientWidth);
+        ctx.getData(VIEW_TYPES[localStorage.getItem('LastView') || 'available']);
     }
 
     getData(view = null) {
@@ -156,39 +152,30 @@ export class AppComponent {
             localStorage.setItem('LastView', view.tag);
         }
         this.config.lockScreen();
-        var ml = [],
-            sl = [];
-        this.api.retrieve(RetrieveType.movies, view.movies).subscribe(result => {
-            result.sort(function (m1, m2) {
-                var y1 = (m1.released || 'ZZZZ').substr(0, 4),
-                    y2 = (m2.released || 'ZZZZ').substr(0, 4),
-                    n1 = (m1.name || 'ZZZZ').toLocaleLowerCase(),
-                    n2 = (m2.name || 'ZZZZ').toLocaleLowerCase();
-                return y1.localeCompare(y2) || n1.localeCompare(n2);
-            });
+        var res = [];
+        this.api.retrieve(RetrieveType.series, view.series).subscribe(result => {
             result.forEach(function (itm) {
-                ml.push(new Movie(itm));
+                res.push(new Series(itm, view.episode));
             });
-            this.api.retrieve(RetrieveType.series, view.series).subscribe(result => {
-                result.sort(function (s1, s2) {
-                    var n1 = (s1.name || 'ZZZZ').toLocaleLowerCase(),
-                        n2 = (s2.name || 'ZZZZ').toLocaleLowerCase();
-                    return n1.localeCompare(n2);
-                });
+            this.api.retrieve(RetrieveType.movies, view.movies).subscribe(result => {
                 result.forEach(function (itm) {
-                    sl.push(new Series(itm, view.episode));
+                    res.push(new Movie(itm));
                 });
-                this.setRows(sl.concat(ml));
+                this.setRows(res);
                 this.config.unlockScreen();
             })
         });
     }
 
-    setColumns(areaWidth) {
-        var tot = Math.max(1, Math.floor((areaWidth - 124) / CELL_WIDTH));
+    setColumns(pWidth) {
+        var tot = Math.max(1, Math.floor((pWidth - 124) / CELL_WIDTH));
         if (tot != this.colCount) {
             this.colCount = tot;
             var cols = [];
+            cols.push({
+                field: 'hdr',
+                width: 0
+            });
             for (var i = 0; i < this.colCount; i++) {
                 cols.push({
                     field: 'col' + i,
@@ -199,12 +186,16 @@ export class AppComponent {
             this.titleCols = cols;
             this.setRows(); // bisogna rifare la distribuzione
         }
-        this.gridMargin = Math.floor((areaWidth - (this.colCount * CELL_WIDTH)) / 2);
+        this.titleGrid.columnApi.setColumnWidth('hdr', Math.floor((pWidth - (this.colCount * CELL_WIDTH)) / 2), false);
     }
 
     setRows(values = null) {
-        if (values)
+        if (values) {
             this.titleList = values;
+            this.titleList.sort(function (t1, t2) {
+                return t1.sortKey().localeCompare(t2.sortKey());
+            });
+        }
         var rows = [],
             n = 0,
             row, j;
@@ -221,5 +212,32 @@ export class AppComponent {
             rows.push(row);
         }
         this.titleRows = rows;
+    }
+
+    refreshTitle(title) {
+        this.titleGrid.api.forEachNode(function(node) {
+            for (var c = 0; c < this.colCount; c++) {
+                if (node.data['col' + c] == title) {
+                    this.titleGrid.api.refreshCells([node], 'col' + c);
+                    return;
+                }
+            }
+        });
+    }
+
+    removeTitle(title) {
+        //
+    }
+
+    importIMDB() {
+        this.config.lockScreen();
+        this.api.import(null).subscribe(result => {
+            var res = [];
+            result.forEach(function (itm) {
+                res.push(new Movie(itm));
+            });
+            this.setRows(this.titleList.concat(res));
+            this.config.unlockScreen();
+        });
     }
 }

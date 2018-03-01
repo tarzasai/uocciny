@@ -37,8 +37,6 @@ export class SeriesCardComponent implements OnInit {
             tvdb_id: this.series.tvdb_id,
             rating: -1
         }).subscribe(result => {
-            if (result.length > 0)
-                this.series.load(result[0]);
             this.config.unlockScreen();
         });
     }

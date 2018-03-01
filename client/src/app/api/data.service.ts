@@ -1,13 +1,14 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+import { sprintf } from 'sprintf';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
-import { Subject } from 'rxjs/Subject';
 
 export enum RetrieveType {
     movies = 'movies',
@@ -46,7 +47,7 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    this.messages.addInfo("fetched data");
+                    //this.messages.addInfo('fetched data');
                     return res.result;
                 }),
                 catchError(this.handleError('retrieve', []))
@@ -62,7 +63,22 @@ export class DataService {
                     if (res.isError)
                         throw res.result;
                     this.onUpdate.next({type:what, input:args, output:res.result});
-                    this.messages.addInfo("updated data");
+                    //this.messages.addInfo('updated data');
+                    return res.result;
+                }),
+                catchError(this.handleError('update', []))
+            );
+    }
+
+    import(args: any): Observable<any> {
+        var url = this.config.apiHost + '/importimdb';
+        return this.http
+            .get<ServerResult>([url, this.args2uri(args)].join('?'))
+            .pipe(
+                map(res => {
+                    if (res.isError)
+                        throw res.result;
+                    this.messages.addInfo(sprintf('%d movie(s) added to the watchlist', res.result.length));
                     return res.result;
                 }),
                 catchError(this.handleError('update', []))

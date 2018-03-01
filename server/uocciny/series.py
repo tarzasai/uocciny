@@ -274,6 +274,8 @@ def set_series(tvdb_id, watchlist=None, rating=None):
             save_uf(uf)
         return []
     if not exists:
+        if tvdb_id in uf.get('banned', []):
+            return []
         obj = {
             'watchlist': False,
             'collected': {},
@@ -304,6 +306,8 @@ def set_episode(tvdb_id, season, episode, collected=None, watched=None):
     obj = read_from_uoccin(tvdb_id)
     exists = obj is not None
     if not exists:
+        if tvdb_id in uf.get('banned', []):
+            return []
         obj = {
             'watchlist': False,
             'collected': {},

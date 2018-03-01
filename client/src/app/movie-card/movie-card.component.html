@@ -38,6 +38,11 @@
 
         <div class="tools">
             <div class="btn-group" role="group">
+                <div class="btn-group" *ngIf="movie.watchlist">
+                    <button type="button" class="btn btn-sm btn-danger" (click)="trashMovie()">
+                        <i class="fa fa-lg fa-ban"></i>
+                    </button>
+                </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-primary" (click)="toggleWatched()">
                         <i class="fa fa-lg fa-eye" [ngClass]="{'false': !movie.watched}"></i>

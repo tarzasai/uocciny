@@ -35,6 +35,7 @@ app.config.update(UOCCINY_DB=os.environ.get("UOCCINY_DB"))
 app.config.update(UOCCIN_PATH=os.environ.get("UOCCIN_PATH"))
 app.config.update(TVDB_API_KEY=os.environ.get("TVDB_API_KEY"))
 app.config.update(TMDB_API_KEY=os.environ.get("TMDB_API_KEY"))
+app.config.update(IMDB_USER_ID=os.environ.get("IMDB_USER_ID"))
 
 # di solito non mi interessa fare debug dal browser
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
@@ -99,6 +100,7 @@ def handle_internal_error(err):
 
 from movies import get_movie, get_movie_list, set_movie
 from series import get_series, get_series_list, get_episode, get_episode_list, set_series, set_season, set_episode
+from wimdb import import_imdb_watchlist
 
 
 @app.route('/')
@@ -149,6 +151,11 @@ def view_episodes():
 @app.route('/uoccinfile', methods=['GET', 'OPTIONS'])
 def view_uof():
     return jsonify({'status': 200, 'result': get_uf()})
+
+
+@app.route('/importimdb', methods=['GET', 'OPTIONS'])
+def import_imdb():
+    return jsonify({'status': 200, 'result': import_imdb_watchlist()})
 
 
 @app.route('/movie', methods=['POST'])
