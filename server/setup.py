@@ -9,7 +9,6 @@ setup(
         'flask_cors',
         'sqlalchemy',
         'tmdbsimple',
-        'tvdb_client',
-        'beautifulsoup4'
+        'tvdb_client'
     ],
 )

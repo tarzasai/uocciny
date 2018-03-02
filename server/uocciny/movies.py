@@ -99,6 +99,7 @@ def get_metadata(movie):
     if rec.is_old():
         update_from_tmdb(rec)
     movie.update(row2dict(rec))
+    movie['rating'] = movie.get('rating', 0)
     movie['missing'] = movie['watchlist'] and rec.released is not None and not movie['collected']\
         and not movie['watched'] and datetime.now() > rec.released
     return movie
@@ -151,7 +152,7 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
     rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
     obj['name'] = rec['name']
     if rating > 0:
-        obj['rating'] = max(rating, 5)
+        obj['rating'] = rating if rating <= 5 else 5
     if watchlist is not None:
         obj['watchlist'] = watchlist
         if watchlist:
@@ -161,11 +162,13 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
         obj['collected'] = collected
         if collected:
             obj['watchlist'] = False
+        elif 'subtitles' in obj:
+            del obj['subtitles']
     if watched is not None:
         obj['watched'] = watched
         if watched:
             obj['watchlist'] = False
-        else:
+        elif 'rating' in obj:
             del obj['rating']
     uf.setdefault('movies', {})[imdb_id] = obj
     save_uf(uf)

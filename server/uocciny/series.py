@@ -16,13 +16,15 @@ class Series(Base):
     imdb_id = Column(String, unique=True)
     name = Column(String, nullable=False)
     plot = Column(String)
-    network = Column(String)
-    status = Column(String)
     actors = Column(String)
+    genres = Column(String)
+    status = Column(String)
+    network = Column(String)
+    airsDay = Column(Integer)
+    runtime = Column(Integer)
     firstAired = Column(DateTime)
     poster = Column(String)
     banner = Column(String)
-    genres = Column(String)
     updated = Column(DateTime)
     episodes = relationship('Episode', backref="parent", passive_deletes=True)
 
@@ -178,8 +180,18 @@ def get_metadata(series):
         rec.tvdb_id = sid
     if rec.is_old():
         update_from_tvdb(rec)
+    '''
+    if rec.airsDay is None or rec.runtime is None:
+        tvdb, show = read_from_tvdb(sid)
+        if 'airsDayOfWeek' in show and show['airsDayOfWeek']:
+            rec.airsDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].index(show['airsDayOfWeek'].lower())
+        if 'runtime' in show and show['runtime']:
+            rec.runtime = int(show['runtime'])
+        get_db().commit()
+    '''
     series.update(row2dict(rec))
     series['new'] = rec.is_new()
+    series['rating'] = series.get('rating', 0)
     # episodes
     series['episodes'] = {
         'summary': {
@@ -286,7 +298,7 @@ def set_series(tvdb_id, watchlist=None, rating=None):
     if watchlist is not None:
         obj['watchlist'] = watchlist
     if rating > 0:
-        obj['rating'] = max(rating, 5)
+        obj['rating'] = rating if rating <= 5 else 5
     uf.setdefault('series', {})[str(tvdb_id)] = obj
     save_uf(uf)
     rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
@@ -321,13 +333,16 @@ def set_episode(tvdb_id, season, episode, collected=None, watched=None):
         raise Exception('Episode %dx%d does not exists.' % (season, episode))
     if collected is not None:
         coll = obj['collected'].setdefault(str(season), {})
-        if collected == True:
+        if collected:
             coll.setdefault(str(episode), [])
-        elif str(episode) in coll:
-            del coll[str(episode)]
+        else:
+            if str(episode) in coll:
+                del coll[str(episode)]
+            if 'subtitles' in obj:
+                del obj['subtitles']
     if watched is not None:
         seen = obj['watched'].setdefault(str(season), [])
-        if watched == True:
+        if watched:
             seen.append(episode)
         elif episode in seen:
             seen.remove(episode)

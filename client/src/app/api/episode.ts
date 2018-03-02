@@ -30,24 +30,11 @@ export class Episode extends Title {
         return this.data.title || 'N/A';
     }
 
-    get firstAired() {
+    get date() {
         return this.data.firstAired ? moment(this.data.firstAired) : null;
     }
 
-    get airsToday() {
-        return this.firstAired && this.firstAired.isSame(moment(), 'day');
-    }
-
-    get upcoming() {
-        return !this.firstAired || this.firstAired.isSameOrAfter(moment(), 'day');
-    }
-
     get missing() {
-        return !(this.watched || this.collected) && this.firstAired && this.firstAired.isBefore(moment(), 'day');
-    }
-
-    airedText(rough) {
-        return !this.firstAired ? null : rough ? moment(this.data.firstAired).fromNow() :
-            moment(this.data.firstAired).format('DD/MM/YYYY');
+        return !(this.watched || this.collected) && this.date && this.date.isBefore(moment(), 'day');
     }
 }

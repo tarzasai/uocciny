@@ -116,8 +116,8 @@ export class SeriesCardComponent implements OnInit {
             return 'fa-hdd-o';
         if (this.episode.missing)
             return 'fa-eye-slash';
-        if (!this.episode.firstAired || this.episode.upcoming)
-            return this.episode.airsToday ? 'fa-clock' : 'fa-calendar';
+        if (!this.episode.date || this.episode.isToday || this.episode.isAfter)
+            return this.episode.isToday ? 'fa-clock' : 'fa-calendar';
         return 'fa-rss';
     }
 }

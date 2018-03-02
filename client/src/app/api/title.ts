@@ -9,6 +9,7 @@ export enum TitleType {
 export class Title {
     type: TitleType;
     data: any;
+    date: moment.Moment;
 
     constructor(data: any) {
         this.load(data);
@@ -31,6 +32,10 @@ export class Title {
 
     sortKey():string {
         return this.type === TitleType.series ? '000000' : this.type === TitleType.movie ? '111111' : '222222';
+    }
+
+    dateAsText(rough=null) {
+        return !this.date ? null : rough ? this.date.fromNow() : this.date.format('DD/MM/YYYY');
     }
 
     get isMovie() {
@@ -83,5 +88,17 @@ export class Title {
 
     get subtitles() {
         return this.data.subtitles ? this.data.subtitles.join(', ') : null;
+    }
+
+    get isBefore() {
+        return this.date && this.date.isBefore(moment(), 'day')
+    }
+
+    get isToday() {
+        return this.date && this.date.isSame(moment(), 'day')
+    }
+
+    get isAfter() {
+        return this.date && this.date.isAfter(moment(), 'day')
     }
 }

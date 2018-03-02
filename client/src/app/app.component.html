@@ -1,9 +1,8 @@
 <div id="LinkBar">
     <div class="btn-group" *ngFor="let view of ViewTypes | values">
-        <button type="button" class="btn" [ngClass]="{
-            'btn-primary': view != activeView,
-            'btn-danger': view === activeView
-        }" (click)="getData(view);">
+        <button type="button" class="btn" (click)="getData(view);"
+            [class.btn-danger]="view === activeView"
+            [class.btn-primary]="view != activeView">
             <div><i class="fa {{view.icon}}"></i></div>
             <span>{{view.label}}</span>
         </button>
@@ -17,16 +16,16 @@
 </div>
 <div id="MsgBox">
     <div>
-        <div class="alert alert-dismissable" *ngFor="let msg of messages.list; let i = index" [ngClass]="{
-            'alert-info': msg.type === MessageType.info,
-            'alert-warning': msg.type === MessageType.warning,
-            'alert-danger': msg.type === MessageType.error
-        }">
-            <i class="fa fa-lg" [ngClass]="{
-                'fa-info-circle': msg.type === MessageType.info,
-                'fa-exclamation-triangle': msg.type === MessageType.warning,
-                'fa-exclamation-circle': msg.type === MessageType.error
-            }"></i>
+        <div class="alert alert-dismissable"
+            *ngFor="let msg of messages.list; let i = index"
+            [class.alert-info]="msg.type === MessageType.info"
+            [class.alert-danger]="msg.type === MessageType.error"
+            [class.alert-warning]="msg.type === MessageType.warning">
+            <i class="fa fa-lg"
+                [class.fa-info-circle]="msg.type === MessageType.info"
+                [class.fa-exclamation-circle]="msg.type === MessageType.error"
+                [class.fa-exclamation-triangle]="msg.type === MessageType.warning">
+            </i>
             <a class="close" (click)="messages.del(i)">&times;</a>
             <strong *ngIf="msg.title">{{msg.title}}:</strong>
             <span>{{msg.text}}</span>

@@ -10,7 +10,8 @@ export class Movie extends Title {
     }
 
     sortKey():string {
-        return super.sortKey() + (this.data.released || 'zzzz').substr(0, 4) +
+        return super.sortKey() + (!this.date ? 'zzzzzzzz' : this.date.isBefore(moment(), 'day') ?
+            (this.date.year() + '0000') : this.date.format('YYYYMMDD')) +
             (this.data.name || 'zzzzzzzzzz').toLocaleLowerCase();
     }
 
@@ -23,8 +24,8 @@ export class Movie extends Title {
         return this.data.director;
     }
 
-    get year() {
-        return this.data.released ? moment(this.data.released).year() : 'N/A';
+    get date() {
+        return this.data.released ? moment(this.data.released) : null;
     }
 
     get runtime() {
@@ -35,8 +36,8 @@ export class Movie extends Title {
         if (d.hours() > 0)
             l.push(sprintf('%dh', d.hours()));
         if (d.minutes() > 0)
-            l.push(sprintf('%dm', d.minutes()));
-        return l.join(' e ');
+            l.push(sprintf("%d'", d.minutes()));
+        return l.join(' ');
     }
 
     get available() {

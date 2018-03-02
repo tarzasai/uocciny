@@ -48,6 +48,10 @@ export class Series extends Title {
         return this.data.tvdb_id;
     }
 
+    get date() {
+        return this.data.firstAired ? moment(this.data.firstAired) : null;
+    }
+
     get genres() {
         return this.data.genres ? this.data.genres.toLocaleLowerCase() : null;
     }
@@ -61,8 +65,17 @@ export class Series extends Title {
         return this.data.status.sameAs('ended');
     }
 
-    get network() {
-        return this.ended ? 'Ended' : this.data.network;
+    get airing() {
+        if (this.ended)
+            return 'Ended';
+        if (!this.data.network)
+            return null;
+        var res = [];
+        if (this.data.airsDay)
+            res.push(moment().day(this.data.airsDay).format('ddd'));
+        if (this.data.runtime > 0)
+            res.push(this.data.runtime + "'");
+        return [this.data.network, res.join(' ')].join(', ');
     }
 
     get episodes() {
