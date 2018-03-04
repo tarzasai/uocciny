@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
-import { Series, EpisodePreview } from '../api/series';
 import { DataService, UpdateType } from '../api/data.service';
+import { Series, EpisodePreview } from '../api/series';
 import { Episode } from '../api/episode';
+import { ModalService } from '../utils/modal.service';
 
 @Component({
     selector: 'app-series-card',
@@ -18,7 +18,7 @@ export class SeriesCardComponent implements OnInit {
 
     EpisodePreview = EpisodePreview;
 
-    constructor(private config: ConfigService, private messages: MessageService, private api: DataService) { }
+    constructor(private messages: MessageService, private api: DataService, public modals: ModalService) { }
 
     ngOnInit() {
         this.setEpisode();
@@ -36,72 +36,74 @@ export class SeriesCardComponent implements OnInit {
     }
 
     trashSeries() {
-        this.config.lockScreen();
+        this.api.lockScreen();
         this.api.update(UpdateType.series, {
             tvdb_id: this.series.tvdb_id,
             rating: -1
         }).subscribe(result => {
-            this.config.unlockScreen();
+            this.series.load(result[0]);
+            this.setEpisode();
+            this.api.onUpdate.next(this.series);
+            this.api.unlockScreen();
         });
     }
 
     setRating(value) {
-        this.config.lockScreen();
+        this.api.lockScreen();
         this.api.update(UpdateType.series, {
             tvdb_id: this.series.tvdb_id,
             rating: value
         }).subscribe(result => {
-            if (result.length > 0) {
-                this.series.load(result[0]);
-                this.setEpisode();
-            }
-            this.config.unlockScreen();
+            this.series.load(result[0]);
+            this.setEpisode();
+            this.api.onUpdate.next(this.series);
+            this.api.unlockScreen();
         });
     }
 
     toggleWatchlist() {
-        this.config.lockScreen();
+        this.api.lockScreen();
         this.api.update(UpdateType.series, {
             tvdb_id: this.series.tvdb_id,
             watchlist: (!this.series.watchlist ? 1 : 0)
         }).subscribe(result => {
-            if (result.length > 0) {
-                this.series.load(result[0]);
-                this.setEpisode();
-            }
-            this.config.unlockScreen();
+            this.series.load(result[0]);
+            this.setEpisode();
+            this.api.onUpdate.next(this.series);
+            this.api.unlockScreen();
         });
     }
 
     toggleCollected() {
-        this.config.lockScreen();
+        this.api.lockScreen();
         this.api.update(UpdateType.episode, {
             tvdb_id: this.series.tvdb_id,
             season: this.episode.season,
             episode: this.episode.episode,
             collected: (!this.episode.collected ? 1 : 0)
         }).subscribe(result => {
-            if (result.length > 0) {
-                this.series.load(result[0]);
-                this.setEpisode();
-            }
-            this.config.unlockScreen();
+            this.series.load(result[0]);
+            this.setEpisode();
+            this.api.onUpdate.next(this.series);
+            this.api.unlockScreen();
         });
     }
 
     toggleWatched() {
-        this.config.lockScreen();
+        var seen = !this.episode.watched ? 1 : 0,
+            coll = seen ? 0 : null
+        this.api.lockScreen();
         this.api.update(UpdateType.episode, {
             tvdb_id: this.series.tvdb_id,
             season: this.episode.season,
             episode: this.episode.episode,
-            watched: (!this.episode.watched ? 1 : 0)
+            collected: coll,
+            watched: seen
         }).subscribe(result => {
-            if (result.length > 0) {
-                this.series.load(result[0]);
-                this.setEpisode();
-            }
-            this.config.unlockScreen();
+            this.series.load(result[0]);
+            this.setEpisode();
+            this.api.onUpdate.next(this.series);
+            this.api.unlockScreen();
         });
     }
 

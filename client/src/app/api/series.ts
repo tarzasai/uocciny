@@ -61,8 +61,17 @@ export class Series extends Title {
         // 680 x 1000
     }
 
+    get banner() {
+        return this.data.banner ? 'https://www.thetvdb.com/banners/' + this.data.banner : null;
+        // 680 x 1000
+    }
+
     get ended() {
         return this.data.status.sameAs('ended');
+    }
+
+    get seasons() {
+        return this.data.seasons || [];
     }
 
     get airing() {
@@ -70,12 +79,13 @@ export class Series extends Title {
             return 'Ended';
         if (!this.data.network)
             return null;
-        var res = [];
+        var res:any = [];
         if (this.data.airsDay)
             res.push(moment().day(this.data.airsDay).format('ddd'));
         if (this.data.runtime > 0)
             res.push(this.data.runtime + "'");
-        return [this.data.network, res.join(' ')].join(', ');
+        res = res.join(' ').trim() || null;
+        return this.data.network + (res ? ', ' + res : '');
     }
 
     get episodes() {

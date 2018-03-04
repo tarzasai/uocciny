@@ -18,6 +18,10 @@ export class Episode extends Title {
         return sprintf('%dx%d', this.data.season, this.data.episode);
     }
 
+    get series() {
+        return this.data.series;
+    }
+
     get season() {
         return this.data.season;
     }
@@ -36,5 +40,9 @@ export class Episode extends Title {
 
     get missing() {
         return !(this.watched || this.collected) && this.date && this.date.isBefore(moment(), 'day');
+    }
+
+    get thumbnail() {
+        return this.data.thumbnail ? 'https://www.thetvdb.com/banners/' + this.data.thumbnail : null;
     }
 }

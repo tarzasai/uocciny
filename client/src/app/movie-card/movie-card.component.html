@@ -15,7 +15,8 @@
             <div class="icon">
                 <i class="fa" *ngIf="movie.watched || movie.collected || movie.missing"
                     [class.fa-eye]="movie.watched"
-                    [class.fa-hdd-o]="movie.collected"
+                    [class.fa-cc]="movie.collected && movie.subtitles"
+                    [class.fa-hdd-o]="movie.collected && !movie.subtitles"
                     [class.fa-eye-slash]="movie.missing">
                 </i>
             </div>
@@ -24,26 +25,25 @@
             </div>
         </div>
 
-        <div class="section plot">
+        <div class="section rows">
             <div class="icon"><i class="fa fa-quote-left"></i></div>
-            <div class="text">{{movie.plot}}</div>
+            <div class="text plot">{{movie.plot}}</div>
         </div>
 
-        <div class="section footl subs" *ngIf="movie.collected && movie.subtitles">
-            <div class="icon"><i class="fa fa-cc"></i></div>
-            <div class="text">{{movie.subtitles}}</div>
+        <div class="section footer">
+            <div class="icon">
+                <i class="fa fa-clock-o" *ngIf="movie.date"></i>
+            </div>
+            <div class="text">
+                <span *ngIf="movie.date">{{movie.dateAsText(true)}}</span>
+                <div class="spacer"></div>
+                <span *ngIf="movie.data.runtime">{{movie.runtime}}</span>
+            </div>
         </div>
-
-        <div class="section footl" *ngIf="!movie.collected && movie.isAfter">
-            <div class="icon"><i class="fa fa-clock-o"></i></div>
-            <div class="text">{{movie.dateAsText(true)}}</div>
-        </div>
-
-        <div class="footr" *ngIf="movie.data.runtime"><div>{{movie.runtime}}</div></div>
 
         <div class="tools">
             <div class="btn-group" role="group">
-                <div class="btn-group" *ngIf="movie.watchlist">
+                <div class="btn-group" *ngIf="!(movie.watchlist || movie.collected || movie.watched)">
                     <button type="button" class="btn btn-sm btn-danger" (click)="trashMovie()">
                         <i class="fa fa-lg fa-ban"></i>
                     </button>
@@ -66,11 +66,6 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-success" (click)="openLink(movie.imdbUrl)">
                         <i class="fa fa-lg fa-imdb"></i>
-                    </button>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
-                        <i class="fa fa-lg fa-info-circle"></i>
                     </button>
                 </div>
             </div>

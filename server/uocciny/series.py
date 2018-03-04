@@ -180,18 +180,14 @@ def get_metadata(series):
         rec.tvdb_id = sid
     if rec.is_old():
         update_from_tvdb(rec)
-    '''
-    if rec.airsDay is None or rec.runtime is None:
-        tvdb, show = read_from_tvdb(sid)
-        if 'airsDayOfWeek' in show and show['airsDayOfWeek']:
-            rec.airsDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].index(show['airsDayOfWeek'].lower())
-        if 'runtime' in show and show['runtime']:
-            rec.runtime = int(show['runtime'])
-        get_db().commit()
-    '''
     series.update(row2dict(rec))
     series['new'] = rec.is_new()
     series['rating'] = series.get('rating', 0)
+    # season list
+    series['seasons'] = []
+    for rec in get_db().query(Episode).filter(Episode.series == sid)\
+        .distinct(Episode.season).group_by(Episode.season).all():
+        series['seasons'].append(rec.season)
     # episodes
     series['episodes'] = {
         'summary': {
@@ -208,6 +204,7 @@ def get_metadata(series):
         ep = row2dict(rec)
         ep['collected'] = rec.collected()
         ep['watched'] = rec.watched()
+        ep['subtitles'] = rec.subtitles()
         if rec.aired() or rec.collected():
             series['episodes']['summary']['aired'] += 1
             series['episodes']['lastAired'] = ep
@@ -218,7 +215,6 @@ def get_metadata(series):
             elif rec.collected() and not rec.watched():
                 series['episodes']['summary']['available'] += 1
                 if series['episodes']['available'] is None:
-                    ep['subtitles'] = rec.subtitles()
                     series['episodes']['available'] = ep
         elif series['episodes']['upcoming'] is None:
             series['episodes']['upcoming'] = ep
@@ -275,34 +271,34 @@ def get_episode_list(series, season=None, episode=None, collected=None, watched=
 
 def set_series(tvdb_id, watchlist=None, rating=None):
     app.logger.debug('set_series: watchlist=%s, rating=%s' % (watchlist, rating))
-    uf = get_uf()
-    obj = read_from_uoccin(tvdb_id)
-    exists = obj is not None
-    # ban&trash
-    if rating is not None and rating < 0:
-        uf.setdefault('banned', []).append(tvdb_id)
-        if exists:
-            del uf['series'][str(tvdb_id)]
-            save_uf(uf)
-        return []
-    if not exists:
-        if tvdb_id in uf.get('banned', []):
-            return []
-        obj = {
+    serobj = read_from_uoccin(tvdb_id)
+    if serobj is None:
+        serobj = {
             'watchlist': False,
             'collected': {},
-            'watched': {}
+            'watched': {},
+            'rating': 0
         }
-    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
-    obj['name'] = rec['name']
+    serrec = get_metadata(dict({'tvdb_id': tvdb_id}, **serobj))
+    serobj['name'] = serrec['name']
+
     if watchlist is not None:
-        obj['watchlist'] = watchlist
-    if rating > 0:
-        obj['rating'] = rating if rating <= 5 else 5
-    uf.setdefault('series', {})[str(tvdb_id)] = obj
+        serrec['watchlist'] = serobj['watchlist'] = watchlist
+    if rating is not None:
+        serrec['rating'] = serobj['rating'] = rating if rating <= 5 else 5
+    
+    uf = get_uf()
+    uf.setdefault('series', {})[str(tvdb_id)] = serobj
+
+    if serrec['rating'] < 0:
+        uf.setdefault('banned', []).append(tvdb_id)
+        del uf['series'][str(tvdb_id)]
+        serrec['banned'] = True
+    elif tvdb_id in uf.get('banned', []):
+        uf['banned'].remove(tvdb_id)
+
     save_uf(uf)
-    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
-    return [rec]
+    return [serrec]
 
 
 def set_season(tvdb_id, season, collected=None, watched=None):
@@ -314,39 +310,38 @@ def set_season(tvdb_id, season, collected=None, watched=None):
 def set_episode(tvdb_id, season, episode, collected=None, watched=None):
     app.logger.debug('set_episode: tvdb_id=%s, season=%s, episode=%s, collected=%s, watched=%s' %
         (tvdb_id, season, episode, collected, watched))
-    uf = get_uf()
-    obj = read_from_uoccin(tvdb_id)
-    exists = obj is not None
-    if not exists:
-        if tvdb_id in uf.get('banned', []):
-            return []
-        obj = {
+    serobj = read_from_uoccin(tvdb_id)
+    if serobj is None:
+        serobj = {
             'watchlist': False,
             'collected': {},
-            'watched': {}
+            'watched': {},
+            'rating': 0
         }
-    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
-    obj['name'] = rec['name']
-    chk = get_db().query(Episode).filter(Episode.series == tvdb_id, Episode.season == season,
-        Episode.episode == episode).first()
-    if chk is None:
-        raise Exception('Episode %dx%d does not exists.' % (season, episode))
-    if collected is not None:
-        coll = obj['collected'].setdefault(str(season), {})
-        if collected:
-            coll.setdefault(str(episode), [])
-        else:
-            if str(episode) in coll:
+    serrec = get_metadata(dict({'tvdb_id': tvdb_id}, **serobj))
+    serobj['name'] = serrec['name']
+
+    if get_db().query(Episode).filter(Episode.series == tvdb_id, Episode.season == season,
+        Episode.episode == episode).first() is not None:
+        if collected is not None:
+            coll = serobj['collected'].setdefault(str(season), {})
+            if collected:
+                coll.setdefault(str(episode), [])
+            elif str(episode) in coll:
                 del coll[str(episode)]
-            if 'subtitles' in obj:
-                del obj['subtitles']
-    if watched is not None:
-        seen = obj['watched'].setdefault(str(season), [])
-        if watched:
-            seen.append(episode)
-        elif episode in seen:
-            seen.remove(episode)
-    uf.setdefault('series', {})[str(tvdb_id)] = obj
+                if not serobj['collected'][str(season)]:
+                    del serobj['collected'][str(season)]
+        if watched is not None:
+            seen = serobj['watched'].setdefault(str(season), [])
+            if watched:
+                seen.append(episode)
+            elif episode in seen:
+                seen.remove(episode)
+                if not serobj['watched'][str(season)]:
+                    del serobj['watched'][str(season)]
+        serrec = get_metadata(dict({'tvdb_id': tvdb_id}, **serobj))
+    
+    uf = get_uf()
+    uf.setdefault('series', {})[str(tvdb_id)] = serobj
     save_uf(uf)
-    rec = get_metadata(dict({'tvdb_id': tvdb_id}, **obj))
-    return [rec]
+    return [serrec]

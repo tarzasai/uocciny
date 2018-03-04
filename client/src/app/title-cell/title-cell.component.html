@@ -1,2 +1,3 @@
-<app-movie-card *ngIf="title && title.type == TitleType.movie" [movie]="title"></app-movie-card>
-<app-series-card *ngIf="title && title.type == TitleType.series" [series]="title"></app-series-card>
+<app-movie-card *ngIf="title && title.isMovie" [movie]="title"></app-movie-card>
+<app-series-card *ngIf="title && title.isSeries" [series]="title"></app-series-card>
+<app-episode-card *ngIf="title && title.isEpisode" [episode]="title"></app-episode-card>

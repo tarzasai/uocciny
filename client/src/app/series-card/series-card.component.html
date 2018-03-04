@@ -11,29 +11,29 @@
             <div class="text">{{series.title}}</div>
         </div>
 
-        <div class="section plot" *ngIf="series.error">
-            <div class="icon" style="color:darkred;"><i class="fa fa-exclamation-triangle"></i></div>
+        <div class="section rows" *ngIf="series.error" style="color:darkred;">
+            <div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
             <div class="text">{{series.error}}</div>
         </div>
 
-        <div class="section plot" *ngIf="!series.error && !episode">
+        <div class="section rows" *ngIf="!series.error && !episode">
             <div class="icon"><i class="fa fa-quote-left"></i></div>
-            <div class="text">{{series.plot}}</div>
+            <div class="text plot">{{series.plot}}</div>
         </div>
 
         <ng-container *ngIf="!series.error && episode">
+
             <div class="section info">
                 <div class="icon">
                     <i class="fa" *ngIf="episode.watched || episode.collected || episode.missing"
                         [class.fa-eye]="episode.watched"
-                        [class.fa-hdd-o]="episode.collected"
+                        [class.fa-cc]="episode.collected && episode.subtitles"
+                        [class.fa-hdd-o]="episode.collected && !episode.subtitles"
                         [class.fa-eye-slash]="episode.missing">
                     </i>
                 </div>
                 <div class="text">
-                    <span style="font-weight: bold;">{{episode.season}}</span>
-                    <span>&#8226;</span>
-                    <span style="font-weight: bold;">{{episode.episode}}</span>
+                    <span style="font-weight: bold;">{{episode.season}}&#8226;{{episode.episode}}</span>
                     <span *ngIf="episode === series.available && series.episodes.available > 1">
                         {{'(+' + (series.episodes.available - 1) + ')'}}
                     </span>
@@ -43,22 +43,24 @@
                     <span>{{': ' + episode.title}}</span>
                 </div>
             </div>
-            <div class="section plot">
-                <div class="icon"><i class="fa fa-quote-left"></i></div>
-                <div class="text">{{episode.plot || series.plot}}</div>
-            </div>
-            <div class="section footl subs" *ngIf="episode.subtitles">
-                <div class="icon"><i class="fa fa-cc"></i></div>
-                <div class="text">{{episode.subtitles}}</div>
-            </div>
-            <div class="section footl" *ngIf="!episode.subtitles"
-                [style.color]="episode.isToday ? 'darkred' : !episode.date ? 'lightgray' : null">
-                <div class="icon"><i class="fa fa-clock-o"></i></div>
-                <div class="text">{{episode.dateAsText(true) || 'unknown'}}</div>
-            </div>
-        </ng-container>
 
-        <div class="footr" [class.ended]="series.ended"><div>{{series.airing}}</div></div>
+            <div class="section rows">
+                <div class="icon"><i class="fa fa-quote-left"></i></div>
+                <div class="text plot">{{episode.plot || series.plot}}</div>
+            </div>
+
+            <div class="section footer">
+                <div class="icon">
+                    <i class="fa fa-clock-o" *ngIf="episode.date"></i>
+                </div>
+                <div class="text">
+                    <span *ngIf="episode.date">{{episode.dateAsText(true)}}</span>
+                    <div class="spacer"></div>
+                    <span [class.ended]="series.ended">{{series.airing}}</span>
+                </div>
+            </div>
+
+        </ng-container>
 
         <div class="tools">
             <div class="btn-group" role="group">
@@ -79,17 +81,17 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-primary" (click)="toggleWatchlist()">
-                        <i class="fa fa-lg fa-heart" [class.false]="!episode.watchlist"></i>
+                        <i class="fa fa-lg fa-heart" [class.false]="!series.watchlist"></i>
+                    </button>
+                </div>
+                <div class="btn-group" title="Series" *ngIf="series.seasons.length > 0">
+                    <button type="button" class="btn btn-sm btn-success" (click)="modals.openSeries(series)">
+                        <i class="fa fa-lg fa-info-circle"></i>
                     </button>
                 </div>
                 <div class="btn-group" *ngIf="series.imdbUrl">
                     <button type="button" class="btn btn-sm btn-success" (click)="openLink(series.imdbUrl)">
                         <i class="fa fa-lg fa-imdb"></i>
-                    </button>
-                </div>
-                <div class="btn-group" title="Series">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openInfo()">
-                        <i class="fa fa-lg fa-info-circle"></i>
                     </button>
                 </div>
             </div>
@@ -100,19 +102,6 @@
                     </button>
                 </div>
             </div>
-            <!--<div class="btn-group" role="group" *ngIf="episode">
-                <div class="btn-group" *ngIf="episode.imdbUrl">
-                    <button type="button" class="btn btn-sm btn-success"
-                        (click)="openLink(episode.imdbUrl)">
-                        <i class="fa fa-lg fa-imdb"></i>
-                    </button>
-                </div>
-                <div class="btn-group" title="Episode">
-                    <button type="button" class="btn btn-sm btn-success" (click)="openIni()">
-                        <i class="fa fa-lg fa-info-circle"></i>
-                    </button>
-                </div>
-            </div>-->
         </div>
 
     </div>

@@ -1,0 +1,32 @@
+.modal-body {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    background-color: white;
+    padding: 0;
+    height: 100%;
+    width: 758px;
+}
+
+.tab-container {
+    margin: 5px;
+}
+
+.nav-item {
+    font-weight: bold;
+}
+
+#GridBox {
+    display: flex;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    /*
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;*/
+    /*top: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;*/
+}

@@ -2,14 +2,3 @@
     /* 780 : 1170 = 133 : 156 */
     width: 104px;
 }
-
-.card.movie .footr > * {
-    display: flex;
-    position: relative;
-    margin: 0;
-    padding: 0;
-}
-
-.card.movie .footr .fa {
-    margin: auto 0 auto 5px;
-}

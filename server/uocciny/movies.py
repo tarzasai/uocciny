@@ -34,7 +34,7 @@ class Movie(Base):
         except Exception as err:
             name = str(err)
         return '<Movie %s - %s>' % (self.imdb_id, name)
-    
+
     def is_old(self):
         if self.updated is None:
             return True
@@ -47,25 +47,25 @@ class Movie(Base):
             return age > 180
         return age > 45
 
-    
+
 def read_from_uoccin(imdb_id):
     return get_uf().get('movies', {}).get(imdb_id, None)
 
 
-def read_from_imdb(imdb_id):
+def read_from_tmdb(imdb_id):
     try:
         return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits')
     except Exception as err:
-        app.logger.debug('read_from_imdb: ' + str(err))
+        app.logger.debug('read_from_tmdb: ' + str(err))
         return None
 
-    
+
 def update_from_tmdb(movie):
     app.logger.info('updating %r...' % movie)
     exists = movie.updated is not None
     db = get_db()
     try:
-        obj = read_from_imdb(movie.imdb_id)
+        obj = read_from_tmdb(movie.imdb_id)
         if obj is None:
             raise Exception('IMDB error or movie not found')
         movie.tmdb_id = obj['id']
@@ -120,7 +120,7 @@ def get_movie_list(watchlist=None, collected=None, missing=None, watched=None):
     for mid, itm in get_uf().get('movies', {}).iteritems():
         if ((watchlist is None or itm['watchlist'] == watchlist) and
             (collected is None or itm['collected'] == collected) and
-            (watched is None or itm['watched'] == watched)):
+                (watched is None or itm['watched'] == watched)):
             obj = get_metadata(dict({'imdb_id': mid}, **itm))
             if (missing is None or obj['missing'] == missing):
                 res.append(obj)
@@ -130,47 +130,48 @@ def get_movie_list(watchlist=None, collected=None, missing=None, watched=None):
 def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None):
     app.logger.debug('set_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s' %
         (imdb_id, watchlist, collected, watched, rating))
-    uf = get_uf()
-    obj = read_from_uoccin(imdb_id)
-    exists = obj is not None
-    # ban&trash
-    if rating is not None and rating < 0:
-        uf.setdefault('banned', []).append(imdb_id)
-        if exists:
-            del uf['movies'][imdb_id]
-            save_uf(uf)
-        return []
-    if not exists:
-        if imdb_id in uf.get('banned', []):
-            return []
-        obj = {
+    movobj = read_from_uoccin(imdb_id)
+    if movobj is None:
+        movobj = {
             'watchlist': False,
             'collected': False,
             'watched': False,
-            'rating': None
+            'rating': 0
         }
-    rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
-    obj['name'] = rec['name']
-    if rating > 0:
-        obj['rating'] = rating if rating <= 5 else 5
+    movrec = get_metadata(dict({'imdb_id': imdb_id}, **movobj))
+    movobj['name'] = movrec['name']
+
     if watchlist is not None:
-        obj['watchlist'] = watchlist
-        if watchlist:
-            obj['watched'] = False
-            del obj['rating']
+        movrec['watchlist'] = movobj['watchlist'] = watchlist
     if collected is not None:
-        obj['collected'] = collected
-        if collected:
-            obj['watchlist'] = False
-        elif 'subtitles' in obj:
-            del obj['subtitles']
+        movrec['collected'] = movobj['collected'] = collected
     if watched is not None:
-        obj['watched'] = watched
-        if watched:
-            obj['watchlist'] = False
-        elif 'rating' in obj:
-            del obj['rating']
-    uf.setdefault('movies', {})[imdb_id] = obj
+        movrec['watched'] = movobj['watched'] = watched
+    if rating > 0:
+        movrec['rating'] = movobj['rating'] = rating if rating <= 5 else 5
+
+    uf = get_uf()
+    uf.setdefault('movies', {})[imdb_id] = movobj
+
+    if movrec['rating'] < 0:
+        uf.setdefault('banned', []).append(imdb_id)
+        del uf['movies'][imdb_id]
+    elif not (movrec['watchlist'] or movrec['collected'] or movrec['watched']):
+        del uf['movies'][imdb_id]
+    else:
+        if imdb_id in uf.get('banned', []):
+            uf['banned'].remove(imdb_id)
+        if movrec['watchlist']:
+            movrec['watched'] = movobj['watched'] = False
+            movrec['rating'] = movobj['rating'] = 0
+        if movrec['collected']:
+            movrec['watchlist'] = movobj['watchlist'] = False
+        else:
+            movrec['subtitles'] = movobj['subtitles'] = []
+        if movrec['watched']:
+            movrec['watchlist'] = movobj['watchlist'] = False
+        else:
+            movrec['rating'] = movobj['rating'] = 0
+
     save_uf(uf)
-    rec = get_metadata(dict({'imdb_id': imdb_id}, **obj))
-    return [rec]
+    return [movrec]

@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ElementRef, HostListener } from '@angular/core';
 import { GridOptions } from 'ag-grid/main';
+import { Subscription } from 'rxjs/Subscription';
 
-import { ConfigService } from './utils/config.service';
+import { ModalService } from './utils/modal.service';
 import { MessageService, MessageType } from './utils/message.service';
 import { TitleParentComponent } from './title-parent/title-parent.component';
 import { TitleCellComponent } from './title-cell/title-cell.component';
@@ -9,7 +10,6 @@ import { Title, TitleType } from './api/title';
 import { Movie } from './api/movie';
 import { Series, EpisodePreview } from './api/series';
 import { DataService, RetrieveType, UpdateType } from './api/data.service';
-import { Subscription } from 'rxjs/Subscription';
 
 const CELL_HEIGHT = 186;
 const CELL_WIDTH = 480;
@@ -83,7 +83,7 @@ export class AppComponent {
     // https://valor-software.com/ngx-bootstrap/#/modals
 
 
-    constructor(private elref: ElementRef, private config: ConfigService, public messages: MessageService,
+    constructor(private elref: ElementRef, private modals: ModalService, public messages: MessageService,
         private api: DataService) {
         //
         this.titleGrid = <GridOptions>{
@@ -98,33 +98,16 @@ export class AppComponent {
     }
 
     ngOnInit() {
-        this.updateListener = this.api.onUpdate.subscribe(args => {
-            //console.log('DashboardComponent.onUpdate', args);
-            if (args.output.length <= 0) {
-                var title = this.titleList.find(function (itm) {
-                    return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === args.input.imdb_id) ||
-                        (args.type === UpdateType.series && itm.type === TitleType.series && itm.data.tvdb_id === args.input.tvdb_id) ||
-                        (itm.type === TitleType.series && itm.data.tvdb_id === args.input.series);
-                });
-                if (!title)
-                    this.getData();
-                else
-                    this.removeTitle(title);
-            } else if (args.output.length === 1) {
-                var res = args.output[0];
-                var title = this.titleList.find(function (itm) {
-                    return (args.type === UpdateType.movie && itm.type === TitleType.movie && itm.data.imdb_id === res.imdb_id) ||
-                        (args.type != UpdateType.movie && itm.type === TitleType.series && itm.data.tvdb_id === res.tvdb_id);
-                });
-                if (!title)
-                    this.getData();
-                else if ((this.activeView === VIEW_TYPES.watchlist && !title.watchlist) ||
-                    (this.activeView === VIEW_TYPES.missing && !title.missing) ||
-                    (this.activeView === VIEW_TYPES.available && !title.available))
-                    this.removeTitle(title);
-            } else {
-                this.getData();
-            }
+        this.updateListener = this.api.onUpdate.subscribe(title => {
+            //console.log('onUpdate', title);
+            if (
+                title.data.banned ||
+                (this.activeView === VIEW_TYPES.watchlist && !title.watchlist) ||
+                (this.activeView === VIEW_TYPES.missing && !title.missing) ||
+                (this.activeView === VIEW_TYPES.available && !title.available) ||
+                (title.isMovie && !(title.watched || title.collected || title.watchlist))
+            )
+                this.removeTitle(title);
         });
     }
 
@@ -149,7 +132,7 @@ export class AppComponent {
             this.activeView = view;
             localStorage.setItem('LastView', view.tag);
         }
-        this.config.lockScreen();
+        this.api.lockScreen();
         var res = [];
         this.api.retrieve(RetrieveType.series, view.series).subscribe(result => {
             result.forEach(function (itm) {
@@ -160,7 +143,7 @@ export class AppComponent {
                     res.push(new Movie(itm));
                 });
                 this.setRows(res);
-                this.config.unlockScreen();
+                this.api.unlockScreen();
             })
         });
     }
@@ -229,14 +212,14 @@ export class AppComponent {
     }
 
     importIMDB() {
-        this.config.lockScreen();
+        this.api.lockScreen();
         this.api.import(null).subscribe(result => {
             var res = [];
             result.forEach(function (itm) {
                 res.push(new Movie(itm));
             });
             this.setRows(this.titleList.concat(res));
-            this.config.unlockScreen();
+            this.api.unlockScreen();
         });
     }
 }

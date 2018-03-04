@@ -1,0 +1,16 @@
+<div class="modal-body">
+
+    <img src="{{series.banner}}" width="100%" />
+
+    <tabset type="pills">
+        <tab heading="{{season}}" *ngFor="let season of series.seasons"
+            id="{{season}}" (select)="loadSeason(season)"></tab>
+    </tabset>
+
+    <div id="GridBox">
+        <ag-grid-angular id="GridObj" class="ag-theme-fresh"
+            [gridOptions]="epGrid" [columnDefs]="epCols" [rowData]="epRows">
+        </ag-grid-angular>
+    </div>
+
+</div>

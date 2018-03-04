@@ -9,6 +9,7 @@ import { Subject } from 'rxjs/Subject';
 
 import { ConfigService } from '../utils/config.service';
 import { MessageService } from '../utils/message.service';
+import { Title } from './title';
 
 export enum RetrieveType {
     movies = 'movies',
@@ -34,10 +35,11 @@ export class ServerResult {
 
 @Injectable()
 export class DataService {
-    onUpdate: Subject<any> = new Subject();
+    onUpdate: Subject<Title> = new Subject();
+    lockRequests = 0;
 
-    constructor(private config: ConfigService, private messages: MessageService,
-        private http: HttpClient) { }
+    constructor(private http: HttpClient, private config: ConfigService,
+        private messages: MessageService) { }
 
     retrieve(what: RetrieveType, args: any): Observable<any> {
         var url = this.config.apiHost + '/' + RetrieveType[what];
@@ -62,7 +64,6 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    this.onUpdate.next({type:what, input:args, output:res.result});
                     //this.messages.addInfo('updated data');
                     return res.result;
                 }),
@@ -83,6 +84,18 @@ export class DataService {
                 }),
                 catchError(this.handleError('update', []))
             );
+    }
+
+    lockScreen() {
+        this.lockRequests++;
+    }
+
+    unlockScreen() {
+        this.lockRequests--;
+    }
+
+    get locked(): boolean {
+        return this.lockRequests > 0;
     }
 
     private args2uri(dict) {

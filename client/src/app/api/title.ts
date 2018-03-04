@@ -10,6 +10,8 @@ export class Title {
     type: TitleType;
     data: any;
     date: moment.Moment;
+    missing: any;
+    available: any;
 
     constructor(data: any) {
         this.load(data);

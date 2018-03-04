@@ -29,16 +29,16 @@
         342301,
         337749,
         332027,
-        "tt4633694",
-        "tt0120669",
-        "tt0310775",
-        "tt0405094",
-        "tt2078552",
-        "tt1124037",
-        "tt2436682",
+        342206,
+        "tt6333056",
         "tt3799694",
         "tt2406566",
-        "tt6333056"
+        "tt1124037",
+        "tt2436682",
+        "tt2078552",
+        "tt0405094",
+        "tt0310775",
+        "tt0120669"
     ],
     "movies": {
         "tt0032553": {
@@ -104,7 +104,7 @@
             "watchlist": false
         },
         "tt0057831": {
-            "collected": false,
+            "collected": true,
             "name": "Zorba the Greek",
             "rating": 4,
             "subtitles": [
@@ -1825,6 +1825,13 @@
             "watched": true,
             "watchlist": false
         },
+        "tt0310793": {
+            "collected": false,
+            "name": "Bowling for Columbine",
+            "rating": 3,
+            "watched": true,
+            "watchlist": false
+        },
         "tt0315327": {
             "collected": false,
             "name": "Bruce Almighty",
@@ -2532,7 +2539,7 @@
             "watchlist": false
         },
         "tt0831387": {
-            "collected": true,
+            "collected": false,
             "name": "Godzilla",
             "rating": 3,
             "watched": true,
@@ -4173,12 +4180,6 @@
             "watched": true,
             "watchlist": false
         },
-        "tt3496992": {
-            "collected": false,
-            "name": null,
-            "watched": false,
-            "watchlist": false
-        },
         "tt3498820": {
             "collected": false,
             "name": "Captain America: Civil War",
@@ -4312,6 +4313,12 @@
             ],
             "watched": true,
             "watchlist": false
+        },
+        "tt4633694": {
+            "collected": false,
+            "name": "Spider-Man: Into the Spider-Verse",
+            "watched": false,
+            "watchlist": true
         },
         "tt4703048": {
             "collected": false,
@@ -4604,7 +4611,8 @@
                         "ita"
                     ],
                     "9": [
-                        "eng"
+                        "eng",
+                        "ita"
                     ]
                 }
             },
@@ -5546,7 +5554,9 @@
                     "13": [
                         "eng"
                     ],
-                    "14": [],
+                    "14": [
+                        "eng"
+                    ],
                     "2": [
                         "ita",
                         "eng"
@@ -7402,6 +7412,16 @@
             "watched": {},
             "watchlist": true
         },
+        "331821": {
+            "collected": {},
+            "name": "The Looming Tower",
+            "watched": {
+                "1": [
+                    1
+                ]
+            },
+            "watchlist": true
+        },
         "331980": {
             "collected": {},
             "name": "Marvel's The Punisher",
@@ -8111,6 +8131,10 @@
                         "ita"
                     ],
                     "15": [
+                        "eng",
+                        "ita"
+                    ],
+                    "16": [
                         "eng",
                         "ita"
                     ]
