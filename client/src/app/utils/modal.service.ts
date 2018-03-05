@@ -10,9 +10,9 @@ export class ModalService {
 
     constructor(private modalService: BsModalService) { }
 
-    openSeries(seriesRef) {
+    openSeries(seriesRef, seasonNo=null) {
         this.modalRef = this.modalService.show(SeriesFormComponent, {
-            initialState: { series: seriesRef },
+            initialState: { series: seriesRef, season: seasonNo },
             animated: true,
             keyboard: true
         });

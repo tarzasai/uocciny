@@ -12,6 +12,8 @@ import { Episode } from '../api/episode';
 export class EpisodeCardComponent implements OnInit {
     @Input() episode: Episode;
 
+    static cardHeight = 102 + 10;
+
     thumbHeight:number;
     thumbWidth:number;
 
@@ -20,12 +22,12 @@ export class EpisodeCardComponent implements OnInit {
     ngOnInit() {
         var th = this.episode.data.thumbHeight || 225,
             tw = this.episode.data.thumbWidth || 400;
-        this.thumbHeight = Math.floor(th / 2);
+        this.thumbHeight = 102;//Math.floor(th / 2);
         this.thumbWidth = Math.floor((this.thumbHeight * tw) / th);
     }
 
     toggleCollected() {
-        this.api.lockScreen();
+        /*this.api.lockScreen();
         this.api.update(UpdateType.episode, {
             tvdb_id: this.episode.series,
             season: this.episode.season,
@@ -35,11 +37,11 @@ export class EpisodeCardComponent implements OnInit {
             this.episode.load(result[0]);
             this.api.onUpdate.next(this.episode);
             this.api.unlockScreen();
-        });
+        });*/
     }
 
     toggleWatched() {
-        var seen = !this.episode.watched ? 1 : 0,
+        /*var seen = !this.episode.watched ? 1 : 0,
             coll = seen ? 0 : null
         this.api.lockScreen();
         this.api.update(UpdateType.episode, {
@@ -52,6 +54,6 @@ export class EpisodeCardComponent implements OnInit {
             this.episode.load(result[0]);
             this.api.onUpdate.next(this.episode);
             this.api.unlockScreen();
-        });
+        });*/
     }
 }

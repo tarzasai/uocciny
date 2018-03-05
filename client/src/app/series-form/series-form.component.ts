@@ -6,6 +6,7 @@ import { MessageService } from '../utils/message.service';
 import { DataService, RetrieveType } from '../api/data.service';
 import { Episode } from '../api/episode';
 import { TitleParentComponent } from '../title-parent/title-parent.component';
+import { EpisodeCardComponent } from '../episode-card/episode-card.component';
 
 @Component({
     selector: 'app-series-form',
@@ -14,7 +15,8 @@ import { TitleParentComponent } from '../title-parent/title-parent.component';
 })
 export class SeriesFormComponent implements OnInit {
     series: any;
-    season = null;
+    season: number;
+    episodes: Episode[];
 
     epGrid: GridOptions;
     epCols = [];
@@ -23,7 +25,7 @@ export class SeriesFormComponent implements OnInit {
     constructor(public modalRef: BsModalRef, public messages: MessageService, private api: DataService) {
         this.epGrid = <GridOptions>{
             headerHeight: 0,
-            rowHeight: 190,
+            rowHeight: EpisodeCardComponent.cardHeight,
             enableColResize: false,
             onGridReady: this.onGridReady,
         };
@@ -40,8 +42,7 @@ export class SeriesFormComponent implements OnInit {
     }
 
     ngOnInit() {
-        //
-        this.loadSeason(this.series.seasons[0]);
+        this.loadSeason(this.season || this.series.seasons[0]);
     }
 
     onGridReady(params) {
@@ -56,9 +57,11 @@ export class SeriesFormComponent implements OnInit {
             season: this.season,
         }).subscribe(result => {
             result.forEach(function (itm) {
-                res.push({ episode: new Episode(itm) });
+                //res.push({ episode: new Episode(itm) });
+                res.push(new Episode(itm));
             });
-            this.epRows = res;
+            //this.epRows = res;
+            this.episodes = res;
             this.api.unlockScreen();
         });
     }

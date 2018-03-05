@@ -1,6 +1,93 @@
-.card {
+.cell {
+    display: flex;
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    flex-direction: row;
+    border: 1px solid darkgrey;
+    box-shadow: 2px 2px 10px darkgray;
+    border-radius: 3px;
+    line-height: 116%;
     font-size: 90%;
+    padding: 0;
     margin: 5px;
-    height: 180px;
-    width: 730px;
+}
+
+.thumb {
+    display: flex;
+    position: relative;
+    flex-grow: 0;
+    flex-direction: column;
+    margin: -1px 0 0 -1px;
+}
+
+.ep-details {
+    display: flex;
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    flex-direction: column;
+    margin: 7px 0 7px 10px;
+    overflow: hidden;
+}
+
+.ep-details > div {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    vertical-align: top;
+}
+
+.ep-details > div .fa {
+    height: 18px;
+    width: 18px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.ep-details > div span {
+    margin-left: 5px;
+}
+
+.ep-title {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-bottom: 5px;
+}
+
+.ep-title span {
+    flex-grow: 0;
+    flex-shrink: 0;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.ep-title a span {
+    color: blue;
+}
+
+a .fa-imdb {
+    display: none;
+}
+
+a:hover .fa-imdb {
+    display: inline-block;
+}
+
+.ep-plot {
+    flex-grow: 0;
+    flex-shrink: 0;
+    white-space: normal;
+}
+
+.ep-title {
+    font-weight: bold;
+}
+
+.right {
+    display: flex;
+    position: relative;
+    margin: auto 7px;
 }

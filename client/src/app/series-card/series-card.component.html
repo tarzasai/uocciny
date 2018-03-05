@@ -85,7 +85,7 @@
                     </button>
                 </div>
                 <div class="btn-group" title="Series" *ngIf="series.seasons.length > 0">
-                    <button type="button" class="btn btn-sm btn-success" (click)="modals.openSeries(series)">
+                    <button type="button" class="btn btn-sm btn-success" (click)="modals.openSeries(series, episode ? episode.season : null)">
                         <i class="fa fa-lg fa-info-circle"></i>
                     </button>
                 </div>

@@ -265,7 +265,8 @@ def get_episode_list(series, season=None, episode=None, collected=None, watched=
     for rec in get_db().query(Episode).filter(Episode.series == series).order_by(Episode.season, Episode.episode).all():
         if (season is None or (rec.season == season and (episode is None or rec.episode == episode))) and\
             (collected is None or rec.collected() == collected) and (watched is None or rec.watched() == watched):
-            res.append(dict({'collected':rec.collected(), 'watched':rec.watched()}, **row2dict(rec)))
+            res.append(dict({'collected':rec.collected(), 'watched':rec.watched(), 'subtitles':rec.subtitles()},
+                **row2dict(rec)))
     return res
 
 

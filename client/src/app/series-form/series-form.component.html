@@ -1,16 +1,20 @@
+<div class="modal-header">
+    <img src="{{series.banner}}" width="100%" />
+    <tabset type="pills">
+        <tab *ngFor="let sno of series.seasons" heading="{{sno}}" [active]="sno === season"
+            id="{{sno}}" (select)="loadSeason(sno)"></tab>
+    </tabset>
+</div>
 <div class="modal-body">
 
-    <img src="{{series.banner}}" width="100%" />
-
-    <tabset type="pills">
-        <tab heading="{{season}}" *ngFor="let season of series.seasons"
-            id="{{season}}" (select)="loadSeason(season)"></tab>
-    </tabset>
-
-    <div id="GridBox">
+    <!--<div id="GridBox">
         <ag-grid-angular id="GridObj" class="ag-theme-fresh"
             [gridOptions]="epGrid" [columnDefs]="epCols" [rowData]="epRows">
         </ag-grid-angular>
+    </div>-->
+
+    <div class="ep-box" *ngFor="let ep of episodes">
+
     </div>
 
 </div>
