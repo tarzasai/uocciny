@@ -80,9 +80,6 @@ export class AppComponent {
     titleFltr = null;
     colCount = 0;
 
-    // https://valor-software.com/ngx-bootstrap/#/modals
-
-
     constructor(private elref: ElementRef, private modals: ModalService, public messages: MessageService,
         private api: DataService) {
         //

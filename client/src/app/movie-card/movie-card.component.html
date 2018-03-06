@@ -1,44 +1,37 @@
 <div class="card movie">
 
     <div class="poster">
-        <img src="{{movie.poster}}" width="100%"/>
+        <img *ngIf="movie.poster" src="{{movie.poster}}" width="100%"/>
+        <i *ngIf="!movie.poster" class="fa fa-picture-o"></i>
     </div>
 
     <div class="details">
 
-        <div class="section title" title="{{movie.title}}">
-            <div class="icon"><i class="fa fa-film"></i></div>
-            <div class="text">{{movie.title}}</div>
+        <div class="section s" title="{{movie.title}}">
+            <i class="fa fa-film"></i>
+            <span class="bold">{{movie.title}}</span>
         </div>
 
-        <div class="section info">
-            <div class="icon">
-                <i class="fa" *ngIf="movie.watched || movie.collected || movie.missing"
-                    [class.fa-eye]="movie.watched"
-                    [class.fa-cc]="movie.collected && movie.subtitles"
-                    [class.fa-hdd-o]="movie.collected && !movie.subtitles"
-                    [class.fa-eye-slash]="movie.missing">
-                </i>
-            </div>
-            <div class="text">
-                {{((movie.date ? movie.date.year() : '') + (movie.director ? ' by ' + movie.director : '')) || 'No data'}}
-            </div>
+        <div class="section s">
+            <i class="fa"
+                [class.fa-eye]="movie.watched"
+                [class.fa-cc]="movie.collected && movie.subtitles"
+                [class.fa-hdd-o]="movie.collected && !movie.subtitles"
+                [class.fa-eye-slash]="movie.missing">
+            </i>
+            <span>{{movieInfo}}</span>
         </div>
 
-        <div class="section rows">
-            <div class="icon"><i class="fa fa-quote-left"></i></div>
-            <div class="text plot">{{movie.plot}}</div>
+        <div class="section m">
+            <i class="fa fa-quote-left"></i>
+            <span [style.opacity]="0.7">{{movie.plot || 'Unknown'}}</span>
         </div>
 
-        <div class="section footer">
-            <div class="icon">
-                <i class="fa fa-clock-o" *ngIf="movie.date"></i>
-            </div>
-            <div class="text">
-                <span *ngIf="movie.date">{{movie.dateAsText(true)}}</span>
-                <div class="spacer"></div>
-                <span *ngIf="movie.data.runtime">{{movie.runtime}}</span>
-            </div>
+        <div class="section s">
+            <i class="fa" [class.fa-clock-o]="movie.date"></i>
+            <span *ngIf="movie.date">{{movie.dateAsText(true)}}</span>
+            <span class="spacer"></span>
+            <span *ngIf="movie.data.runtime">{{movie.runtime}}</span>
         </div>
 
         <div class="tools">

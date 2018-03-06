@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { sprintf } from 'sprintf';
 
 import { MessageService } from '../utils/message.service';
 import { DataService, UpdateType } from '../api/data.service';
@@ -12,16 +14,22 @@ import { ModalService } from '../utils/modal.service';
     styleUrls: ['./series-card.component.css']
 })
 export class SeriesCardComponent implements OnInit {
+    // per il template:
+    EpisodePreview = EpisodePreview;
+
     @Input() series: Series;
 
     episode: Episode;
-
-    EpisodePreview = EpisodePreview;
+    updateListener: Subscription;
 
     constructor(private messages: MessageService, private api: DataService, public modals: ModalService) { }
 
     ngOnInit() {
         this.setEpisode();
+        this.updateListener = this.api.onUpdate.subscribe(title => {
+            if (title.isSeries && title == this.series)
+                this.setEpisode();
+        });
     }
 
     setEpisode() {
@@ -42,7 +50,6 @@ export class SeriesCardComponent implements OnInit {
             rating: -1
         }).subscribe(result => {
             this.series.load(result[0]);
-            this.setEpisode();
             this.api.onUpdate.next(this.series);
             this.api.unlockScreen();
         });
@@ -55,7 +62,6 @@ export class SeriesCardComponent implements OnInit {
             rating: value
         }).subscribe(result => {
             this.series.load(result[0]);
-            this.setEpisode();
             this.api.onUpdate.next(this.series);
             this.api.unlockScreen();
         });
@@ -65,10 +71,9 @@ export class SeriesCardComponent implements OnInit {
         this.api.lockScreen();
         this.api.update(UpdateType.series, {
             tvdb_id: this.series.tvdb_id,
-            watchlist: (!this.series.watchlist ? 1 : 0)
+            watchlist: (this.series.watchlist ? 0 : 1)
         }).subscribe(result => {
             this.series.load(result[0]);
-            this.setEpisode();
             this.api.onUpdate.next(this.series);
             this.api.unlockScreen();
         });
@@ -80,28 +85,23 @@ export class SeriesCardComponent implements OnInit {
             tvdb_id: this.series.tvdb_id,
             season: this.episode.season,
             episode: this.episode.episode,
-            collected: (!this.episode.collected ? 1 : 0)
+            collected: (this.episode.collected ? 0 : 1)
         }).subscribe(result => {
             this.series.load(result[0]);
-            this.setEpisode();
             this.api.onUpdate.next(this.series);
             this.api.unlockScreen();
         });
     }
 
     toggleWatched() {
-        var seen = !this.episode.watched ? 1 : 0,
-            coll = seen ? 0 : null
         this.api.lockScreen();
         this.api.update(UpdateType.episode, {
             tvdb_id: this.series.tvdb_id,
             season: this.episode.season,
             episode: this.episode.episode,
-            collected: coll,
-            watched: seen
+            watched: (this.episode.watched ? 0 : 1)
         }).subscribe(result => {
             this.series.load(result[0]);
-            this.setEpisode();
             this.api.onUpdate.next(this.series);
             this.api.unlockScreen();
         });
@@ -111,15 +111,13 @@ export class SeriesCardComponent implements OnInit {
         window.open(url, '_blank');
     }
 
-    get episodeIcon() {
-        if (this.episode.watched)
-            return 'fa-eye';
-        if (this.episode.collected)
-            return 'fa-hdd-o';
-        if (this.episode.missing)
-            return 'fa-eye-slash';
-        if (!this.episode.date || this.episode.isToday || this.episode.isAfter)
-            return this.episode.isToday ? 'fa-clock' : 'fa-calendar';
-        return 'fa-rss';
+    get episodeInfo() {
+        var res = this.episode.eid;
+        if (this.episode == this.series.available && this.series.episodes.available > 1)
+            res += sprintf('(+%d)', this.series.episodes.available - 1);
+        else if (this.episode == this.series.missing && this.series.episodes.missing > 1)
+            res += sprintf('(+%d)', this.series.episodes.missing - 1);
+        res += ': ' + (this.episode.title || 'N/A');
+        return res;
     }
 }

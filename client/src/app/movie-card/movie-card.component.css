@@ -1,3 +1,13 @@
+.card.movie {
+    margin: 15px;
+    height: 158px;
+    width: 450px;
+}
+
+.card.movie .details {
+    margin: 6px 5px 7px 8px;
+}
+
 .card.movie .poster {
     /* 780 : 1170 = 133 : 156 */
     width: 104px;

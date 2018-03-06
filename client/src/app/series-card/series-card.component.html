@@ -1,63 +1,49 @@
 <div class="card series">
 
     <div class="poster">
-        <img src="{{series.poster}}" width="100%"/>
+        <img *ngIf="series.poster" src="{{series.poster}}" width="100%"/>
+        <i *ngIf="!series.poster" class="fa fa-picture-o"></i>
     </div>
 
     <div class="details">
 
-        <div class="section title" title="{{series.title}}">
-            <div class="icon"><i class="fa fa-television"></i></div>
-            <div class="text">{{series.title}}</div>
+        <div class="section s" title="{{series.title}}">
+            <i class="fa fa-television"></i>
+            <span class="bold">{{series.title}}</span>
         </div>
 
-        <div class="section rows" *ngIf="series.error" style="color:darkred;">
-            <div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
-            <div class="text">{{series.error}}</div>
+        <div class="section m" *ngIf="series.error" style="color:darkred;">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span>{{series.error}}</span>
         </div>
 
-        <div class="section rows" *ngIf="!series.error && !episode">
-            <div class="icon"><i class="fa fa-quote-left"></i></div>
-            <div class="text plot">{{series.plot}}</div>
+        <div class="section m" *ngIf="!series.error && !episode">
+            <i class="fa fa-quote-left"></i>
+            <span [style.opacity]="0.8">{{series.plot || 'Unknown'}}</span>
         </div>
 
         <ng-container *ngIf="!series.error && episode">
 
-            <div class="section info">
-                <div class="icon">
-                    <i class="fa" *ngIf="episode.watched || episode.collected || episode.missing"
-                        [class.fa-eye]="episode.watched"
-                        [class.fa-cc]="episode.collected && episode.subtitles"
-                        [class.fa-hdd-o]="episode.collected && !episode.subtitles"
-                        [class.fa-eye-slash]="episode.missing">
-                    </i>
-                </div>
-                <div class="text">
-                    <span style="font-weight: bold;">{{episode.season}}&#8226;{{episode.episode}}</span>
-                    <span *ngIf="episode === series.available && series.episodes.available > 1">
-                        {{'(+' + (series.episodes.available - 1) + ')'}}
-                    </span>
-                    <span *ngIf="episode === series.missing && series.episodes.missing > 1">
-                        {{'(+' + (series.episodes.missing - 1) + ')'}}
-                    </span>
-                    <span>{{': ' + episode.title}}</span>
-                </div>
+            <div class="section s">
+                <i class="fa"
+                    [class.fa-eye]="episode.watched"
+                    [class.fa-cc]="episode.collected && episode.subtitles"
+                    [class.fa-hdd-o]="episode.collected && !episode.subtitles"
+                    [class.fa-eye-slash]="episode.missing">
+                </i>
+                <span>{{episodeInfo}}</span>
             </div>
 
-            <div class="section rows">
-                <div class="icon"><i class="fa fa-quote-left"></i></div>
-                <div class="text plot">{{episode.plot || series.plot}}</div>
+            <div class="section m">
+                <i class="fa fa-quote-left"></i>
+                <span [style.opacity]="0.7">{{episode.plot || 'Unknown'}}</span>
             </div>
 
-            <div class="section footer">
-                <div class="icon">
-                    <i class="fa fa-clock-o" *ngIf="episode.date"></i>
-                </div>
-                <div class="text">
-                    <span *ngIf="episode.date">{{episode.dateAsText(true)}}</span>
-                    <div class="spacer"></div>
-                    <span [class.ended]="series.ended">{{series.airing}}</span>
-                </div>
+            <div class="section s">
+                <i class="fa" [class.fa-clock-o]="episode.date"></i>
+                <span *ngIf="episode.date">{{episode.dateAsText(true)}}</span>
+                <span class="spacer"></span>
+                <span [class.ended]="series.ended">{{series.airing}}</span>
             </div>
 
         </ng-container>

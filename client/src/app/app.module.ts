@@ -25,7 +25,6 @@ import { TitleParentComponent } from './title-parent/title-parent.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { SeriesCardComponent } from './series-card/series-card.component';
 import { SeriesFormComponent } from './series-form/series-form.component';
-import { EpisodeCardComponent } from './episode-card/episode-card.component';
 
 /* */
 export function loadConfig(configService: ConfigService) {
@@ -67,7 +66,6 @@ export function loadConfig(configService: ConfigService) {
         SeriesFormComponent,
         KeysPipe,
         ValuesPipe,
-        EpisodeCardComponent,
     ],
     entryComponents: [
         SeriesFormComponent,

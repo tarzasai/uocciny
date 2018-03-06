@@ -24,119 +24,25 @@
     font-weight: bold;
 }
 
-.ep-box {
-    display: flex;
-    position: relative;
-    flex: 0 0 auto;
-    flex-direction: row;
-    border: 1px solid darkgrey;
-    box-shadow: 2px 2px 10px darkgray;
-    border-radius: 3px;
-    line-height: 116%;
-    font-size: 90%;
-    padding: 0;
+.card.episode {
     margin: 5px;
     height: 102px;
-    /*background-color: bisque;*/
 }
 
-.ep-thumb {
-    display: flex;
-    position: relative;
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: center;
-    background-color: buttonface;
-}
-
-.ep-thumb img {
-    display: flex;
-    position: relative;
-}
-
-.ep-thumb .fa {
-    display: flex;
-    position: relative;
-    flex: 0 0 auto;
-    font-size: 70px;
-    color: white;
-    opacity: 0.6;
-    margin: auto;
-}
-
-.ep-data {
-    display: flex;
-    position: relative;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: auto;
-    flex-direction: column;
+.card.episode .details {
     margin: 4px 0 5px 4px;
-    overflow: hidden;
 }
 
-.ep-section {
+.section .fa-external-link {
+    display: none;
+}
+
+.section:hover .fa-external-link {
     display: flex;
-    position: relative;
-    flex-direction: row;
-    vertical-align: top;
-    align-items: flex-start;
-    align-content: flex-start;
-    justify-content: flex-start;
-    overflow: hidden;
-}
-
-.ep-section .fa {
-    display: flex;
-    position: relative;
-    flex: 0 0;
-    height: 20px;
-    min-width: 20px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.ep-section i:before {
-    display: flex;
-    position: relative;
-    margin: auto;
-}
-
-.ep-section span {
-    display: flex;
-    position: relative;
-}
-
-.ep-section.s {
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.ep-section.s span {
-    margin: auto 5px;
-    white-space: nowrap;
-}
-
-.ep-section.m {
-    flex-grow: 1;
-    flex-shrink: 1;
-}
-
-.ep-section.m span {
-    margin: 1px 5px;
-    white-space: normal;
 }
 
 .ep-right {
     display: flex;
     position: relative;
     margin: auto 7px;
-}
-
-a .fa-imdb {
-    display: none;
-}
-
-a:hover .fa-imdb {
-    display: inline-block;
 }

@@ -5,51 +5,46 @@
             id="{{sno}}" (select)="loadSeason(sno)"></tab>
     </tabset>
 </div>
-
 <div class="modal-body">
-    <div class="ep-box" *ngFor="let episode of episodes">
-
-        <div class="ep-thumb" [style.width.px]="maxThumbWidth">
-            <img *ngIf="episode.thumbnail" src="{{episode.thumbnail}}" height="100px" width="{{thumbWidth(episode)}}"/>
-            <i *ngIf="!episode.thumbnail" class="fa fa-picture-o"></i>
+    <div class="card episode" *ngFor="let epiobj of episodes">
+        <div class="poster" [style.width.px]="maxThumbWidth">
+            <img *ngIf="epiobj.thumbnail" src="{{epiobj.thumbnail}}" height="100px" width="{{thumbWidth(epiobj)}}"/>
+            <i *ngIf="!epiobj.thumbnail" class="fa fa-picture-o"></i>
         </div>
-
-        <div class="ep-data">
-
-            <div class="ep-section s">
+        <div class="details">
+            <div class="section s">
                 <i class="fa"
-                    [class.fa-eye]="episode.watched"
-                    [class.fa-cc]="episode.collected && episode.subtitles"
-                    [class.fa-hdd-o]="episode.collected && !episode.subtitles"
-                    [class.fa-eye-slash]="episode.missing">
+                    [class.fa-eye]="epiobj.watched"
+                    [class.fa-cc]="epiobj.collected && epiobj.subtitles"
+                    [class.fa-hdd-o]="epiobj.collected && !epiobj.subtitles"
+                    [class.fa-eye-slash]="epiobj.missing">
                 </i>
-                <span class="bold">{{episode.episode}}: {{episode.title}}</span>
+                <span class="bold" *ngIf="!epiobj.imdbUrl">{{epiobj.episode}}: {{epiobj.title}}</span>
+                <span class="bold" *ngIf="epiobj.imdbUrl">
+                    <a href="{{epiobj.imdbUrl}}" target="_blank">{{epiobj.episode}}: {{epiobj.title}}</a>
+                </span>
+                <i class="fa fa-external-link" *ngIf="epiobj.imdbUrl"></i>
             </div>
-
-            <div class="ep-section m">
+            <div class="section m">
                 <i class="fa fa-quote-left"></i>
-                <span [style.opacity]="0.8">{{episode.plot || 'Unknown'}}</span>
+                <span [style.opacity]="0.7">{{epiobj.plot || 'Unknown'}}</span>
             </div>
-
-            <div class="ep-section s">
+            <div class="section s" *ngIf="epiobj.date">
                 <i class="fa fa-clock-o"></i>
-                <span>{{episode.dateAsText(true)}}</span>
+                <span>{{epiobj.dateAsText(true)}}</span>
             </div>
-
         </div>
-
         <div class="ep-right btn-group-vertical" role="group">
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-default" (click)="toggleWatched()">
-                    <i class="fa fa-2x fa-eye" [class.false]="!episode.watched"></i>
+                <button type="button" class="btn btn-sm btn-default" (click)="toggleWatched(epiobj)">
+                    <i class="fa fa-2x fa-eye" [class.false]="!epiobj.watched"></i>
                 </button>
             </div>
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-default" (click)="toggleCollected()">
-                    <i class="fa fa-2x fa-hdd-o" [class.false]="!episode.collected"></i>
+                <button type="button" class="btn btn-sm btn-default" (click)="toggleCollected(epiobj)">
+                    <i class="fa fa-2x fa-hdd-o" [class.false]="!epiobj.collected"></i>
                 </button>
             </div>
         </div>
-
     </div>
 </div>

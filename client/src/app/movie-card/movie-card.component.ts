@@ -80,4 +80,13 @@ export class MovieCardComponent implements OnInit {
     openLink(url) {
         window.open(url, '_blank');
     }
+
+    get movieInfo() {
+        var res = '';
+        if (this.movie.date)
+            res += this.movie.date.year();
+        if (this.movie.director)
+            res += ' by ' + this.movie.director;
+        return res.trim() || 'No data';
+    }
 }
