@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { GridOptions } from 'ag-grid/main';
 
 import { MessageService } from '../utils/message.service';
 import { DataService, RetrieveType } from '../api/data.service';
 import { Episode } from '../api/episode';
-import { TitleParentComponent } from '../title-parent/title-parent.component';
-import { EpisodeCardComponent } from '../episode-card/episode-card.component';
 
 @Component({
     selector: 'app-series-form',
@@ -18,51 +15,39 @@ export class SeriesFormComponent implements OnInit {
     season: number;
     episodes: Episode[];
 
-    epGrid: GridOptions;
-    epCols = [];
-    epRows = [];
+    maxThumbWidth:number;
 
     constructor(public modalRef: BsModalRef, public messages: MessageService, private api: DataService) {
-        this.epGrid = <GridOptions>{
-            headerHeight: 0,
-            rowHeight: EpisodeCardComponent.cardHeight,
-            enableColResize: false,
-            onGridReady: this.onGridReady,
-        };
-        this.epCols = [
-            {
-                field: 'episode',
-                width: 740,
-                cellRendererFramework: TitleParentComponent
-            }
-        ];
-        // gli eventi della agGrid di solito hanno l'oggetto GridOptions o la griglia come
-        // scopo (this), quindi è praticamente necessario avere questa referenza circolare...
-        this.epGrid.context = this;
     }
 
     ngOnInit() {
         this.loadSeason(this.season || this.series.seasons[0]);
     }
 
-    onGridReady(params) {
-    }
-
     loadSeason(season) {
         this.season = season;
         this.api.lockScreen();
-        var res = [];
+        var res = [],
+            tw = 0,
+            th = 99999,
+            ep;
         this.api.retrieve(RetrieveType.episodes, {
             series: this.series.tvdb_id,
             season: this.season,
         }).subscribe(result => {
             result.forEach(function (itm) {
-                //res.push({ episode: new Episode(itm) });
-                res.push(new Episode(itm));
+                ep = new Episode(itm);
+                res.push(ep);
+                tw = Math.max(tw, ep.data.thumbwidth || 400);
+                th = Math.min(th, ep.data.thumbheight || 300);
             });
-            //this.epRows = res;
+            this.maxThumbWidth = Math.floor((100 * tw) / th);
             this.episodes = res;
             this.api.unlockScreen();
         });
+    }
+
+    thumbWidth(ep) {
+        return Math.floor((100 * (ep.data.thumbwidth || 400)) / (ep.data.thumbheight || 225));
     }
 }

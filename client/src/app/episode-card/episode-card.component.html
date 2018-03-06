@@ -8,14 +8,8 @@
     <div class="ep-details">
 
         <div class="ep-title">
-
             <i class="fa" [class.fa-cc]="episode.collected && episode.subtitles"></i>
             <span>{{episode.episode}} - {{episode.title}}</span>
-
-            <!--<a *ngIf="episode.imdbUrl" (click)="openLink(episode.imdbUrl)">
-                <span>{{episode.episode}} - {{episode.title}}</span>
-                <i class="fa fa-lg fa-imdb"></i>
-            </a>-->
         </div>
 
         <div class="ep-plot">

@@ -69,6 +69,9 @@ ag-grid-angular {
 
 
 /**/
+.bold {
+    font-weight: bold !important;
+}
 
 title-parent,
 title-cell,
@@ -83,11 +86,32 @@ app-episode-card {
     right: 0;
 }
 
+.modal-dialog,
+.modal-content {
+    display: flex;
+    width: auto;
+    min-width: unset;
+    max-width: unset;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modal-dialog {
+    max-height: 90%;
+}
+
+app-series-form {
+    display: flex;
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;
+}
+
 
 /**/
 
-.card,
-.form {
+.card {
     display: flex;
     flex-grow: 0;
     flex-shrink: 0;
@@ -97,19 +121,11 @@ app-episode-card {
     border: 1px solid darkgrey;
     border-radius: 3px;
     line-height: 116%;
-    padding: 0;
-}
-
-.card {
-    font-size: 90%;
     margin: 15px;
+    padding: 0;
+    font-size: 90%;
     height: 158px;
     width: 450px;
-}
-
-.form {
-    font-size: 110%;
-    margin: 0;
 }
 
 .poster,
@@ -148,15 +164,8 @@ app-episode-card {
     flex-shrink: 1;
     color: darkslategray;
     overflow: hidden;
-    width: 100%;
-}
-
-.card .details {
     margin: 5px;
-}
-
-.form .details {
-    margin: 10px;
+    width: 100%;
 }
 
 .section {
@@ -165,18 +174,10 @@ app-episode-card {
     flex-shrink: 0;
     flex-direction: row;
     vertical-align: top;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.card .section {
     margin: 1px 5px;
     height: 18px;
-}
-
-.form .section {
-    margin: 3px 10px;
-    height: 22px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .section div {
@@ -209,18 +210,9 @@ app-episode-card {
 .icon {
     flex-grow: 0;
     flex-shrink: 0;
-}
-
-.card .icon {
+    margin-right: 5px;
     height: 18px;
     width: 18px;
-    margin-right: 5px;
-}
-
-.form .icon {
-    height: 22px;
-    width: 22px;
-    margin-right: 10px;
 }
 
 .icon .fa {
@@ -280,26 +272,4 @@ app-episode-card {
 
 .fa.false {
     opacity: 0.3;
-}
-
-
-/**/
-
-app-series-form {
-    width: 100%;
-    height: 100%;
-}
-
-.modal-dialog,
-.modal-content {
-    display: flex;
-    width: auto;
-    min-width: unset;
-    max-width: unset;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.modal-dialog {
-    height: 90%;
 }
