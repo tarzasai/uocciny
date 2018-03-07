@@ -33,14 +33,6 @@
     margin: 4px 0 5px 4px;
 }
 
-.section .fa-external-link {
-    display: none;
-}
-
-.section:hover .fa-external-link {
-    display: flex;
-}
-
 .ep-right {
     display: flex;
     position: relative;

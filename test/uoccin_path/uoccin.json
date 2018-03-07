@@ -38,7 +38,8 @@
         "tt2078552",
         "tt0405094",
         "tt0310775",
-        "tt0120669"
+        "tt0120669",
+        343669
     ],
     "movies": {
         "tt0032553": {
@@ -104,12 +105,10 @@
             "watchlist": false
         },
         "tt0057831": {
-            "collected": true,
+            "collected": false,
             "name": "Zorba the Greek",
             "rating": 4,
-            "subtitles": [
-                "und"
-            ],
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -379,9 +378,10 @@
             "watchlist": false
         },
         "tt0080120": {
-            "collected": true,
+            "collected": false,
             "name": "The Warriors",
             "rating": 4,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -2384,7 +2384,8 @@
         "tt0470752": {
             "collected": false,
             "name": "Ex Machina",
-            "rating": 4,
+            "rating": 3,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -2564,12 +2565,10 @@
             "watchlist": false
         },
         "tt0887912": {
-            "collected": true,
+            "collected": false,
             "name": "The Hurt Locker",
-            "rating": 3,
-            "subtitles": [
-                "und"
-            ],
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -2900,7 +2899,8 @@
         "tt1219827": {
             "collected": false,
             "name": "Ghost in the Shell",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "tags": [
                 "requeued"
             ],
@@ -3151,9 +3151,10 @@
             "watchlist": false
         },
         "tt1392190": {
-            "collected": false,
+            "collected": true,
             "name": "Mad Max: Fury Road",
-            "rating": 4,
+            "rating": 5,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -3437,7 +3438,8 @@
         "tt1706620": {
             "collected": false,
             "name": "Snowpiercer",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -3604,13 +3606,10 @@
             "watchlist": false
         },
         "tt1959563": {
-            "collected": true,
+            "collected": false,
             "name": "The Hitman's Bodyguard",
             "rating": 1,
-            "subtitles": [
-                "und",
-                "ita"
-            ],
+            "subtitles": [],
             "tags": [
                 "imdb"
             ],
@@ -3620,17 +3619,16 @@
         "tt1961175": {
             "collected": false,
             "name": "American Assassin",
-            "rating": 3,
-            "subtitles": [
-                "eng"
-            ],
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
         "tt1964418": {
             "collected": false,
             "name": "Tomorrowland",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "tags": [
                 "IMDB"
             ],
@@ -3741,7 +3739,8 @@
         "tt2057392": {
             "collected": false,
             "name": "Eye in the Sky",
-            "rating": 4,
+            "rating": 3,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -3758,7 +3757,8 @@
         "tt2120120": {
             "collected": false,
             "name": "Pixels",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "tags": [
                 "IMDB"
             ],
@@ -3842,7 +3842,8 @@
         "tt2265171": {
             "collected": false,
             "name": "The Raid 2",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "tags": [
                 "IMDB"
             ],
@@ -3901,7 +3902,8 @@
         "tt2316204": {
             "collected": false,
             "name": "Alien: Covenant",
-            "rating": 3,
+            "rating": 2,
+            "subtitles": [],
             "tags": [
                 "imdb"
             ],
@@ -3918,21 +3920,16 @@
         "tt2345759": {
             "collected": false,
             "name": "The Mummy",
-            "rating": 2,
-            "subtitles": [
-                "eng",
-                "und"
-            ],
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
         "tt2381249": {
             "collected": false,
             "name": "Mission: Impossible - Rogue Nation",
-            "rating": 4,
-            "subtitles": [
-                "eng"
-            ],
+            "rating": 3,
+            "subtitles": [],
             "tags": [
                 "IMDB"
             ],
@@ -3952,7 +3949,8 @@
         "tt2397535": {
             "collected": false,
             "name": "Predestination",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "tags": [
                 "IMDB"
             ],
@@ -4122,7 +4120,8 @@
         "tt2911666": {
             "collected": false,
             "name": "John Wick",
-            "rating": 1,
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -4135,8 +4134,9 @@
         },
         "tt3072482": {
             "collected": false,
-            "name": "Hardcore!",
-            "rating": 2,
+            "name": "Hardcore Henry",
+            "rating": 1,
+            "subtitles": [],
             "tags": [
                 "IMDB"
             ],
@@ -4153,7 +4153,8 @@
         "tt3397884": {
             "collected": false,
             "name": "Sicario",
-            "rating": 3,
+            "rating": 4,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -4250,9 +4251,10 @@
             "watchlist": true
         },
         "tt3963816": {
-            "collected": true,
+            "collected": false,
             "name": "Marauders",
             "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -4275,9 +4277,10 @@
             "watchlist": true
         },
         "tt4172430": {
-            "collected": true,
-            "name": "13 Hours",
+            "collected": false,
+            "name": "13 Hours: The Secret Soldiers of Benghazi",
             "rating": 3,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -4420,10 +4423,21 @@
             "watched": false,
             "watchlist": true
         },
+        "tt5580390": {
+            "collected": true,
+            "name": "The Shape of Water",
+            "subtitles": [
+                "eng",
+                "und"
+            ],
+            "watched": false,
+            "watchlist": false
+        },
         "tt5962210": {
             "collected": true,
             "name": "Ingrid Goes West",
             "subtitles": [
+                "ita",
                 "eng",
                 "und"
             ],
@@ -4596,6 +4610,10 @@
         "153021": {
             "collected": {
                 "8": {
+                    "10": [
+                        "eng",
+                        "ita"
+                    ],
                     "7": [
                         "eng",
                         "ita"
@@ -4811,6 +4829,10 @@
                     "3": [
                         "eng",
                         "und",
+                        "ita"
+                    ],
+                    "4": [
+                        "eng",
                         "ita"
                     ]
                 }
@@ -5136,11 +5158,7 @@
             "watchlist": true
         },
         "254834": {
-            "collected": {
-                "5": {
-                    "4": []
-                }
-            },
+            "collected": {},
             "name": "Endeavour",
             "rating": 4,
             "tags": [
@@ -5175,7 +5193,8 @@
                     1,
                     2,
                     3,
-                    4
+                    4,
+                    5
                 ]
             },
             "watchlist": true
@@ -5292,7 +5311,7 @@
         "261109": {
             "collected": {
                 "4": {
-                    "3": []
+                    "4": []
                 }
             },
             "name": "Shetland",
@@ -5324,7 +5343,8 @@
                 ],
                 "4": [
                     1,
-                    2
+                    2,
+                    3
                 ]
             },
             "watchlist": true
@@ -5550,7 +5570,8 @@
                         "eng"
                     ],
                     "14": [
-                        "eng"
+                        "eng",
+                        "ita"
                     ],
                     "2": [
                         "ita",

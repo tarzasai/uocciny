@@ -172,13 +172,13 @@ def update_from_tvdb(series):
         series.error = str(err)
 
 
-def get_metadata(series):
+def get_metadata(series, forceRefresh=False):
     sid = series['tvdb_id']
     rec = get_db().query(Series).filter(Series.tvdb_id == sid).first()
     if rec is None:
         rec = Series()
         rec.tvdb_id = sid
-    if rec.is_old():
+    if forceRefresh or rec.is_old():
         update_from_tvdb(rec)
     series.update(row2dict(rec))
     series['new'] = rec.is_new()
@@ -228,12 +228,12 @@ def get_metadata(series):
     return series
 
 
-def get_series(tvdb_id):
+def get_series(tvdb_id, forceRefresh):
     app.logger.debug('get_series: tvdb_id=%s' % tvdb_id)
     obj = read_from_uoccin(tvdb_id)
     if obj is None:
         return []
-    return [get_metadata(dict({'tvdb_id': tvdb_id}, **obj))]
+    return [get_metadata(dict({'tvdb_id': tvdb_id}, **obj), forceRefresh)]
 
 
 def get_series_list(watchlist=None, collected=None, missing=None, available=None):

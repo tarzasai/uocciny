@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { sprintf } from 'sprintf';
 
 import { MessageService } from '../utils/message.service';
-import { DataService, UpdateType } from '../api/data.service';
+import { DataService, RetrieveType, UpdateType } from '../api/data.service';
 import { Series, EpisodePreview } from '../api/series';
 import { Episode } from '../api/episode';
 import { ModalService } from '../utils/modal.service';
@@ -25,11 +25,11 @@ export class SeriesCardComponent implements OnInit {
     constructor(private messages: MessageService, private api: DataService, public modals: ModalService) { }
 
     ngOnInit() {
-        this.setEpisode();
         this.updateListener = this.api.onUpdate.subscribe(title => {
             if (title.isSeries && title == this.series)
                 this.setEpisode();
         });
+        this.setEpisode();
     }
 
     setEpisode() {
@@ -41,6 +41,18 @@ export class SeriesCardComponent implements OnInit {
             ser.preview === EpisodePreview.any ? (ser.missing || ser.available || ser.upcoming || ser.aired) :
             ser.aired
         );
+    }
+
+    forceRefresh() {
+        this.api.lockScreen();
+        this.api.retrieve(RetrieveType.series, {
+            tvdb_id: this.series.tvdb_id,
+            refresh: 1
+        }).subscribe(result => {
+            this.series.load(result[0]);
+            this.api.onUpdate.next(this.series);
+            this.api.unlockScreen();
+        });
     }
 
     trashSeries() {
@@ -111,13 +123,11 @@ export class SeriesCardComponent implements OnInit {
         window.open(url, '_blank');
     }
 
-    get episodeInfo() {
-        var res = this.episode.eid;
+    get more() {
         if (this.episode == this.series.available && this.series.episodes.available > 1)
-            res += sprintf('(+%d)', this.series.episodes.available - 1);
-        else if (this.episode == this.series.missing && this.series.episodes.missing > 1)
-            res += sprintf('(+%d)', this.series.episodes.missing - 1);
-        res += ': ' + (this.episode.title || 'N/A');
-        return res;
+            return this.series.episodes.available - 1;
+        if (this.episode == this.series.missing && this.series.episodes.missing > 1)
+            return this.series.episodes.missing - 1;
+        return null;
     }
 }

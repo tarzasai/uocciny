@@ -111,7 +111,7 @@ def index():
 @app.route('/movies', methods=['GET', 'OPTIONS'])
 def view_movies():
     imdb_id = request.args.get('imdb_id', None)
-    res = get_movie(imdb_id) if imdb_id\
+    res = get_movie(imdb_id, prm2bool(request.args, 'refresh')) if imdb_id\
         else get_movie_list(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),
@@ -124,7 +124,7 @@ def view_movies():
 @app.route('/series', methods=['GET', 'OPTIONS'])
 def view_series():
     tvdb_id = prm2int(request.args, 'tvdb_id')
-    res = get_series(tvdb_id) if tvdb_id\
+    res = get_series(tvdb_id, prm2bool(request.args, 'refresh')) if tvdb_id\
         else get_series_list(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),

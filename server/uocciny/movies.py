@@ -1,4 +1,5 @@
 # encoding: utf-8
+import operator
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -15,11 +16,13 @@ class Movie(Base):
     tmdb_id = Column(Integer, unique=True)
     name = Column(String, nullable=False)
     plot = Column(String)
-    poster = Column(String)
     genres = Column(String)
     actors = Column(String)
     director = Column(String)
     language = Column(String)
+    poster = Column(String)
+    posterWidth = Column(Integer)
+    posterHeight = Column(Integer)
     released = Column(DateTime)
     runtime = Column(Integer)
     updated = Column(DateTime)
@@ -54,7 +57,7 @@ def read_from_uoccin(imdb_id):
 
 def read_from_tmdb(imdb_id):
     try:
-        return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits')
+        return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits,images')
     except Exception as err:
         app.logger.debug('read_from_tmdb: ' + str(err))
         return None
@@ -71,13 +74,22 @@ def update_from_tmdb(movie):
         movie.tmdb_id = obj['id']
         movie.name = obj['title'] if obj['title'] else None
         movie.plot = obj['overview'] if obj['overview'] else None
-        movie.poster = obj['poster_path'] if obj['poster_path'] else None
         movie.genres = ', '.join([g['name'] for g in obj['genres']]) if obj['genres'] else None
         movie.language = obj['original_language'] if obj['original_language'] else None
         movie.released = datetime.strptime(obj['release_date'], '%Y-%m-%d') if obj['release_date'] != '' else None
         movie.runtime = obj['runtime'] if obj['runtime'] else None
         movie.actors = ', '.join([a['name'] for a in obj['credits']['cast'] if a['gender'] > 0])
         movie.director = ', '.join([c['name'] for c in obj['credits']['crew'] if c['job'] == 'Director'])
+        #
+        movie.poster = obj['poster_path'] if obj['poster_path'] else None
+        movie.posterWidth = 780
+        movie.posterHeight = 1170
+        imgs = obj.get('images', {}).get('posters', [])
+        if len(imgs):
+            imgs = sorted(imgs, key=operator.itemgetter('vote_average'), reverse=True)
+            movie.poster = imgs[0]['file_path']
+            movie.posterWidth = imgs[0]['width']
+            movie.posterHeight = imgs[0]['height']
         # done
         movie.updated = datetime.now()
         if not exists:
@@ -91,12 +103,12 @@ def update_from_tmdb(movie):
         movie.error = str(err)
 
 
-def get_metadata(movie):
+def get_metadata(movie, forceRefresh=False):
     mid = movie['imdb_id']
     rec = get_db().query(Movie).filter(Movie.imdb_id == mid).first()
     if rec is None:
         rec = Movie(mid)
-    if rec.is_old():
+    if forceRefresh or rec.is_old():
         update_from_tmdb(rec)
     movie.update(row2dict(rec))
     movie['rating'] = movie.get('rating', 0)
@@ -105,12 +117,12 @@ def get_metadata(movie):
     return movie
 
 
-def get_movie(imdb_id):
+def get_movie(imdb_id, forceRefresh):
     app.logger.debug('get_movie: imdb_id=%s' % imdb_id)
     obj = read_from_uoccin(imdb_id)
     if obj is None:
         return []
-    return [get_metadata(dict({'imdb_id': imdb_id}, **obj))]
+    return [get_metadata(dict({'imdb_id': imdb_id}, **obj), forceRefresh)]
 
 
 def get_movie_list(watchlist=None, collected=None, missing=None, watched=None):

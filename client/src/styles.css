@@ -7,16 +7,15 @@ body {
     font-family: 'Roboto Condensed', sans-serif;
 }
 
-::-webkit-input-placeholder {
-    color: #bdbdbd;
+a {
+    color: #0B3861;
 }
 
-::-ms-input-placeholder {
-    color: #bdbdbd;
-}
-
-::-moz-placeholder {
-    color: #bdbdbd;
+::-webkit-input-placeholder,
+::-ms-input-placeholder,
+::-moz-placeholder,
+::placeholder {
+    color: #D8D8D8;
 }
 
 .btn-sm, .btn-group-sm > .btn {
@@ -210,6 +209,14 @@ app-series-form {
 .section.m span {
     margin: 1px 5px;
     white-space: normal;
+}
+
+.section .fa-external-link {
+    display: none;
+}
+
+.section:hover .fa-external-link {
+    display: flex;
 }
 
 .spacer {

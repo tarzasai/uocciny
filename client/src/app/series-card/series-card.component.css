@@ -10,10 +10,19 @@
 }
 
 .card.series .details {
-    margin: 6px 5px 7px 8px;
+    margin: 6px 0 7px 8px;
+    padding-right: 5px;
 }
 
 .ended {
     color: darkred;
     font-weight: bold;
+}
+
+sup {
+    display: flex;
+    position: relative;
+    margin-left: -3px;
+    top: -1px;
+    font-size: 80%;
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import { MessageService } from '../utils/message.service';
-import { DataService, UpdateType } from '../api/data.service';
+import { DataService, RetrieveType, UpdateType } from '../api/data.service';
 import { Movie } from '../api/movie';
 
 @Component({
@@ -14,14 +14,25 @@ export class MovieCardComponent implements OnInit {
 
     constructor(private messages: MessageService, private api: DataService) { }
 
-    ngOnInit() {
-    }
+    ngOnInit() { }
 
     trashMovie() {
         this.api.lockScreen();
         this.api.update(UpdateType.movie, {
             imdb_id: this.movie.imdb_id,
             rating: -1
+        }).subscribe(result => {
+            this.movie.load(result[0]);
+            this.api.onUpdate.next(this.movie);
+            this.api.unlockScreen();
+        });
+    }
+
+    forceRefresh() {
+        this.api.lockScreen();
+        this.api.retrieve(RetrieveType.movies, {
+            imdb_id: this.movie.imdb_id,
+            refresh: 1
         }).subscribe(result => {
             this.movie.load(result[0]);
             this.api.onUpdate.next(this.movie);
@@ -81,12 +92,7 @@ export class MovieCardComponent implements OnInit {
         window.open(url, '_blank');
     }
 
-    get movieInfo() {
-        var res = '';
-        if (this.movie.date)
-            res += this.movie.date.year();
-        if (this.movie.director)
-            res += ' by ' + this.movie.director;
-        return res.trim() || 'No data';
+    get posterWidth() {
+        return Math.floor((156 * (this.movie.data.posterWidth || 780)) / (this.movie.data.posterHeight || 1170));
     }
 }
