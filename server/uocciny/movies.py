@@ -120,8 +120,8 @@ def get_movie(imdb_id, forceRefresh):
     return [get_metadata(dict({'imdb_id': imdb_id}, **obj), forceRefresh)]
 
 
-def get_movie_list(watchlist=None, collected=None, missing=None, watched=None):
-    app.logger.debug('get_movie_list: watchlist=%s, collected=%s, missing=%s, watched=%s' %
+def get_movlst(watchlist=None, collected=None, missing=None, watched=None):
+    app.logger.debug('get_movlst: watchlist=%s, collected=%s, missing=%s, watched=%s' %
         (watchlist, collected, missing, watched))
     res = []
     for mid, itm in get_uf().get('movies', {}).iteritems():
@@ -182,3 +182,32 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
 
     save_uf(uf)
     return [movrec]
+
+def cleanup_movies():
+    app.logger.debug('cleanup_movies...')
+    db = get_db()
+    uf = get_uf()
+    try:
+        purge = []
+        for mid, mobj in uf.setdefault('movies', {}).iteritems():
+            if not (mobj['watchlist'] or mobj['collected'] or mobj['watched']):
+                purge.append(mid)
+        for mrec in db.query(Movie).all():
+            if mrec.imdb_id not in purge and uf.get('movies', {}).get(mrec.imdb_id, None) is None:
+                purge.append(mrec.imdb_id)
+        if not purge:
+            return 0
+        for mid in purge:
+            db.query(Movie).filter(Movie.imdb_id == mid).delete()
+            try:
+                del uf['movies'][mid]
+            except:
+                pass
+        db.commit()
+        save_uf(uf)
+        app.logger.info('cleanup_movies done: %d deleted titles' % len(purge))
+        return len(purge)
+    except Exception as err:
+        app.logger.error('cleanup_movies failed: %r' % err)
+        db.rollback()
+        raise err

@@ -14,7 +14,6 @@ class PrefixMiddleware(object):
     def __init__(self, wsgi_app, prefix=''):
         self.app = wsgi_app
         self.prefix = prefix
-
     def __call__(self, environ, start_response):
         if environ['PATH_INFO'].startswith(self.prefix):
             environ['PATH_INFO'] = environ['PATH_INFO'][len(self.prefix):]
@@ -40,11 +39,10 @@ app.config.update(IMDB_USER_ID=os.environ.get("IMDB_USER_ID"))
 # di solito non mi interessa fare debug dal browser
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
-# quando il servizio gira in IIS è sempre in una directory virtuale, quindi bisogna gestire la porzione di path "non
-# prevista" prima che le rule di werkzeug diano 404 perchè non sanno come mappare le richieste.
+# quando il servizio gira in IIS è sempre in una directory virtuale, quindi bisogna gestire la porzione di
+# path "non prevista" prima che le rule di werkzeug diano 404 perchè non sanno come mappare le richieste.
 if 'ISS_VIRTUALFOLDER' in app.config:
-    app.wsgi_app = PrefixMiddleware(
-        app.wsgi_app, prefix='/' + app.config['ISS_VIRTUALFOLDER'])
+    app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix='/' + app.config['ISS_VIRTUALFOLDER'])
 
 # CORS forse dovrebbe essere opzionale, cmq...
 CORS(app, resources=r'/*')
@@ -98,8 +96,9 @@ def handle_internal_error(err):
     return jsonify({'status': 500, 'result': str(err)}), 200
 
 
-from movies import get_movie, get_movie_list, set_movie
-from series import get_series, get_series_list, get_episode, get_episode_list, set_series, set_season, set_episode
+#
+from movies import get_movie, get_movlst, set_movie, cleanup_movies
+from series import get_series, get_serlst, get_episode, get_epilst, set_series, set_season, set_episode, cleanup_series
 from wimdb import import_imdb_watchlist
 
 
@@ -112,7 +111,7 @@ def index():
 def view_movies():
     imdb_id = request.args.get('imdb_id', None)
     res = get_movie(imdb_id, prm2bool(request.args, 'refresh')) if imdb_id\
-        else get_movie_list(
+        else get_movlst(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),
             missing=prm2bool(request.args, 'missing'),
@@ -125,7 +124,7 @@ def view_movies():
 def view_series():
     tvdb_id = prm2int(request.args, 'tvdb_id')
     res = get_series(tvdb_id, prm2bool(request.args, 'refresh')) if tvdb_id\
-        else get_series_list(
+        else get_serlst(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),
             missing=prm2bool(request.args, 'missing'),
@@ -138,7 +137,7 @@ def view_series():
 def view_episodes():
     tvdb_id = prm2int(request.args, 'tvdb_id')
     res = get_episode(tvdb_id) if tvdb_id\
-        else get_episode_list(
+        else get_epilst(
             int(request.args['series']), ## obbligatorio
             season=prm2int(request.args, 'season'),
             episode=prm2int(request.args, 'episode'),
@@ -151,11 +150,6 @@ def view_episodes():
 @app.route('/uoccinfile', methods=['GET', 'OPTIONS'])
 def view_uof():
     return jsonify({'status': 200, 'result': get_uf()})
-
-
-@app.route('/importimdb', methods=['GET', 'OPTIONS'])
-def import_imdb():
-    return jsonify({'status': 200, 'result': import_imdb_watchlist()})
 
 
 @app.route('/movie', methods=['POST'])
@@ -205,6 +199,16 @@ def upd_episode():
         watched=prm2bool(prms, 'watched')
     )
     return jsonify({'status': 200, 'result': res})
+
+
+@app.route('/importimdb', methods=['POST'])
+def import_imdb():
+    return jsonify({'status': 200, 'result': import_imdb_watchlist()})
+
+
+@app.route('/cleanup', methods=['POST'])
+def cleanup_db():
+    return jsonify({'status': 200, 'result': cleanup_movies() + cleanup_series()})
 
 
 def prm2bool(args, name):

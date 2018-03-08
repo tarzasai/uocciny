@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -15,8 +16,10 @@ def get_db():
         engine = create_engine('sqlite:///' + fn, convert_unicode=True)
         if not os.path.exists(fn):
             Base.metadata.create_all(bind=engine)
-        g._database = db = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+        g._database = db = scoped_session(sessionmaker(
+            autocommit=False, autoflush=False, bind=engine))
     return db
+
 
 def row2dict(row):
     d = {}

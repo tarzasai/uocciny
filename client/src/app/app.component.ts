@@ -128,7 +128,8 @@ export class AppComponent {
         if (view) {
             this.activeView = view;
             localStorage.setItem('LastView', view.tag);
-        }
+        } else
+            view = this.activeView;
         this.api.lockScreen();
         var res = [];
         this.api.retrieve(RetrieveType.series, view.series).subscribe(result => {
@@ -210,7 +211,7 @@ export class AppComponent {
 
     importIMDB() {
         this.api.lockScreen();
-        this.api.import(null).subscribe(result => {
+        this.api.import().subscribe(result => {
             var res = [];
             result.forEach(function (itm) {
                 res.push(new Movie(itm));
@@ -218,6 +219,15 @@ export class AppComponent {
             if (res.length > 0)
                 this.setRows(this.titleList.concat(res));
             this.api.unlockScreen();
+        });
+    }
+
+    cleanupDB() {
+        this.api.lockScreen();
+        this.api.cleanup().subscribe(result => {
+            this.api.unlockScreen();
+            if (result > 0)
+                this.getData();
         });
     }
 }

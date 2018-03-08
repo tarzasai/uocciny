@@ -1,6 +1,6 @@
 # encoding: utf-8
-from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Index
+from datetime import datetime, timedelta
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Index, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from tvdb_client import ApiV2Client
@@ -32,28 +32,13 @@ class Series(Base):
     def __repr__(self):
         return '<Series %d - %s>' % (self.tvdb_id, self.name if self.name else 'N/A')
     
-    def is_old(self):
-        if self.updated is None:
-            return True
-        age = (datetime.now() - self.updated).days
-
-        '''app.logger.debug('is_old:"%s" - age:%d - first:%d - last:%d' % (self.name, age,
-            (datetime.now() - self.firstAired).days, (datetime.now() - self.lastAired).days))'''
-
-        if self.firstAired is None:
-            return age > 7
-        if (datetime.now() - self.firstAired).days <= 30:
-            return age > 15
-        if self.lastAired is None:
-            return age > 7
-        if (datetime.now() - self.lastAired).days <= 15:
-            return age > 7
-        if (datetime.now() - self.lastAired).days > (5 * 365):
-            return age > 180
-        return age > 30
+    def need_full_update(self):
+        return (self.updated is None or (datetime.now() - self.updated).days >= 90)
     
-    def is_new(self):
-        return self.updated is not None and (self.firstAired is None or (datetime.now() - self.firstAired).days <= 30)
+    def need_partial_update(self):
+        return (self.updated and self.lastAired and
+            (datetime.now() - self.lastAired).days <= 10 and
+            (datetime.now() - self.updated).days >= 5)
 
 
 class Episode(Base):
@@ -112,7 +97,10 @@ def read_from_tvdb(tvdb_id):
     return tvdb, show.get('data', None)
 
 
-def update_from_tvdb(series):
+def update_from_tvdb(series, forced=False):
+    if not (forced or series.need_full_update() or series.need_partial_update()):
+        #
+        return
     app.logger.info('updating %r...' % series)
     exists = series.updated is not None
     db = get_db()
@@ -138,28 +126,30 @@ def update_from_tvdb(series):
         if not exists:
             db.add(series)
         # episodes
-        db.query(Episode).filter(Episode.series == series.tvdb_id).delete()
+        if forced or series.need_full_update():
+            db.query(Episode).filter(Episode.series == series.tvdb_id).delete()
+        else:
+            del_since = datetime.now() - timedelta(days=15)
+            db.query(Episode).filter(Episode.series == series.tvdb_id)\
+                .filter(or_(Episode.firstAired is None, Episode.firstAired >= del_since)).delete()
         eps = tvdb.get_series_episodes(series.tvdb_id)
         while eps['data']:
             for ep in eps['data']:
-                eid = int(ep['id'])
-                if ep['airedSeason'] == 0 or ep['airedEpisodeNumber'] == 0:
+                if ep['airedSeason'] <= 0 or ep['airedEpisodeNumber'] <= 0:
                     continue
-                episode = Episode()
-                episode.series = series.tvdb_id
-                episode.tvdb_id = ep['id'] ## tvdb_id
-                episode.season = ep['airedSeason']
-                episode.episode = ep['airedEpisodeNumber']
-                episode.title = ep['episodeName'] if ep['episodeName'] else None
-                episode.plot = ep['overview'] if ep['overview'] else None
-                episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
-                db.add(episode)
-                if episode.firstAired is not None and episode.firstAired <= datetime.now() and\
-                    (series.lastAired is None or episode.firstAired > series.lastAired):
-                    series.lastAired = episode.firstAired
-                try:
-                    app.logger.info('updating %r...' % episode)
+                eid = int(ep['id'])
+                episode = db.query(Episode).filter(Episode.tvdb_id == eid).first()
+                if episode is None:
+                    app.logger.debug('retrieving episode %d...' % eid)
                     ep = tvdb.get_episode(eid)['data']
+                    episode = Episode()
+                    episode.series = series.tvdb_id
+                    episode.tvdb_id = ep['id'] ## tvdb_id
+                    episode.season = ep['airedSeason']
+                    episode.episode = ep['airedEpisodeNumber']
+                    episode.title = ep['episodeName'] if ep['episodeName'] else None
+                    episode.plot = ep['overview'] if ep['overview'] else None
+                    episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
                     episode.imdb_id = ep['imdbId'] if ep['imdbId'] else None
                     episode.writers = ', '.join(ep['writers']) if ep['writers'] else None
                     episode.director = ep['director'] if ep['director'] else None
@@ -168,9 +158,11 @@ def update_from_tvdb(series):
                     episode.thumbwidth = int(ep['thumbWidth']) if ep['thumbWidth'] else None
                     episode.thumbheight = int(ep['thumbHeight']) if ep['thumbHeight'] else None
                     episode.updated = datetime.now()
-                    app.logger.debug('%r updated.' % episode)
-                except Exception as err:
-                    app.logger.error('update failed for %r: %s' % (episode, str(err)))
+                    db.add(episode)
+                    app.logger.info('updated %r' % episode)
+                    if (episode.firstAired is not None and episode.firstAired <= datetime.now() and
+                        (series.lastAired is None or episode.firstAired > series.lastAired)):
+                        series.lastAired = episode.firstAired
             if eps['links']['next']:
                 eps = tvdb.get_series_episodes(series.tvdb_id, page=eps['links']['next'])
             else:
@@ -190,10 +182,9 @@ def get_metadata(series, forceRefresh=False):
     if rec is None:
         rec = Series()
         rec.tvdb_id = sid
-    if forceRefresh or rec.is_old():
-        update_from_tvdb(rec)
+    update_from_tvdb(rec, forceRefresh)
     series.update(row2dict(rec))
-    series['new'] = rec.is_new()
+    #series['new'] = rec.is_new()
     series['rating'] = series.get('rating', 0)
     # season list
     series['seasons'] = []
@@ -248,8 +239,8 @@ def get_series(tvdb_id, forceRefresh):
     return [get_metadata(dict({'tvdb_id': tvdb_id}, **obj), forceRefresh)]
 
 
-def get_series_list(watchlist=None, collected=None, missing=None, available=None):
-    app.logger.debug('get_series_list: watchlist=%s, collected=%s, missing=%s, available=%s' %
+def get_serlst(watchlist=None, collected=None, missing=None, available=None):
+    app.logger.debug('get_serlst: watchlist=%s, collected=%s, missing=%s, available=%s' %
         (watchlist, collected, missing, available))
     if available == True:
         collected = True
@@ -272,8 +263,8 @@ def get_episode(tvdb_id):
     return dict({'collected':rec.collected(), 'watched':rec.watched()}, **row2dict(rec))
 
 
-def get_episode_list(series, season=None, episode=None, collected=None, watched=None):
-    app.logger.debug('get_episode_list: series=%s, season=%s, episode=%s, collected=%s, watched=%s' %
+def get_epilst(series, season=None, episode=None, collected=None, watched=None):
+    app.logger.debug('get_epilst: series=%s, season=%s, episode=%s, collected=%s, watched=%s' %
         (series, season, episode, collected, watched))
     res = []
     for rec in get_db().query(Episode).filter(Episode.series == series).order_by(Episode.season, Episode.episode).all():
@@ -360,3 +351,42 @@ def set_episode(tvdb_id, season, episode, collected=None, watched=None):
     uf.setdefault('series', {})[str(tvdb_id)] = serobj
     save_uf(uf)
     return [serrec]
+
+def cleanup_series():
+    app.logger.debug('cleanup_series...')
+    db = get_db()
+    uf = get_uf()
+    try:
+        purge = []
+        for sid, sobj in uf.setdefault('series', {}).iteritems():
+            coll = sobj.setdefault('collected', {})
+            lst = coll.keys()
+            for s in lst:
+                if not coll[s]:
+                    del coll[s]
+            seen = sobj.setdefault('watched', {})
+            lst = seen.keys()
+            for s in lst:
+                if not seen[s]:
+                    del seen[s]
+            if not (sobj['watchlist'] or sobj['collected'] or sobj['watched']):
+                purge.append(int(sid))
+        for srec in db.query(Series).all():
+            if srec.tvdb_id not in purge and uf.get('series', {}).get(str(srec.tvdb_id), None) is None:
+                purge.append(srec.tvdb_id)
+        if not purge:
+            return 0
+        for sid in purge:
+            db.query(Series).filter(Series.tvdb_id == sid).delete()
+            try:
+                del uf['series'][str(sid)]
+            except:
+                pass
+        db.commit()
+        save_uf(uf)
+        app.logger.info('cleanup_series done: %d deleted titles' % len(purge))
+        return len(purge)
+    except Exception as err:
+        app.logger.error('cleanup_series failed: %r' % err)
+        db.rollback()
+        raise err

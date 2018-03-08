@@ -30,16 +30,27 @@
         337749,
         332027,
         342206,
-        "tt6333056",
-        "tt3799694",
-        "tt2406566",
+        343669,
+        "tt0120669",
+        "tt0310775",
+        "tt0405094",
+        "tt2078552",
         "tt1124037",
         "tt2436682",
-        "tt2078552",
-        "tt0405094",
-        "tt0310775",
-        "tt0120669",
-        343669
+        "tt3799694",
+        "tt2406566",
+        "tt6333056",
+        "tt4633694",
+        272644,
+        281537,
+        311876,
+        123581,
+        290853,
+        276312,
+        274431,
+        262980,
+        328756,
+        295743
     ],
     "movies": {
         "tt0032553": {
@@ -526,7 +537,8 @@
         "tt0087182": {
             "collected": false,
             "name": "Dune",
-            "rating": 3,
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1151,13 +1163,16 @@
         "tt0118799": {
             "collected": false,
             "name": "Life Is Beautiful",
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
         "tt0118929": {
             "collected": false,
             "name": "Dark City",
-            "rating": 3,
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1185,7 +1200,8 @@
         "tt0119174": {
             "collected": false,
             "name": "The Game",
-            "rating": 3,
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1206,7 +1222,8 @@
         "tt0119396": {
             "collected": false,
             "name": "Jackie Brown",
-            "rating": 4,
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1244,7 +1261,8 @@
         "tt0120201": {
             "collected": false,
             "name": "Starship Troopers",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1286,7 +1304,8 @@
         "tt0120655": {
             "collected": false,
             "name": "Dogma",
-            "rating": 4,
+            "rating": 3,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1307,7 +1326,8 @@
         "tt0120685": {
             "collected": false,
             "name": "Godzilla",
-            "rating": 3,
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1370,7 +1390,8 @@
         "tt0120907": {
             "collected": false,
             "name": "eXistenZ",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1653,7 +1674,8 @@
         "tt0209958": {
             "collected": false,
             "name": "The Cell",
-            "rating": 2,
+            "rating": 1,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1807,7 +1829,8 @@
         "tt0296572": {
             "collected": false,
             "name": "The Chronicles of Riddick",
-            "rating": 3,
+            "rating": 2,
+            "subtitles": [],
             "watched": true,
             "watchlist": false
         },
@@ -1954,7 +1977,7 @@
         "tt0361748": {
             "collected": false,
             "name": "Inglourious Basterds",
-            "rating": 3,
+            "rating": 2,
             "watched": true,
             "watchlist": false
         },
@@ -2095,7 +2118,7 @@
         "tt0386032": {
             "collected": false,
             "name": "Sicko",
-            "rating": 3,
+            "rating": 2,
             "watched": true,
             "watchlist": false
         },
@@ -2363,7 +2386,7 @@
         "tt0463854": {
             "collected": false,
             "name": "28 Weeks Later",
-            "rating": 3,
+            "rating": 2,
             "watched": true,
             "watchlist": false
         },
@@ -2496,7 +2519,7 @@
         "tt0796366": {
             "collected": false,
             "name": "Star Trek",
-            "rating": 3,
+            "rating": 2,
             "watched": true,
             "watchlist": false
         },
@@ -2658,7 +2681,7 @@
         "tt0993846": {
             "collected": false,
             "name": "The Wolf of Wall Street",
-            "rating": 2,
+            "rating": 3,
             "subtitles": [
                 "eng",
                 "und",
@@ -2977,7 +3000,7 @@
         "tt1276104": {
             "collected": false,
             "name": "Looper",
-            "rating": 2,
+            "rating": 1,
             "watched": true,
             "watchlist": false
         },
@@ -3005,7 +3028,7 @@
         "tt1323594": {
             "collected": false,
             "name": "Despicable Me",
-            "rating": 2,
+            "rating": 1,
             "watched": true,
             "watchlist": false
         },
@@ -3040,7 +3063,7 @@
         "tt1343092": {
             "collected": false,
             "name": "The Great Gatsby",
-            "rating": 4,
+            "rating": 3,
             "subtitles": [
                 "eng",
                 "ita"
@@ -3101,7 +3124,7 @@
         "tt1371111": {
             "collected": false,
             "name": "Cloud Atlas",
-            "rating": 2,
+            "rating": 1,
             "watched": true,
             "watchlist": false
         },
@@ -3576,8 +3599,8 @@
         },
         "tt1899353": {
             "collected": false,
-            "name": "The Raid: Redemption",
-            "rating": 3,
+            "name": "The Raid",
+            "rating": 2,
             "watched": true,
             "watchlist": false
         },
@@ -3792,7 +3815,7 @@
         "tt2193215": {
             "collected": false,
             "name": "The Counselor",
-            "rating": 2,
+            "rating": 1,
             "subtitles": [
                 "und"
             ],
@@ -3853,7 +3876,7 @@
         "tt2265398": {
             "collected": false,
             "name": "Drinking Buddies",
-            "rating": 3,
+            "rating": 2,
             "subtitles": [
                 "eng"
             ],
@@ -4554,59 +4577,6 @@
             },
             "watchlist": true
         },
-        "123581": {
-            "collected": {},
-            "name": "Episodes",
-            "rating": 3,
-            "tags": [
-                "favorite"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                ],
-                "3": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                ],
-                "4": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                ]
-            },
-            "watchlist": false
-        },
         "153021": {
             "collected": {
                 "8": {
@@ -4824,19 +4794,7 @@
             "watchlist": true
         },
         "247897": {
-            "collected": {
-                "7": {
-                    "3": [
-                        "eng",
-                        "und",
-                        "ita"
-                    ],
-                    "4": [
-                        "eng",
-                        "ita"
-                    ]
-                }
-            },
+            "collected": {},
             "name": "Homeland",
             "rating": 4,
             "tags": [
@@ -4929,7 +4887,9 @@
                 ],
                 "7": [
                     1,
-                    2
+                    2,
+                    3,
+                    4
                 ]
             },
             "watchlist": true
@@ -5309,11 +5269,7 @@
             "watchlist": true
         },
         "261109": {
-            "collected": {
-                "4": {
-                    "4": []
-                }
-            },
+            "collected": {},
             "name": "Shetland",
             "rating": 4,
             "tags": [
@@ -5344,82 +5300,11 @@
                 "4": [
                     1,
                     2,
-                    3
+                    3,
+                    4
                 ]
             },
             "watchlist": true
-        },
-        "262980": {
-            "collected": {},
-            "name": "House of Cards (US)",
-            "rating": 4,
-            "tags": [
-                "favorite",
-                "netflix"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ],
-                "3": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ],
-                "4": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ]
-            },
-            "watchlist": false
         },
         "263365": {
             "collected": {},
@@ -5572,6 +5457,9 @@
                     "14": [
                         "eng",
                         "ita"
+                    ],
+                    "15": [
+                        "eng"
                     ],
                     "2": [
                         "ita",
@@ -5958,50 +5846,6 @@
             },
             "watchlist": false
         },
-        "272644": {
-            "collected": {},
-            "name": "12 Monkeys",
-            "rating": 3,
-            "tags": [
-                "favorite"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ],
-                "3": [
-                    1
-                ]
-            },
-            "watchlist": false
-        },
         "273181": {
             "collected": {},
             "name": "Better Call Saul",
@@ -6048,118 +5892,6 @@
                 ]
             },
             "watchlist": true
-        },
-        "274431": {
-            "collected": {},
-            "name": "Gotham",
-            "rating": 2,
-            "tags": [
-                "favorite"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21,
-                    22
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21,
-                    22
-                ],
-                "3": [
-                    1,
-                    2,
-                    3,
-                    4
-                ]
-            },
-            "watchlist": false
-        },
-        "276312": {
-            "collected": {},
-            "name": "From Dusk Till Dawn: The Series",
-            "rating": 2,
-            "tags": [
-                "favorite"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10
-                ],
-                "3": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10
-                ]
-            },
-            "watchlist": false
         },
         "276564": {
             "collected": {},
@@ -6379,47 +6111,6 @@
             },
             "watchlist": true
         },
-        "281537": {
-            "collected": {},
-            "name": "Aquarius (2015)",
-            "rating": 4,
-            "tags": [
-                "favorite"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ]
-            },
-            "watchlist": false
-        },
         "281662": {
             "collected": {},
             "name": "Marvel's Daredevil",
@@ -6533,7 +6224,23 @@
             "watchlist": true
         },
         "284190": {
-            "collected": {},
+            "collected": {
+                "2": {
+                    "1": [],
+                    "10": [],
+                    "11": [],
+                    "12": [],
+                    "13": [],
+                    "2": [],
+                    "3": [],
+                    "4": [],
+                    "5": [],
+                    "6": [],
+                    "7": [],
+                    "8": [],
+                    "9": []
+                }
+            },
             "name": "Marvel's Jessica Jones",
             "rating": 4,
             "tags": [
@@ -6703,36 +6410,6 @@
             },
             "watchlist": true
         },
-        "290853": {
-            "collected": {},
-            "name": "Fear the Walking Dead",
-            "rating": 3,
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                ],
-                "2": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12
-                ]
-            },
-            "watchlist": false
-        },
         "292050": {
             "collected": {},
             "name": "Gangland Undercover",
@@ -6799,38 +6476,6 @@
                     7,
                     8,
                     9
-                ]
-            },
-            "watchlist": false
-        },
-        "295743": {
-            "collected": {},
-            "name": "Limitless",
-            "rating": 3,
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21,
-                    22
                 ]
             },
             "watchlist": false
@@ -7090,24 +6735,6 @@
                 ]
             },
             "watchlist": true
-        },
-        "311876": {
-            "collected": {},
-            "name": "Designated Survivor",
-            "tags": [
-                "evaluate"
-            ],
-            "watched": {
-                "1": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                ]
-            },
-            "watchlist": false
         },
         "311900": {
             "collected": {
@@ -7429,7 +7056,11 @@
             "watchlist": true
         },
         "331821": {
-            "collected": {},
+            "collected": {
+                "1": {
+                    "4": []
+                }
+            },
             "name": "The Looming Tower",
             "watched": {
                 "1": [
@@ -7464,9 +7095,7 @@
             "watchlist": true
         },
         "332331": {
-            "collected": {
-                "1": {}
-            },
+            "collected": {},
             "name": "Altered Carbon",
             "watched": {},
             "watchlist": true

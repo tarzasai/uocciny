@@ -71,10 +71,10 @@ export class DataService {
             );
     }
 
-    import(args: any): Observable<any> {
+    import(): Observable<any> {
         var url = this.config.apiHost + '/importimdb';
         return this.http
-            .get<ServerResult>([url, this.args2uri(args)].join('?'))
+            .post<ServerResult>(url, null)
             .pipe(
                 map(res => {
                     if (res.isError)
@@ -82,7 +82,22 @@ export class DataService {
                     this.messages.addInfo(sprintf('%d movie(s) added to the watchlist', res.result.length));
                     return res.result;
                 }),
-                catchError(this.handleError('update', []))
+                catchError(this.handleError('import', []))
+            );
+    }
+
+    cleanup(): Observable<any> {
+        var url = this.config.apiHost + '/cleanup';
+        return this.http
+            .post<ServerResult>(url, null)
+            .pipe(
+                map(res => {
+                    if (res.isError)
+                        throw res.result;
+                    this.messages.addInfo(sprintf('%d orphan title(s) deleted.', res.result));
+                    return res.result;
+                }),
+                catchError(this.handleError('cleanup', 0))
             );
     }
 
