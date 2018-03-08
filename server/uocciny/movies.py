@@ -31,12 +31,7 @@ class Movie(Base):
         self.imdb_id = imdb_id
 
     def __repr__(self):
-        name = ''
-        try:
-            name = self.name if self.name else 'N/A'
-        except Exception as err:
-            name = str(err)
-        return '<Movie %s - %s>' % (self.imdb_id, name)
+        return '<Movie %s>' % self.imdb_id
 
     def is_old(self):
         if self.updated is None:
@@ -155,35 +150,35 @@ def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None
 
     if watchlist is not None:
         movrec['watchlist'] = movobj['watchlist'] = watchlist
+        if watchlist:
+            movrec['watched'] = movobj['watched'] = False
+            movrec['rating'] = movobj['rating'] = 0
     if collected is not None:
         movrec['collected'] = movobj['collected'] = collected
+        if collected:
+            movrec['watchlist'] = movobj['watchlist'] = False
+        else:
+            movrec['subtitles'] = movobj['subtitles'] = []
     if watched is not None:
         movrec['watched'] = movobj['watched'] = watched
-    if rating > 0:
+        if watched:
+            movrec['watchlist'] = movobj['watchlist'] = False
+        else:
+            movrec['rating'] = movobj['rating'] = 0
+    if rating is not None:
         movrec['rating'] = movobj['rating'] = rating if rating <= 5 else 5
 
     uf = get_uf()
     uf.setdefault('movies', {})[imdb_id] = movobj
 
-    if movrec['rating'] < 0:
+    if not (movrec['watchlist'] or movrec['collected'] or movrec['watched']):
+        del uf['movies'][imdb_id]
+    elif movrec['rating'] < 0:
         uf.setdefault('banned', []).append(imdb_id)
         del uf['movies'][imdb_id]
-    elif not (movrec['watchlist'] or movrec['collected'] or movrec['watched']):
-        del uf['movies'][imdb_id]
-    else:
-        if imdb_id in uf.get('banned', []):
-            uf['banned'].remove(imdb_id)
-        if movrec['watchlist']:
-            movrec['watched'] = movobj['watched'] = False
-            movrec['rating'] = movobj['rating'] = 0
-        if movrec['collected']:
-            movrec['watchlist'] = movobj['watchlist'] = False
-        else:
-            movrec['subtitles'] = movobj['subtitles'] = []
-        if movrec['watched']:
-            movrec['watchlist'] = movobj['watchlist'] = False
-        else:
-            movrec['rating'] = movobj['rating'] = 0
+        movrec['banned'] = True
+    elif imdb_id in uf.get('banned', []):
+        uf['banned'].remove(imdb_id)
 
     save_uf(uf)
     return [movrec]

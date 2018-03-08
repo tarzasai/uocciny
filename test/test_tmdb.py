@@ -3,7 +3,7 @@ import operator
 import tmdbsimple as tmdb
 
 tmdb.API_KEY = '4cb75e343ed38c533e19f547c44cf5d0'
-res = tmdb.Movies('tt0120689').info(language='en', append_to_response='credits,images')
+res = tmdb.Movies('tt0092086').info(language='en', append_to_response='credits,images')
 
 print ', '.join([g['name'] for g in res['genres']]) if res['genres'] else None
 print datetime.strptime(res['release_date'], '%Y-%m-%d') if res['release_date'] != '' else None

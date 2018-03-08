@@ -14,10 +14,14 @@ export class Title {
     available: any;
 
     constructor(data: any) {
+        if (!data)
+            throw new Error('Invalid data!');
         this.load(data);
     }
 
     load(value:any) {
+        if (value == null)
+            return;
         this.data = value;
         if (this.data.subtitles) {
             this.data.subtitles.sort();

@@ -3,7 +3,7 @@ import json
 import re
 import requests
 
-from uocciny import app
+from uocciny import app, get_uf
 from movies import read_from_uoccin, set_movie
 
 
@@ -11,7 +11,7 @@ def import_imdb_watchlist():
     res = []
     for mid in get_imdb_ids():
         app.logger.debug('import_imdb_watchlist: checking title %s...' % mid)
-        if read_from_uoccin(mid) is None:
+        if read_from_uoccin(mid) is None and mid not in get_uf().get('banned', []):
             res.extend(set_movie(mid, watchlist=True))
     return res
 

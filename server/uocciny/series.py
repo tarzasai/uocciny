@@ -23,6 +23,7 @@ class Series(Base):
     airsDay = Column(Integer)
     runtime = Column(Integer)
     firstAired = Column(DateTime)
+    lastAired = Column(DateTime)
     poster = Column(String)
     banner = Column(String)
     updated = Column(DateTime)
@@ -35,11 +36,19 @@ class Series(Base):
         if self.updated is None:
             return True
         age = (datetime.now() - self.updated).days
+
+        '''app.logger.debug('is_old:"%s" - age:%d - first:%d - last:%d' % (self.name, age,
+            (datetime.now() - self.firstAired).days, (datetime.now() - self.lastAired).days))'''
+
         if self.firstAired is None:
             return age > 7
         if (datetime.now() - self.firstAired).days <= 30:
             return age > 15
-        if (datetime.now() - self.firstAired).days > (15 * 365):
+        if self.lastAired is None:
+            return age > 7
+        if (datetime.now() - self.lastAired).days <= 15:
+            return age > 7
+        if (datetime.now() - self.lastAired).days > (5 * 365):
             return age > 180
         return age > 30
     
@@ -145,6 +154,9 @@ def update_from_tvdb(series):
                 episode.plot = ep['overview'] if ep['overview'] else None
                 episode.firstAired = datetime.strptime(ep['firstAired'], '%Y-%m-%d') if ep['firstAired'] else None
                 db.add(episode)
+                if episode.firstAired is not None and episode.firstAired <= datetime.now() and\
+                    (series.lastAired is None or episode.firstAired > series.lastAired):
+                    series.lastAired = episode.firstAired
                 try:
                     app.logger.info('updating %r...' % episode)
                     ep = tvdb.get_episode(eid)['data']
@@ -243,7 +255,9 @@ def get_series_list(watchlist=None, collected=None, missing=None, available=None
         collected = True
     res = []
     for sid, itm in get_uf().get('series', {}).iteritems():
-        if ((watchlist is None or watchlist == itm['watchlist']) and
+        if ((missing is None or itm['watchlist']) and
+            (available is None or len(itm['collected']) > 0) and
+            (watchlist is None or watchlist == itm['watchlist']) and
             (collected is None or collected == (len(itm['collected']) > 0))):
             obj = get_metadata(dict({'tvdb_id': int(sid)}, **itm))
             if ((missing is None or (obj['watchlist'] and missing == (obj['episodes']['summary']['missing'] > 0))) and

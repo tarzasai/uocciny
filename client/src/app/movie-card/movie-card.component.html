@@ -42,7 +42,7 @@
 
         <div class="tools">
             <div class="btn-group" role="group">
-                <div class="btn-group" *ngIf="!(movie.watchlist || movie.collected || movie.watched)" title="Delete all data">
+                <div class="btn-group" *ngIf="movie.watchlist" title="Ban movie">
                     <button type="button" class="btn btn-sm btn-danger" (click)="trashMovie()">
                         <i class="fa fa-lg fa-ban"></i>
                     </button>

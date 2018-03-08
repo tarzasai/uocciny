@@ -215,7 +215,8 @@ export class AppComponent {
             result.forEach(function (itm) {
                 res.push(new Movie(itm));
             });
-            this.setRows(this.titleList.concat(res));
+            if (res.length > 0)
+                this.setRows(this.titleList.concat(res));
             this.api.unlockScreen();
         });
     }
