@@ -2,9 +2,9 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { sprintf } from 'sprintf';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
-import { catchError, map, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 
 import { ConfigService } from '../utils/config.service';
@@ -49,7 +49,6 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    //this.messages.addInfo('fetched data');
                     return res.result;
                 }),
                 catchError(this.handleError('retrieve', []))
@@ -64,7 +63,6 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    //this.messages.addInfo('updated data');
                     return res.result;
                 }),
                 catchError(this.handleError('update', []))
@@ -79,7 +77,7 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    this.messages.addInfo(sprintf('%d movie(s) added to the watchlist', res.result.length));
+                    this.messages.addInfo(sprintf('%d movie(s) added.', res.result.length));
                     return res.result;
                 }),
                 catchError(this.handleError('import', []))
@@ -94,7 +92,7 @@ export class DataService {
                 map(res => {
                     if (res.isError)
                         throw res.result;
-                    this.messages.addInfo(sprintf('%d orphan title(s) deleted.', res.result));
+                    this.messages.addInfo(sprintf('%d orphan(s) deleted.', res.result));
                     return res.result;
                 }),
                 catchError(this.handleError('cleanup', 0))

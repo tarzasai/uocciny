@@ -2,25 +2,21 @@
 
 html,
 body {
-    /*margin: 0;
-    height: 100%;*/
     font-family: 'Roboto Condensed', sans-serif;
+    color: darkslategray;
 }
 
 a {
     color: #0B3861;
 }
 
-::-webkit-input-placeholder,
-::-ms-input-placeholder,
-::-moz-placeholder,
-::placeholder {
-    color: #D8D8D8;
-}
-
 .btn-sm, .btn-group-sm > .btn {
     line-height: 22px;
     padding: 5px 9px;
+}
+
+.bold {
+    font-weight: bold !important;
 }
 
 /*
@@ -37,7 +33,9 @@ app-root {
 }
 
 
-/* per far funzionare la agGrid in un layout flexbox */
+/*
+per far funzionare la agGrid in un layout flexbox:
+*/
 #borderLayout_eRootPanel {
     display: flex !important;
     flex-grow: 1;
@@ -67,23 +65,13 @@ ag-grid-angular {
 }
 
 
-/**/
-.bold {
-    font-weight: bold !important;
-}
-
-title-parent,
-title-cell,
-app-movie-card,
-app-series-card {
-    display: flex;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
+/*
+servono questi stili per controllare (più che altro "contenere") le dimensioni
+delle modal di bootstrap, ma la cosa peggiore è che devono stare qui, perchè
+se si mettono nel css del componente specifico (SeriesForm) non hanno effetto,
+perchè le suddette classi e il tag "app-series-form" sono esterni allo scopo
+di quel css...
+*/
 .modal-dialog,
 .modal-content {
     display: flex;
@@ -93,11 +81,9 @@ app-series-card {
     margin-left: auto;
     margin-right: auto;
 }
-
 .modal-dialog {
     max-height: 90%;
 }
-
 app-series-form {
     display: flex;
     position: relative;
@@ -108,7 +94,6 @@ app-series-form {
 
 
 /**/
-
 .card {
     display: flex;
     position: relative;
@@ -118,10 +103,11 @@ app-series-form {
     background-color: white;
     box-shadow: 2px 2px 10px darkgray;
     border: 1px solid darkgrey;
-    border-radius: 3px;
+    border-radius: 4px;
     line-height: 116%;
     font-size: 90%;
     padding: 0;
+    overflow: hidden;
 }
 
 .poster {
@@ -155,7 +141,6 @@ app-series-form {
     flex-shrink: 1;
     flex-basis: auto;
     flex-direction: column;
-    color: darkslategray;
     overflow: hidden;
 }
 

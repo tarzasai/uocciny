@@ -2,11 +2,10 @@
 import operator
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 import tmdbsimple as tmdb
 
 from uocciny import app, get_uf, save_uf
-from database import Base, get_db, row2dict
+from uocciny.database import Base, get_db, row2dict
 
 
 class Movie(Base):
@@ -54,12 +53,12 @@ def read_from_tmdb(imdb_id):
     try:
         return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits,images')
     except Exception as err:
-        app.logger.debug('read_from_tmdb: ' + str(err))
+        app.logger.debug('read_from_tmdb: %r', err)
         return None
 
 
 def update_from_tmdb(movie):
-    app.logger.info('updating %r...' % movie)
+    app.logger.info('updating %r...', movie)
     exists = movie.updated is not None
     db = get_db()
     try:
@@ -80,7 +79,7 @@ def update_from_tmdb(movie):
         movie.posterWidth = 780
         movie.posterHeight = 1170
         imgs = obj.get('images', {}).get('posters', [])
-        if len(imgs):
+        if len(imgs): #pylint: disable=C1801
             imgs = sorted(imgs, key=operator.itemgetter('vote_average'), reverse=True)
             movie.poster = imgs[0]['file_path']
             movie.posterWidth = imgs[0]['width']
@@ -90,10 +89,9 @@ def update_from_tmdb(movie):
         if not exists:
             db.add(movie)
         db.commit()
-        app.logger.info('updated %r' % movie)
+        app.logger.info('updated %r', movie)
     except Exception as err:
-        #app.logger.error('update failed for %r: %s' % (movie, str(err)))
-        app.logger.error('update failed for %r: %r' % (movie, err))
+        app.logger.error('update failed for %r: %r', movie, err)
         db.rollback()
         movie.error = str(err)
 
@@ -113,7 +111,7 @@ def get_metadata(movie, forceRefresh=False):
 
 
 def get_movie(imdb_id, forceRefresh):
-    app.logger.debug('get_movie: imdb_id=%s' % imdb_id)
+    app.logger.debug('get_movie: imdb_id=%s', imdb_id)
     obj = read_from_uoccin(imdb_id)
     if obj is None:
         return []
@@ -121,8 +119,8 @@ def get_movie(imdb_id, forceRefresh):
 
 
 def get_movlst(watchlist=None, collected=None, missing=None, watched=None):
-    app.logger.debug('get_movlst: watchlist=%s, collected=%s, missing=%s, watched=%s' %
-        (watchlist, collected, missing, watched))
+    app.logger.debug('get_movlst: watchlist=%s, collected=%s, missing=%s, watched=%s',
+        watchlist, collected, missing, watched)
     res = []
     for mid, itm in get_uf().get('movies', {}).iteritems():
         if ((watchlist is None or itm['watchlist'] == watchlist) and
@@ -135,8 +133,8 @@ def get_movlst(watchlist=None, collected=None, missing=None, watched=None):
 
 
 def set_movie(imdb_id, watchlist=None, collected=None, watched=None, rating=None):
-    app.logger.debug('set_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s' %
-        (imdb_id, watchlist, collected, watched, rating))
+    app.logger.debug('set_movie: imdb_id=%s, watchlist=%s, collected=%s, watched=%s, rating=%s',
+        imdb_id, watchlist, collected, watched, rating)
     movobj = read_from_uoccin(imdb_id)
     if movobj is None:
         movobj = {
@@ -201,13 +199,13 @@ def cleanup_movies():
             db.query(Movie).filter(Movie.imdb_id == mid).delete()
             try:
                 del uf['movies'][mid]
-            except:
+            except Exception:
                 pass
         db.commit()
         save_uf(uf)
-        app.logger.info('cleanup_movies done: %d deleted titles' % len(purge))
+        app.logger.info('cleanup_movies done: %d deleted titles', len(purge))
         return len(purge)
     except Exception as err:
-        app.logger.error('cleanup_movies failed: %r' % err)
+        app.logger.error('cleanup_movies failed: %r', err)
         db.rollback()
         raise err
