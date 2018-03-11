@@ -1,7 +1,7 @@
 <div id="LinkBar">
     <div class="btn-group" *ngFor="let view of ViewTypes | values">
         <button type="button" class="btn" (click)="getData(view);"
-            [class.btn-danger]="view === activeView"
+            [class.btn-success]="view === activeView"
             [class.btn-primary]="view != activeView">
             <div><i class="fa {{view.icon}}"></i></div>
             <span>{{view.label}}</span>

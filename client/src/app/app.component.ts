@@ -28,7 +28,7 @@ const VIEW_TYPES = {
     },
     available: {
         tag: 'available',
-        icon: 'fa-hdd-o',
+        icon: 'fa-play-circle',
         label: 'Available',
         movies: {
             collected: 1,
@@ -50,6 +50,18 @@ const VIEW_TYPES = {
             missing: 1
         },
         episode: EpisodePreview.missing
+    },
+    collected: {
+        tag: 'collected',
+        icon: 'fa-hdd-o',
+        label: 'Collected',
+        movies: {
+            collected: 1
+        },
+        series: {
+            collected: 1
+        },
+        episode: EpisodePreview.any
     },
     everything: {
         tag: 'everything',
@@ -100,8 +112,9 @@ export class AppComponent {
             if (
                 title.data.banned ||
                 (this.activeView === VIEW_TYPES.watchlist && !title.watchlist) ||
-                (this.activeView === VIEW_TYPES.missing && !title.missing) ||
                 (this.activeView === VIEW_TYPES.available && !title.available) ||
+                (this.activeView === VIEW_TYPES.missing && !title.missing) ||
+                (this.activeView === VIEW_TYPES.collected && !title.collected) ||
                 (title.isMovie && !(title.watched || title.collected || title.watchlist))
             )
                 this.removeTitle(title);
