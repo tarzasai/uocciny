@@ -7,6 +7,7 @@ setup(
     install_requires=[
         'flask',
         'flask_cors',
+        'flipflop',
         'sqlalchemy',
         'tmdbsimple',
         'tvdb_client'

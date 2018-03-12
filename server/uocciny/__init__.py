@@ -49,6 +49,7 @@ CORS(app, resources=r'/*')
 logging.getLogger('flask_cors').level = logging.DEBUG
 
 
+# pylint: disable=W0212
 def get_uf():
     fn = os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json')
     ft = time.ctime(os.path.getmtime(fn))
@@ -59,14 +60,17 @@ def get_uf():
             uf = g._uoccinfile = json.load(f)
         app.logger.debug('reloaded ' + fn)
     return uf
+# pylint: enable=W0212
 
 
+# pylint: disable=W0212
 def save_uf(data):
     fn = os.path.join(app.config['UOCCIN_PATH'], 'uoccin.json')
     with open(fn, 'w+') as f:
         json.dump(data, f, indent=4, separators=(',', ': '), sort_keys=True)
     g._uoccinfile = data
     g._uoccintime = time.ctime(os.path.getmtime(fn))
+# pylint: enable=W0212
 
 
 @app.teardown_appcontext
@@ -96,10 +100,11 @@ def handle_internal_error(err):
     return jsonify({'status': 500, 'result': str(err)}), 200
 
 
-#
-from movies import get_movie, get_movlst, set_movie, cleanup_movies
-from series import get_series, get_serlst, get_episode, get_epilst, set_series, set_season, set_episode, cleanup_series
-from wimdb import import_imdb_watchlist
+# pylint: disable=C0413
+from uocciny.movies import get_movie, get_movlst, set_movie, cleanup_movies
+from uocciny.series import get_series, get_serlst, get_episode, get_epilst, set_series, set_season, set_episode, cleanup_series
+from uocciny.wimdb import import_imdb_watchlist
+# pylint: enable=C0413
 
 
 @app.route('/')
