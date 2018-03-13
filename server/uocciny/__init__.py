@@ -100,6 +100,28 @@ def handle_internal_error(err):
     return jsonify({'status': 500, 'result': str(err)}), 200
 
 
+def prm2bool(args, name):
+    if name not in args:
+        return None
+    try:
+        if int(args[name]) == 1:
+            return True
+        if int(args[name]) == 0:
+            return False
+        raise Exception('asd')
+    except Exception:
+        raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
+
+
+def prm2int(args, name):
+    if name not in args:
+        return None
+    try:
+        return int(args[name])
+    except Exception:
+        raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
+
+
 # pylint: disable=C0413
 from uocciny.movies import get_movie, get_movlst, set_movie, cleanup_movies
 from uocciny.series import get_series, get_serlst, get_episode, get_epilst, set_series, set_season, set_episode, cleanup_series
@@ -115,8 +137,10 @@ def index():
 @app.route('/movies', methods=['GET', 'OPTIONS'])
 def view_movies():
     imdb_id = request.args.get('imdb_id', None)
-    res = get_movie(imdb_id, prm2bool(request.args, 'refresh')) if imdb_id\
-        else get_movlst(
+    if imdb_id:
+        res = get_movie(imdb_id, prm2bool(request.args, 'refresh'))
+    else:
+        res = get_movlst(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),
             missing=prm2bool(request.args, 'missing'),
@@ -128,8 +152,10 @@ def view_movies():
 @app.route('/series', methods=['GET', 'OPTIONS'])
 def view_series():
     tvdb_id = prm2int(request.args, 'tvdb_id')
-    res = get_series(tvdb_id, prm2bool(request.args, 'refresh')) if tvdb_id\
-        else get_serlst(
+    if tvdb_id:
+        res = get_series(tvdb_id, prm2bool(request.args, 'refresh'))
+    else:
+        res = get_serlst(
             watchlist=prm2bool(request.args, 'watchlist'),
             collected=prm2bool(request.args, 'collected'),
             missing=prm2bool(request.args, 'missing'),
@@ -141,8 +167,10 @@ def view_series():
 @app.route('/episodes', methods=['GET', 'OPTIONS'])
 def view_episodes():
     tvdb_id = prm2int(request.args, 'tvdb_id')
-    res = get_episode(tvdb_id) if tvdb_id\
-        else get_epilst(
+    if tvdb_id:
+        res = get_episode(tvdb_id)
+    else:
+        res = get_epilst(
             int(request.args['series']), ## obbligatorio
             season=prm2int(request.args, 'season'),
             episode=prm2int(request.args, 'episode'),
@@ -214,28 +242,6 @@ def import_imdb():
 @app.route('/cleanup', methods=['POST'])
 def cleanup_db():
     return jsonify({'status': 200, 'result': cleanup_movies() + cleanup_series()})
-
-
-def prm2bool(args, name):
-    if name not in args:
-        return None
-    try:
-        if int(args[name]) == 1:
-            return True
-        if int(args[name]) == 0:
-            return False
-        raise Exception('asd')
-    except Exception:
-        raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
-
-
-def prm2int(args, name):
-    if name not in args:
-        return None
-    try:
-        return int(args[name])
-    except Exception:
-        raise Exception('Invalid value for parameter "%s": "%s"' % (name, args[name]))
 
 
 if __name__ == '__main__':

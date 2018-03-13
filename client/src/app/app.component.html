@@ -1,13 +1,15 @@
 <div id="LinkBar">
-    <div class="btn-group" *ngFor="let view of ViewTypes | values">
+    <div class="btn-group" *ngFor="let view of ViewTypes | values; last as lastView">
         <button type="button" class="btn" (click)="getData(view);"
-            [class.btn-success]="view === activeView"
+            [class.lastView]="lastView"
+            [class.selected]="view === activeView"
+            [class.btn-danger]="view === activeView"
             [class.btn-primary]="view != activeView">
             <div><i class="fa {{view.icon}}"></i></div>
             <span>{{view.label}}</span>
         </button>
     </div>
-    <div class="btn-group accessory">
+    <div class="btn-group">
         <button type="button" class="btn btn-success" (click)="importIMDB();"
             *ngIf="activeView && activeView.tag === 'watchlist'">
             <div><i class="fa fa-imdb"></i></div><span>Import</span>

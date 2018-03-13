@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { GridOptions } from 'ag-grid/main';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -83,8 +83,8 @@ export class AppComponent {
     MessageType = MessageType;
     ViewTypes = VIEW_TYPES;
 
-    activeView = null;
     updateListener: Subscription;
+    activeView = null;
     titleList = [];
     titleGrid: GridOptions;
     titleCols = [];
@@ -92,8 +92,7 @@ export class AppComponent {
     titleFltr = null;
     colCount = 0;
 
-    constructor(private elref: ElementRef, private modals: ModalService, public messages: MessageService,
-        private api: DataService) {
+    constructor(private modals: ModalService, public messages: MessageService, private api: DataService) {
         //
         this.titleGrid = <GridOptions>{
             headerHeight: 0,
@@ -127,13 +126,13 @@ export class AppComponent {
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
-        this.setColumns(event.target.innerWidth);
+        this.setColumns();
     }
 
     onGridReady(params) {
         var grd: any = this,
             ctx: any = grd.context;
-        ctx.setColumns(ctx.elref.nativeElement.clientWidth);
+        ctx.setColumns();
         ctx.getData(VIEW_TYPES[localStorage.getItem('LastView') || 'available']);
     }
 
@@ -154,13 +153,21 @@ export class AppComponent {
                     res.push(new Movie(itm));
                 });
                 this.setRows(res);
+                this.setOffset();
                 this.api.unlockScreen();
             })
         });
     }
 
-    setColumns(pWidth) {
-        var tot = Math.max(1, Math.floor((pWidth - 124) / CELL_WIDTH));
+    setOffset() {
+        var w = window.innerWidth,
+            o = Math.floor((w - (this.colCount * CELL_WIDTH)) / 2);
+        //console.log('setOffset()', w, o);
+        this.titleGrid.columnApi.setColumnWidth('hdr', o, false);
+    }
+
+    setColumns() {
+        var tot = Math.max(1, Math.floor((window.innerWidth - 124) / CELL_WIDTH));
         if (tot != this.colCount) {
             this.colCount = tot;
             var cols = [];
@@ -178,7 +185,7 @@ export class AppComponent {
             this.titleCols = cols;
             this.setRows(); // bisogna rifare la distribuzione
         }
-        this.titleGrid.columnApi.setColumnWidth('hdr', Math.floor((pWidth - (this.colCount * CELL_WIDTH)) / 2), false);
+        this.setOffset();
     }
 
     setRows(values = null) {
