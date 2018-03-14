@@ -9,6 +9,7 @@ setup(
         'flask_cors',
         'sqlalchemy',
         'tmdbsimple',
-        'tvdb_client'
+        'tvdb_client',
+        'pywin32'
     ],
 )
