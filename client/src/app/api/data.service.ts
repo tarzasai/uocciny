@@ -47,7 +47,7 @@ export class DataService {
             .get<ServerResult>([url, this.args2uri(args)].join('?'))
             .pipe(
                 map(res => {
-                    if (res.isError)
+                    if (res.isError || res.status != 200)
                         throw res.result;
                     return res.result;
                 }),
@@ -61,7 +61,7 @@ export class DataService {
             .post<ServerResult>(url, args)
             .pipe(
                 map(res => {
-                    if (res.isError)
+                    if (res.isError || res.status != 200)
                         throw res.result;
                     return res.result;
                 }),
@@ -75,7 +75,7 @@ export class DataService {
             .post<ServerResult>(url, null)
             .pipe(
                 map(res => {
-                    if (res.isError)
+                    if (res.isError || res.status != 200)
                         throw res.result;
                     this.messages.addInfo(sprintf('%d movie(s) added.', res.result.length));
                     return res.result;
@@ -90,7 +90,7 @@ export class DataService {
             .post<ServerResult>(url, null)
             .pipe(
                 map(res => {
-                    if (res.isError)
+                    if (res.isError || res.status != 200)
                         throw res.result;
                     this.messages.addInfo(sprintf('%d orphan(s) deleted.', res.result));
                     return res.result;
@@ -121,7 +121,7 @@ export class DataService {
     private handleError<T>(operation = 'operation', result?: T) {
         return (error: any): Observable<T> => {
             console.error(error);
-            this.messages.addError(error.message, operation);
+            this.messages.addError(error.message || error, operation);
             return of(result as T);
         };
     }

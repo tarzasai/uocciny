@@ -92,13 +92,12 @@ def read_from_tvdb(tvdb_id):
     tvdb = ApiV2Client(None, app.config['TVDB_API_KEY'], None, language='en')
     tvdb.login()
     show = tvdb.get_series(tvdb_id)
-    app.logger.debug('find_series: ' + (show['data']['seriesName'] if 'data' in show else show['message']))
+    app.logger.debug('read_from_tvdb: %s', show['data']['seriesName'] if 'data' in show else show['message'])
     return tvdb, show.get('data', None)
 
 
 def update_from_tvdb(series, forced=False):
     if not (forced or series.need_full_update() or series.need_partial_update()):
-        #
         return
     app.logger.info('updating %r...', series)
     exists = series.updated is not None
@@ -172,7 +171,8 @@ def update_from_tvdb(series, forced=False):
     except Exception as err:
         app.logger.error('update failed for %r: %r', series, err)
         db.rollback()
-        series.error = str(err)
+        #series.error = str(err)
+        raise err
 
 
 def get_metadata(series, forceRefresh=False):
@@ -181,9 +181,13 @@ def get_metadata(series, forceRefresh=False):
     if rec is None:
         rec = Series()
         rec.tvdb_id = sid
-    update_from_tvdb(rec, forceRefresh)
+    try:
+        update_from_tvdb(rec, forceRefresh)
+    except Exception as err:
+        if rec.updated is None:
+            raise err
+        series['error'] = err.message
     series.update(row2dict(rec))
-    #series['new'] = rec.is_new()
     series['rating'] = series.get('rating', 0)
     # season list
     series['seasons'] = []

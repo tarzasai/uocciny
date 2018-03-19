@@ -50,11 +50,16 @@ def read_from_uoccin(imdb_id):
 
 
 def read_from_tmdb(imdb_id):
+    res = tmdb.Movies(imdb_id).info(language='en', append_to_response='credits,images')
+    app.logger.debug('read_from_tmdb: %s', res['title'])
+    return res
+    '''
     try:
         return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits,images')
     except Exception as err:
         app.logger.debug('read_from_tmdb: %r', err)
         return None
+    '''
 
 
 def update_from_tmdb(movie):
