@@ -17,4 +17,8 @@ export class ModalService {
             keyboard: true
         });
     }
+
+    openSearch(searchTerm) {
+        //
+    }
 }

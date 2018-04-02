@@ -125,7 +125,7 @@ def prm2int(args, name):
 # pylint: disable=C0413
 from uocciny.movies import get_movie, get_movlst, set_movie, cleanup_movies
 from uocciny.series import get_series, get_serlst, get_episode, get_epilst, set_series, set_season, set_episode, cleanup_series
-from uocciny.wimdb import import_imdb_watchlist
+from uocciny.tools import search_tvdb_series, import_imdb_watchlist
 # pylint: enable=C0413
 
 
@@ -232,6 +232,11 @@ def upd_episode():
         watched=prm2bool(prms, 'watched')
     )
     return jsonify({'status': 200, 'result': res})
+
+
+@app.route('/searchtvdb/<text>', methods=['GET', 'OPTIONS'])
+def search_tvdb(text):
+    return jsonify({'status': 200, 'result': search_tvdb_series(text)})
 
 
 @app.route('/importimdb', methods=['POST'])

@@ -25,6 +25,7 @@ import { TitleParentComponent } from './title-parent/title-parent.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { SeriesCardComponent } from './series-card/series-card.component';
 import { SeriesFormComponent } from './series-form/series-form.component';
+import { SearchFormComponent } from './search-form/search-form.component';
 
 /* */
 export function loadConfig(configService: ConfigService) {
@@ -64,11 +65,13 @@ export function loadConfig(configService: ConfigService) {
         MovieCardComponent,
         SeriesCardComponent,
         SeriesFormComponent,
+        SearchFormComponent,
         KeysPipe,
         ValuesPipe,
     ],
     entryComponents: [
         SeriesFormComponent,
+        SearchFormComponent,
     ],
     bootstrap: [
         AppComponent

@@ -69,6 +69,20 @@ export class DataService {
             );
     }
 
+    search(text): Observable<any> {
+        var url = this.config.apiHost + '/searchtvdb/' + text;
+        return this.http
+            .get<ServerResult>(url)
+            .pipe(
+                map(res => {
+                    if (res.isError || res.status != 200)
+                        throw res.result;
+                    return res.result;
+                }),
+                catchError(this.handleError('search', []))
+            );
+    }
+
     import(): Observable<any> {
         var url = this.config.apiHost + '/importimdb';
         return this.http

@@ -40,6 +40,10 @@ export class Series extends Title {
             this.available = new Episode(this.data.episodes.available);
     }
 
+    hasText(text) {
+        return super.hasText(text) || (this.data.tvdb_id + '').contains(text);
+    }
+
     sortKey():string {
         return super.sortKey() + (this.data.name || 'zzzzzzzzzz').toLocaleLowerCase();
     }

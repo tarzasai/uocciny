@@ -92,7 +92,7 @@ export class AppComponent {
     titleFltr = null;
     colCount = 0;
 
-    constructor(private modals: ModalService, public messages: MessageService, private api: DataService) {
+    constructor(public modals: ModalService, public messages: MessageService, private api: DataService) {
         //
         this.titleGrid = <GridOptions>{
             headerHeight: 0,
@@ -115,8 +115,9 @@ export class AppComponent {
                 (this.activeView === VIEW_TYPES.missing && !title.missing) ||
                 (this.activeView === VIEW_TYPES.collected && !title.collected) ||
                 (title.isMovie && !(title.watched || title.collected || title.watchlist))
-            )
+            ) {
                 this.removeTitle(title);
+            }
         });
     }
 
@@ -208,7 +209,8 @@ export class AppComponent {
                 }
                 n++;
             }
-            rows.push(row);
+            if (j > 0)
+                rows.push(row);
         }
         this.titleRows = rows;
     }

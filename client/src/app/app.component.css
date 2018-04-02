@@ -137,18 +137,28 @@
 .title-filter {
     display: flex;
     position: absolute;
-    justify-content: center;
+    flex-flow: row;
     background-color: #F2F2F2;
     box-shadow: 2px 2px 10px darkgray;
-    padding: 5px;
+    padding: 5px 20%;
     height: 40px;
     top: 0;
     left: 0;
     right: 0;
 }
 
-.title-filter input {
+.title-filter * {
     display: flex;
     position: relative;
-    width: 60%;
+    flex-flow: row;
+}
+
+.title-filter input {
+    width: 100%;
+}
+
+.title-filter .btn {
+    flex: 0 0 auto;
+    vertical-align: middle;
+    margin-left: 5px;
 }

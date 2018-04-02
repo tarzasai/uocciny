@@ -9,6 +9,10 @@ export class Episode extends Title {
         this.type = TitleType.episode;
     }
 
+    hasText(text) {
+        return super.hasText(text) || this.data.tvdb_id.contains(text);
+    }
+
     sortKey():string {
         return super.sortKey() + sprintf('%05d-%05d-%05d', this.data.series, this.data.season, this.data.episode);
     }

@@ -2,9 +2,21 @@
 import json
 import re
 import requests
+from tvdb_client import ApiV2Client
 
 from uocciny import app, get_uf
 from uocciny.movies import read_from_uoccin, set_movie
+
+
+def search_tvdb_series(text):
+    tvdb = ApiV2Client(None, app.config['TVDB_API_KEY'], None, language='en')
+    tvdb.login()
+    res = tvdb.search_series(name=text)
+    if 'data' not in res:
+        if res.get('code', 0) == 404:
+            return []
+        raise Exception(res.get('message', 'Unknown TVDB error'))
+    return res['data']
 
 
 def import_imdb_watchlist():

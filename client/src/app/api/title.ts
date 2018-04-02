@@ -33,7 +33,9 @@ export class Title {
     }
 
     hasText(text) {
-        return (this.data.name || '').toLocaleLowerCase().contains((text || '').toLocaleLowerCase());
+        text = text.toLocaleLowerCase();
+        return (this.data.name || '').toLocaleLowerCase().contains(text) ||
+            (this.data.imdb_id || '').toLocaleLowerCase().contains(text);
     }
 
     sortKey():string {
