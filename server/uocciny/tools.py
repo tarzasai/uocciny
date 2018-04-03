@@ -5,7 +5,8 @@ import requests
 from tvdb_client import ApiV2Client
 
 from uocciny import app, get_uf
-from uocciny.movies import read_from_uoccin, set_movie
+from uocciny.series import read_from_uoccin as series_from_uoccin
+from uocciny.movies import read_from_uoccin as movie_from_uoccin, set_movie
 
 
 def search_tvdb_series(text):
@@ -16,6 +17,11 @@ def search_tvdb_series(text):
         if res.get('code', 0) == 404:
             return []
         raise Exception(res.get('message', 'Unknown TVDB error'))
+    uf = get_uf()
+    for itm in res['data']:
+        ser = series_from_uoccin(itm['id']) or {}
+        itm['watchlist'] = ser.get('watchlist', False)
+        itm['banned'] = int(itm['id']) in uf.get('banned', [])
     return res['data']
 
 
@@ -23,7 +29,7 @@ def import_imdb_watchlist():
     res = []
     for mid in get_imdb_ids():
         app.logger.debug('import_imdb_watchlist: checking title %s...', mid)
-        if read_from_uoccin(mid) is None and mid not in get_uf().get('banned', []):
+        if movie_from_uoccin(mid) is None and mid not in get_uf().get('banned', []):
             res.extend(set_movie(mid, watchlist=True))
     return res
 

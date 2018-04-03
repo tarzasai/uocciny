@@ -75,7 +75,7 @@ class Episode(Base):
 
     def missing(self):
         series = read_from_uoccin(self.series)
-        return series is not None and self.aired() and not (self.collected() or self.watched())
+        return series is None or (self.aired() and not (self.collected() or self.watched()))
 
     def subtitles(self):
         series = read_from_uoccin(self.series)

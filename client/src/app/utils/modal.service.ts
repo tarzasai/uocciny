@@ -3,6 +3,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { SeriesFormComponent } from '../series-form/series-form.component';
+import { SearchFormComponent } from '../search-form/search-form.component';
 
 @Injectable()
 export class ModalService {
@@ -19,6 +20,10 @@ export class ModalService {
     }
 
     openSearch(searchTerm) {
-        //
+        this.modalRef = this.modalService.show(SearchFormComponent, {
+            initialState: { searchTerm: searchTerm },
+            animated: true,
+            keyboard: true
+        });
     }
 }

@@ -55,5 +55,14 @@
         *ngIf="titleFltr && titleFltr.length >= 3"
         [class.btn-success]="titleRows.length > 0"
         [class.btn-danger]="titleRows.length <= 0"
-        (click)="modals.openSearch(titleFltr)">TVDB</button>
+        (click)="modals.openSearch(titleFltr)">
+        <div><i class="fa fa-window-maximize"></i><span>TVDB</span></div>
+    </button>
+    <a class="btn btn-sm"
+        *ngIf="titleFltr && titleFltr.length >= 3"
+        [class.btn-success]="titleRows.length > 0"
+        [class.btn-danger]="titleRows.length <= 0"
+        href="http://www.imdb.com/search/title?title={{titleFltr}}" target="_blank">
+        <div><i class="fa fa-external-link"></i><span>IMDB</span></div>
+    </a>
 </div>

@@ -24,7 +24,8 @@ const VIEW_TYPES = {
         series: {
             watchlist: 1
         },
-        episode: EpisodePreview.upcoming
+        episode: EpisodePreview.upcoming,
+        watchlist: true
     },
     available: {
         tag: 'available',
@@ -37,7 +38,8 @@ const VIEW_TYPES = {
         series: {
             available: 1
         },
-        episode: EpisodePreview.available
+        episode: EpisodePreview.available,
+        available: true
     },
     missing: {
         tag: 'missing',
@@ -49,7 +51,8 @@ const VIEW_TYPES = {
         series: {
             missing: 1
         },
-        episode: EpisodePreview.missing
+        episode: EpisodePreview.missing,
+        missing: true
     },
     collected: {
         tag: 'collected',
@@ -61,7 +64,8 @@ const VIEW_TYPES = {
         series: {
             collected: 1
         },
-        episode: EpisodePreview.any
+        episode: EpisodePreview.any,
+        collected: true
     },
     everything: {
         tag: 'everything',
@@ -69,7 +73,8 @@ const VIEW_TYPES = {
         label: 'Everything',
         movies: null,
         series: null,
-        episode: EpisodePreview.any
+        episode: EpisodePreview.any,
+        everything: true
     },
 };
 
@@ -110,13 +115,37 @@ export class AppComponent {
             //console.log('onUpdate', title);
             if (
                 title.data.banned ||
-                (this.activeView === VIEW_TYPES.watchlist && !title.watchlist) ||
-                (this.activeView === VIEW_TYPES.available && !title.available) ||
-                (this.activeView === VIEW_TYPES.missing && !title.missing) ||
-                (this.activeView === VIEW_TYPES.collected && !title.collected) ||
+                (this.activeView.watchlist && !title.watchlist) ||
+                (this.activeView.available && !title.available) ||
+                (this.activeView.missing && !title.missing) ||
+                (this.activeView.collected && !title.collected) ||
                 (title.isMovie && !(title.watched || title.collected || title.watchlist))
             ) {
                 this.removeTitle(title);
+            } else {
+                var inlist = false,
+                    chk;
+                for (var i = 0; i < this.titleList.length; i++) {
+                    chk = this.titleList[i];
+                    if (chk.type === title.type && (
+                        (chk.isMovie && chk.imdb_id === title.imdb_id) ||
+                        (chk.isSeries && chk.data.tvdb_id === title.data.tvdb_id)
+                    )) {
+                        inlist = true;
+                        break;
+                    }
+                }
+                if (!inlist && !title.isEpisode && !title.data.banned && (
+                    this.activeView.everything ||
+                    (this.activeView.watchlist && title.watchlist) ||
+                    (this.activeView.available && title.available) ||
+                    (this.activeView.missing && title.missing) ||
+                    (this.activeView.collected && title.collected)
+                )) {
+                    var newlist = this.titleList.splice(0);
+                    newlist.push(title);
+                    this.setRows(newlist);
+                }
             }
         });
     }

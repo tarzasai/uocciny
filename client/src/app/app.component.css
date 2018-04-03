@@ -161,4 +161,26 @@
     flex: 0 0 auto;
     vertical-align: middle;
     margin-left: 5px;
+    padding: 3px 8px !important;
+}
+
+.title-filter .btn * {
+    display: flex;
+    flex-shrink: 0;
+    flex-grow: 0;
+    position: relative;
+    vertical-align: middle;
+}
+
+.title-filter .btn div {
+    height: 22px;
+}
+
+.title-filter .btn .fa {
+    margin: auto 5px auto 0;
+}
+
+.title-filter .btn span {
+    font-size: 105%;
+    font-weight: bold;
 }

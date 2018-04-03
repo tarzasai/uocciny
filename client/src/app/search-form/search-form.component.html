@@ -1,3 +1,33 @@
-<p>
-  search-form works!
-</p>
+<div class="modal-header">
+    TVDb results for "{{searchTerm}}"
+</div>
+<div class="modal-body">
+    <div class="wrapper">
+        <div class="box" *ngFor="let series of data">
+            <div class="banner">
+                <img src="https://www.thetvdb.com/banners/{{series.banner}}" width="100%"/>
+            </div>
+            <div class="title">
+                <a href="https://www.thetvdb.com/?tab=series&id={{series.id}}" target="_blank">
+                    {{series.seriesName}}
+                </a>
+                <i class="fa fa-external-link"></i>
+            </div>
+            <div class="plot">
+                {{series.overview}}
+            </div>
+            <div class="footer">
+                <div [class.ended]="series.status==='Ended'">
+                    {{series.firstAired.substr(0, 4)}} - {{series.status}}
+                </div>
+                <div class="spacer"></div>
+                <div *ngIf="series.watchlist" [style.opacity]="0.5">
+                    in watchlist<i class="fa fa-heart"></i>
+                </div>
+                <div *ngIf="!series.watchlist">
+                    <a (click)="add2watchlist(series.id)">add to watchlist<i class="fa fa-heart"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

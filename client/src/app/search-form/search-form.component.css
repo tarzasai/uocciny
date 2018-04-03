@@ -1,0 +1,129 @@
+.modal-header {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    background-color: white;
+    border-bottom: 1px solid darkgray;
+    font-size: 115%;
+    font-weight: bold;
+    margin: 0 0 0 0;
+    padding: 8px 14px;
+    width: 960px;
+}
+
+.modal-body {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 1;
+    background-color: #F2F2F2;
+    padding: 0;
+    height: 740px;
+    width: 960px;
+}
+
+.wrapper {
+    display: flex;
+    flex: 0 1 auto;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    padding: 0 5px 5px 5px;
+    overflow-y: auto;
+}
+
+.box {
+    display: flex;
+    position: relative;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: white;
+    box-shadow: 2px 2px 10px gray;
+    border: 1px solid darkgrey;
+    border-radius: 4px;
+    line-height: 116%;
+    font-size: 90%;
+    padding: 0 0 1px 0;
+    overflow: hidden;
+    margin: 10px 8px;
+    height: 200px;
+    width: 450px;
+}
+
+.box a {
+    color: #0B3861;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.box a:hover {
+    color: #0056b3;
+    text-decoration: initial;
+    text-decoration-line: initial;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+}
+
+.box * {
+    display: flex;
+    position: relative;
+}
+
+.box > div {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.box .banner {
+    padding: 0;
+    /* 758 : 450 = 140 : 83 */
+    width: 450px;
+    height: 83px;
+}
+
+.box .title {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.box .title .fa-external-link {
+    display: none;
+    margin: auto 0 auto 4px;
+}
+
+.box .title:hover .fa-external-link {
+    display: flex;
+}
+
+.box .plot {
+    flex-shrink: 1;
+    /*height: 105px;*/
+    opacity: 0.8;
+    overflow: hidden;
+    white-space: normal;
+}
+
+.box .footer {
+    flex-grow: 1;
+    opacity: 0.7;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.box .footer > div {
+    align-self: flex-end;
+}
+
+.ended {
+    color: darkred;
+    font-weight: bold;
+    opacity: 0.5;
+}
+
+.fa-heart {
+    margin: auto 0 auto 4px;
+}
