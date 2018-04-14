@@ -1,6 +1,6 @@
 # encoding: utf-8
 from datetime import datetime, timedelta
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Index, or_
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Index, or_, func
 from sqlalchemy.orm import relationship
 from tvdb_client import ApiV2Client
 
@@ -97,12 +97,16 @@ def read_from_tvdb(tvdb_id):
 
 
 def update_from_tvdb(series, forced=False):
-    if not (forced or series.need_full_update() or series.need_partial_update()):
-        return
-    app.logger.info('updating %r...', series)
-    exists = series.updated is not None
     db = get_db()
     try:
+        if not (forced or series.need_full_update() or series.need_partial_update()):
+            series.lastAired = db.query(func.max(Episode.firstAired))\
+                .filter(Episode.series == series.tvdb_id)\
+                .filter(Episode.firstAired <= datetime.now()).first()[0]
+            if not (series.need_full_update() or series.need_partial_update()):
+                return
+        app.logger.info('updating %r...', series)
+        exists = series.updated is not None
         tvdb, show = read_from_tvdb(series.tvdb_id)
         if show is None:
             raise Exception('series %s not found on TVDB' % series.tvdb_id)
@@ -184,8 +188,8 @@ def get_metadata(series, forceRefresh=False):
     try:
         update_from_tvdb(rec, forceRefresh)
     except Exception as err:
-        if rec.updated is None:
-            raise err
+        '''if rec.updated is None:
+            raise err'''
         series['error'] = err.message
     series.update(row2dict(rec))
     series['rating'] = series.get('rating', 0)

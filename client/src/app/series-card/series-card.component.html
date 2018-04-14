@@ -39,7 +39,7 @@
             </span>
         </div>
 
-        <div class="section s" *ngIf="!series.error">
+        <div class="section s" *ngIf="!series.error && episode">
             <i class="fa" [class.fa-clock-o]="episode.date"></i>
             <span *ngIf="episode.date">{{episode.dateAsText(true)}}</span>
             <span class="spacer"></span>
