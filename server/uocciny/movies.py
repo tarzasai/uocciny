@@ -1,12 +1,30 @@
 # encoding: utf-8
 import operator
 from datetime import datetime
+import Queue as queue
+import threading
 from sqlalchemy import Column, Integer, String, DateTime
 import tmdbsimple as tmdb
 
 from uocciny import app, get_uf, save_uf
 from uocciny.database import Base, get_db, row2dict
 
+'''
+https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
+
+shutting_down = False
+movie_queue = queue.Queue()
+
+def update_movies():
+    while not shutting_down:
+        try:
+            movie = movie_queue.get(True, 30)
+            update_from_tmdb(movie)
+        except queue.Empty:
+            pass
+
+threading.Thread(target=update_movies).start()
+'''
 
 class Movie(Base):
     __tablename__ = 'movies'
@@ -49,25 +67,12 @@ def read_from_uoccin(imdb_id):
     return get_uf().get('movies', {}).get(imdb_id, None)
 
 
-def read_from_tmdb(imdb_id):
-    res = tmdb.Movies(imdb_id).info(language='en', append_to_response='credits,images')
-    app.logger.debug('read_from_tmdb: %s', res['title'])
-    return res
-    '''
-    try:
-        return tmdb.Movies(imdb_id).info(language='en', append_to_response='credits,images')
-    except Exception as err:
-        app.logger.debug('read_from_tmdb: %r', err)
-        return None
-    '''
-
-
 def update_from_tmdb(movie):
     app.logger.info('updating %r...', movie)
     exists = movie.updated is not None
     db = get_db()
     try:
-        obj = read_from_tmdb(movie.imdb_id)
+        obj = tmdb.Movies(movie.imdb_id).info(language='en', append_to_response='credits,images')
         if obj is None:
             raise Exception('IMDB error or movie not found')
         movie.tmdb_id = obj['id']
@@ -108,6 +113,10 @@ def get_metadata(movie, forceRefresh=False):
         rec = Movie(mid)
     if forceRefresh or rec.is_old():
         update_from_tmdb(rec)
+    '''
+    if (forceRefresh or rec.is_old()) and ((next((m for m in movie_queue if m.imdb_id == mid), None)) is None):
+        movie_queue.put(rec)
+    '''
     movie.update(row2dict(rec))
     movie['rating'] = movie.get('rating', 0)
     movie['missing'] = movie['watchlist'] and rec.released is not None and not movie['collected']\

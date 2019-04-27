@@ -19,9 +19,8 @@ class PrefixMiddleware(object):
             environ['PATH_INFO'] = environ['PATH_INFO'][len(self.prefix):]
             environ['SCRIPT_NAME'] = self.prefix
             return self.app(environ, start_response)
-        else:
-            start_response('404', [('Content-Type', 'text/plain')])
-            return ["This url does not belong to the app.".encode()]
+        start_response('404', [('Content-Type', 'text/plain')])
+        return ["This url does not belong to the app.".encode()]
 
 
 # creazione servizio
