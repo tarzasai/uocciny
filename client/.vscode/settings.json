@@ -1,6 +1,5 @@
 {
     "files.exclude": {
-        "**/*.spec.ts": true,
-        "**/package-lock.json": true
+        "**/*.spec.*": true
     }
 }

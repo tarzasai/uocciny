@@ -61,7 +61,7 @@ export class MessageService {
         this.add(MessageType.error, title, text);
     }
 
-    del(i) {
+    del(i: number) {
         if (i >= 0 && i < this.list.length)
             this.list.splice(i, 1);
     }

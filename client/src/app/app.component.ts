@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { GridOptions } from 'ag-grid/main';
-import { Subscription } from 'rxjs/Subscription';
+import { GridOptions, ColumnApi } from 'ag-grid-community';
+import { Subscription } from 'rxjs';
 
 import { ModalService } from './utils/modal.service';
 import { MessageService, MessageType } from './utils/message.service';
-import { TitleParentComponent } from './title-parent/title-parent.component';
-import { TitleCellComponent } from './title-cell/title-cell.component';
-import { Title, TitleType } from './api/title';
+import { TitleParentComponent } from './components/title-parent/title-parent.component';
 import { Movie } from './api/movie';
 import { Series, EpisodePreview } from './api/series';
 import { DataService, RetrieveType, UpdateType } from './api/data.service';
@@ -91,63 +89,73 @@ export class AppComponent {
     updateListener: Subscription;
     activeView = null;
     titleList = [];
-    titleGrid: GridOptions;
     titleCols = [];
     titleRows = [];
     titleFltr = null;
     colCount = 0;
 
-    constructor(public modals: ModalService, public messages: MessageService, private api: DataService) {
-        //
-        this.titleGrid = <GridOptions>{
+    columnApi: ColumnApi = null;
+
+    titleGrid: GridOptions;
+
+    constructor(public modals: ModalService, public messages: MessageService, public api: DataService) { }
+
+    ngOnInit() {
+
+        console.warn('ngOnInit');
+
+        var ctx = this;
+        ctx.titleGrid = <GridOptions>{
             headerHeight: 0,
             rowHeight: CELL_HEIGHT,
             enableColResize: false,
-            onGridReady: this.onGridReady,
-        };
-        // gli eventi della agGrid di solito hanno l'oggetto GridOptions o la griglia come
-        // scopo (this), quindi è praticamente necessario avere questa referenza circolare...
-        this.titleGrid.context = this;
-    }
+            onGridReady: (params) => {
 
-    ngOnInit() {
-        this.updateListener = this.api.onUpdate.subscribe(title => {
-            //console.log('onUpdate', title);
-            if (
-                title.data.banned ||
-                (this.activeView.watchlist && !title.watchlist) ||
-                (this.activeView.available && !title.available) ||
-                (this.activeView.missing && !title.missing) ||
-                (this.activeView.collected && !title.collected) ||
-                (title.isMovie && !(title.watched || title.collected || title.watchlist))
-            ) {
-                this.removeTitle(title);
-            } else {
-                var inlist = false,
-                    chk;
-                for (var i = 0; i < this.titleList.length; i++) {
-                    chk = this.titleList[i];
-                    if (chk.type === title.type && (
-                        (chk.isMovie && chk.imdb_id === title.imdb_id) ||
-                        (chk.isSeries && chk.data.tvdb_id === title.data.tvdb_id)
-                    )) {
-                        inlist = true;
-                        break;
+                console.warn('onGridReady', ctx, params);
+
+                ctx.titleGrid.context = ctx;
+                ctx.columnApi = params.columnApi;
+                ctx.setColumns();
+                ctx.getData(VIEW_TYPES[localStorage.getItem('LastView') || 'available']);
+
+                ctx.updateListener = ctx.api.onUpdate.subscribe(title => {
+                    if (
+                        title.data.banned ||
+                        (ctx.activeView.watchlist && !title.watchlist) ||
+                        (ctx.activeView.available && !title.available) ||
+                        (ctx.activeView.missing && !title.missing) ||
+                        (ctx.activeView.collected && !title.collected) ||
+                        (title.isMovie && !(title.watched || title.collected || title.watchlist))
+                    ) {
+                        ctx.removeTitle(title);
+                    } else {
+                        var inlist = false,
+                            chk;
+                        for (var i = 0; i < ctx.titleList.length; i++) {
+                            chk = ctx.titleList[i];
+                            if (chk.type === title.type && (
+                                (chk.isMovie && chk.imdb_id === title.imdb_id) ||
+                                (chk.isSeries && chk.data.tvdb_id === title.data.tvdb_id)
+                            )) {
+                                inlist = true;
+                                break;
+                            }
+                        }
+                        if (!inlist && !title.isEpisode && !title.data.banned && (
+                            ctx.activeView.everything ||
+                            (ctx.activeView.watchlist && title.watchlist) ||
+                            (ctx.activeView.available && title.available) ||
+                            (ctx.activeView.missing && title.missing) ||
+                            (ctx.activeView.collected && title.collected)
+                        )) {
+                            var newlist = ctx.titleList.splice(0);
+                            newlist.push(title);
+                            ctx.setRows(newlist);
+                        }
                     }
-                }
-                if (!inlist && !title.isEpisode && !title.data.banned && (
-                    this.activeView.everything ||
-                    (this.activeView.watchlist && title.watchlist) ||
-                    (this.activeView.available && title.available) ||
-                    (this.activeView.missing && title.missing) ||
-                    (this.activeView.collected && title.collected)
-                )) {
-                    var newlist = this.titleList.splice(0);
-                    newlist.push(title);
-                    this.setRows(newlist);
-                }
+                });
             }
-        });
+        };
     }
 
     ngOnDestroy() {
@@ -159,41 +167,41 @@ export class AppComponent {
         this.setColumns();
     }
 
-    onGridReady(params) {
-        var grd: any = this,
-            ctx: any = grd.context;
-        ctx.setColumns();
-        ctx.getData(VIEW_TYPES[localStorage.getItem('LastView') || 'available']);
-    }
-
     getData(view = null) {
+
+        console.warn('getData', view);
+
+        var ctx = this,
+            res = [];
         if (view) {
-            this.activeView = view;
+            ctx.activeView = view;
             localStorage.setItem('LastView', view.tag);
         } else
-            view = this.activeView;
-        this.api.lockScreen();
-        var res = [];
-        this.api.retrieve(RetrieveType.series, view.series).subscribe(result => {
+            view = ctx.activeView;
+        ctx.api.lockScreen();
+        ctx.api.retrieve(RetrieveType.series, view.series).subscribe(result => {
             result.forEach(function (itm) {
                 res.push(new Series(itm, view.episode));
             });
-            this.api.retrieve(RetrieveType.movies, view.movies).subscribe(result => {
+            ctx.api.retrieve(RetrieveType.movies, view.movies).subscribe(result => {
                 result.forEach(function (itm) {
                     res.push(new Movie(itm));
                 });
-                this.setRows(res);
-                this.setOffset();
-                this.api.unlockScreen();
+                ctx.setRows(res);
+                ctx.setOffset();
+                ctx.api.unlockScreen();
             })
         });
     }
 
     setOffset() {
+
+        console.warn('setOffset', this);
+
         var w = window.innerWidth,
             o = Math.floor((w - (this.colCount * CELL_WIDTH)) / 2);
         //console.log('setOffset()', w, o);
-        this.titleGrid.columnApi.setColumnWidth('hdr', o, false);
+        this.columnApi.setColumnWidth('hdr', o, false);
     }
 
     setColumns() {
@@ -250,7 +258,7 @@ export class AppComponent {
         var ctx = this,
             n = -1,
             col;
-        this.titleGrid.api.forEachNode(function(node) {
+        this.titleGrid.api.forEachNode(function (node) {
             for (var c = 0; c < ctx.colCount; c++) {
                 col = 'col' + c;
                 n++;

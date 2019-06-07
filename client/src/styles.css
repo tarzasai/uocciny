@@ -2,7 +2,6 @@
 
 html,
 body {
-    font-family: 'Roboto Condensed', sans-serif;
     color: darkslategray;
 }
 
@@ -25,94 +24,15 @@ a:hover {
     font-weight: bold !important;
 }
 
-/*
-vedi https://stackoverflow.com/a/34643330/28852
- */
+/**/
 
 app-root {
-    display: flex;
-    position: absolute;
-    flex-direction: column;
-    /*
-    align-items: center;
-    flex: 1 1 auto;
-    width: 100%;
-    height: 100%;
-    */
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    font-family: 'Roboto Condensed', sans-serif;
 }
-
-
-/*
-per far funzionare la agGrid in un layout flexbox:
-*/
-
-#borderLayout_eRootPanel {
-    display: flex !important;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 0;
-}
-
-ag-grid-angular {
-    display: flex !important;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 0;
-}
-
-.ag-bl-full-height {
-    height: unset !important;
-}
-
-.ag-bl-center,
-.ag-bl,
-.ag-root {
-    display: flex !important;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 0;
-    width: unset !important;
-}
-
-
-/*
-servono questi stili per controllare (più che altro "contenere") le dimensioni
-delle modal di bootstrap, ma la cosa peggiore è che devono stare qui, perchè
-se si mettono nel css del componente specifico (SeriesForm) non hanno effetto,
-perchè le suddette classi e il tag "app-series-form" sono esterni allo scopo
-di quel css...
-*/
-
-.modal-dialog,
-.modal-content {
-    display: flex;
-    width: auto;
-    min-width: unset;
-    max-width: unset;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.modal-dialog {
-    max-height: 90%;
-}
-
-app-series-form {
-    display: flex;
-    position: relative;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-direction: column;
-}
-
 
 /**/
 
-.card {
+.title-card {
     display: flex;
     position: relative;
     flex-grow: 0;

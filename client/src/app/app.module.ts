@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -9,28 +9,18 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AgGridModule } from "ag-grid-angular/main";
 
-/* */
-import 'rxjs/add/operator/map';
-
-/* */
 import { AppComponent } from './app.component';
-import { MessageService } from './utils/message.service';
-import { ConfigService } from './utils/config.service';
-import { ModalService } from './utils/modal.service';
-import { DataService } from './api/data.service';
 import { KeysPipe } from './utils/keys.pipe';
 import { ValuesPipe } from './utils/values.pipe';
-import { TitleCellComponent } from './title-cell/title-cell.component';
-import { TitleParentComponent } from './title-parent/title-parent.component';
-import { MovieCardComponent } from './movie-card/movie-card.component';
-import { SeriesCardComponent } from './series-card/series-card.component';
-import { SeriesFormComponent } from './series-form/series-form.component';
-import { SearchFormComponent } from './search-form/search-form.component';
-
-/* */
-export function loadConfig(configService: ConfigService) {
-	return () => configService.load();
-}
+import { MessageService } from './utils/message.service';
+import { ModalService } from './utils/modal.service';
+import { DataService } from './api/data.service';
+import { TitleParentComponent } from './components/title-parent/title-parent.component';
+import { TitleCellComponent } from './components/title-cell/title-cell.component';
+import { MovieCardComponent } from './components/movie-card/movie-card.component';
+import { SeriesFormComponent } from './components/series-form/series-form.component';
+import { SeriesCardComponent } from './components/series-card/series-card.component';
+import { SearchFormComponent } from './components/search-form/search-form.component';
 
 @NgModule({
     imports: [
@@ -47,27 +37,20 @@ export function loadConfig(configService: ConfigService) {
         ]),
     ],
     providers: [
-        ConfigService,
         MessageService,
         ModalService,
-        DataService,
-		{
-			provide: APP_INITIALIZER,
-			useFactory: loadConfig,
-			deps: [ ConfigService ],
-			multi: true,
-		}
+        DataService
     ],
     declarations: [
         AppComponent,
-        TitleCellComponent,
-        TitleParentComponent,
-        MovieCardComponent,
-        SeriesCardComponent,
-        SeriesFormComponent,
-        SearchFormComponent,
         KeysPipe,
         ValuesPipe,
+        TitleParentComponent,
+        TitleCellComponent,
+        MovieCardComponent,
+        SeriesFormComponent,
+        SeriesCardComponent,
+        SearchFormComponent
     ],
     entryComponents: [
         SeriesFormComponent,

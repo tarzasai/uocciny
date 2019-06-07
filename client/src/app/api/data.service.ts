@@ -1,13 +1,11 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { sprintf } from 'sprintf';
-import { catchError, map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { Subject } from 'rxjs/Subject';
+import { sprintf } from 'sprintf-js';
+import { catchError, map } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
 
-import { ConfigService } from '../utils/config.service';
+import { environment } from '../../environments/environment';
 import { MessageService } from '../utils/message.service';
 import { Title } from './title';
 
@@ -33,16 +31,17 @@ export class ServerResult {
     }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DataService {
     onUpdate: Subject<Title> = new Subject();
     lockRequests = 0;
 
-    constructor(private http: HttpClient, private config: ConfigService,
-        private messages: MessageService) { }
+    constructor(private http: HttpClient, private messages: MessageService) { }
 
     retrieve(what: RetrieveType, args: any): Observable<any> {
-        var url = this.config.apiHost + '/' + RetrieveType[what];
+        var url = environment.apiHost + '/' + RetrieveType[what];
         return this.http
             .get<ServerResult>([url, this.args2uri(args)].join('?'))
             .pipe(
@@ -56,7 +55,7 @@ export class DataService {
     }
 
     update(what: UpdateType, args: any): Observable<any> {
-        var url = this.config.apiHost + '/' + UpdateType[what];
+        var url = environment.apiHost + '/' + UpdateType[what];
         return this.http
             .post<ServerResult>(url, args)
             .pipe(
@@ -70,7 +69,7 @@ export class DataService {
     }
 
     search(text): Observable<any> {
-        var url = this.config.apiHost + '/searchtvdb/' + text;
+        var url = environment.apiHost + '/searchtvdb/' + text;
         return this.http
             .get<ServerResult>(url)
             .pipe(
@@ -84,7 +83,7 @@ export class DataService {
     }
 
     import(): Observable<any> {
-        var url = this.config.apiHost + '/importimdb';
+        var url = environment.apiHost + '/importimdb';
         return this.http
             .post<ServerResult>(url, null)
             .pipe(
@@ -99,7 +98,7 @@ export class DataService {
     }
 
     cleanup(): Observable<any> {
-        var url = this.config.apiHost + '/cleanup';
+        var url = environment.apiHost + '/cleanup';
         return this.http
             .post<ServerResult>(url, null)
             .pipe(

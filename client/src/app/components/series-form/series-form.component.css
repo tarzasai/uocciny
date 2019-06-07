@@ -1,0 +1,40 @@
+.modal-header {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    background-color: white;
+    box-shadow: 2px 2px 5px darkgray;
+    margin: 0 0 5px 0;
+    padding: 0;
+    width: 758px;
+}
+
+.modal-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+    width: 758px;
+    overflow-y: auto;
+}
+
+.tab-container {
+    margin: 2px;
+    font-weight: bold;
+}
+
+.title-card.episode {
+    margin: 5px;
+    height: 102px;
+}
+
+.title-card.episode .details {
+    margin: 4px 0 5px 4px;
+}
+
+.ep-right {
+    display: flex;
+    position: relative;
+    margin: auto 7px;
+}

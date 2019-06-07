@@ -1,5 +1,5 @@
 import { Title, TitleType } from './title';
-import { sprintf } from 'sprintf';
+import { sprintf } from 'sprintf-js';
 import * as moment from 'moment';
 
 export class Episode extends Title {

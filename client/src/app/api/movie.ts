@@ -1,5 +1,5 @@
 import { Title, TitleType } from './title';
-import { sprintf } from 'sprintf';
+import { sprintf } from 'sprintf-js';
 import * as moment from 'moment';
 
 export class Movie extends Title {
@@ -10,14 +10,24 @@ export class Movie extends Title {
     }
 
     sortKey():string {
-        return super.sortKey() + (!this.date ? 'zzzzzzzz' : this.date.isBefore(moment(), 'day') ?
-            (this.date.year() + '0000') : this.date.format('YYYYMMDD')) +
-            (this.data.name || 'zzzzzzzzzz').toLocaleLowerCase();
+        /*
+        var res = super.sortKey();
+        if (!this.date)
+            res += 'zzzzzzzz';
+        else if (this.date.isBefore(moment(), 'day'))
+            res += this.date.year() + '0000';
+        else
+            res += this.date.format('YYYYMMDD');
+        */
+        return super.sortKey() + (
+            !this.date ? 'zzzzzzzz' :
+                //this.date.isBefore(moment(), 'day') ? (this.date.year() + '0000') :
+                    this.date.format('YYYYMMDD')
+        ) + (this.data.name || 'zzzzzzzzzz').toLocaleLowerCase();
     }
 
     get poster() {
-        return this.data.poster ? 'https://image.tmdb.org/t/p/w780' + this.data.poster : null;
-        // 780 x 1170
+        return this.data.poster ? 'https://image.tmdb.org/t/p/w780' + this.data.poster : null; // 780 x 1170
     }
 
     get director() {

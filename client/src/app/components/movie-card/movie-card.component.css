@@ -1,0 +1,10 @@
+.title-card.movie {
+    margin: 15px;
+    height: 158px;
+    width: 450px;
+}
+
+.title-card.movie .details {
+    margin: 6px 0 7px 8px;
+    padding-right: 5px;
+}

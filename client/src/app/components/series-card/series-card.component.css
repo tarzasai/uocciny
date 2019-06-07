@@ -1,0 +1,28 @@
+.title-card.series {
+    margin: 15px;
+    height: 158px;
+    width: 450px;
+}
+
+.title-card.series .poster {
+    /* 680 : 1000 = 136 : 156 */
+    width: 106px;
+}
+
+.title-card.series .details {
+    margin: 6px 0 7px 8px;
+    padding-right: 5px;
+}
+
+.ended {
+    color: darkred;
+    font-weight: bold;
+}
+
+sup {
+    display: flex;
+    position: relative;
+    margin-left: -3px;
+    top: -1px;
+    font-size: 80%;
+}

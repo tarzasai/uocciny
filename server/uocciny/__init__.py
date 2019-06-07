@@ -34,13 +34,14 @@ app.config.update(UOCCIN_PATH=os.environ.get("UOCCIN_PATH"))
 app.config.update(TVDB_API_KEY=os.environ.get("TVDB_API_KEY"))
 app.config.update(TMDB_API_KEY=os.environ.get("TMDB_API_KEY"))
 app.config.update(IMDB_USER_ID=os.environ.get("IMDB_USER_ID"))
+app.config.update(ISS_VIRTUALFOLDER=os.environ.get("ISS_VIRTUALFOLDER"))
 
 # di solito non mi interessa fare debug dal browser
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
 # quando il servizio gira in IIS è sempre in una directory virtuale, quindi bisogna gestire la porzione di
 # path "non prevista" prima che le rule di werkzeug diano 404 perchè non sanno come mappare le richieste.
-if 'ISS_VIRTUALFOLDER' in app.config:
+if 'ISS_VIRTUALFOLDER' in app.config and app.config['ISS_VIRTUALFOLDER']:
     app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix='/' + app.config['ISS_VIRTUALFOLDER'])
 
 # CORS forse dovrebbe essere opzionale, cmq...

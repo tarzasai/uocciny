@@ -1,8 +1,8 @@
 # encoding: utf-8
 import operator
 from datetime import datetime
-import Queue as queue
-import threading
+# import Queue as queue
+# import threading
 from sqlalchemy import Column, Integer, String, DateTime
 import tmdbsimple as tmdb
 
@@ -143,6 +143,7 @@ def get_movlst(watchlist=None, collected=None, missing=None, watched=None):
             obj = get_metadata(dict({'imdb_id': mid}, **itm))
             if (missing is None or obj['missing'] == missing):
                 res.append(obj)
+    res.sort(key=lambda m: m['released'] if m['released'] is not None else '2200-01-01T00:00:00', reverse=False)
     return res
 
 

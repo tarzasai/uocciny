@@ -1,0 +1,82 @@
+<div class="title-card movie">
+
+    <div class="poster" [style.width.px]="posterWidth">
+        <img *ngIf="movie.poster" src="{{movie.poster}}" height="156" width="{{posterWidth}}"/>
+        <i *ngIf="!movie.poster" class="fa fa-picture-o"></i>
+    </div>
+
+    <div class="details">
+
+        <div class="section s" title="{{movie.title}}">
+            <i class="fa fa-film"></i>
+            <span class="bold">
+                <a href="{{movie.imdbUrl}}" target="_blank"
+                    title="Open IMDB page (new tab)">{{movie.title}}</a>
+            </span>
+            <i class="fa fa-external-link"></i>
+        </div>
+
+        <div class="section s">
+            <i class="fa" title="{{movie.subtitles}}"
+                [class.fa-eye]="movie.watched"
+                [class.fa-cc]="movie.collected && movie.subtitles"
+                [class.fa-hdd-o]="movie.collected && !movie.subtitles"
+                [class.fa-eye-slash]="movie.missing">
+            </i>
+            <span *ngIf="movie.date" [style.margin-right.px]="0">{{movie.date.year()}}</span>
+            <span *ngIf="movie.director">by {{movie.director}}</span>
+            <span *ngIf="!(movie.date || movie.director)">No data</span>
+        </div>
+
+        <div class="section m">
+            <i class="fa fa-quote-left"></i>
+            <span [style.opacity]="0.7">{{movie.plot || 'Unknown'}}</span>
+        </div>
+
+        <div class="section s">
+            <i class="fa" [class.fa-clock-o]="movie.date"></i>
+            <span *ngIf="movie.date">{{movie.dateAsText(true)}}</span>
+            <span class="spacer"></span>
+            <span *ngIf="movie.data.runtime">{{movie.runtime}}</span>
+        </div>
+
+        <div class="tools">
+            <div class="btn-group" role="group">
+                <div class="btn-group" *ngIf="movie.watchlist" title="Ban movie">
+                    <button type="button" class="btn btn-sm btn-danger" (click)="trashMovie()">
+                        <i class="fa fa-lg fa-ban"></i>
+                    </button>
+                </div>
+                <div class="btn-group" title="Refresh data from TMDB (medium execution time)">
+                    <button type="button" class="btn btn-sm btn-warning" (click)="forceRefresh()">
+                        <i class="fa fa-lg fa-refresh"></i>
+                    </button>
+                </div>
+                <div class="btn-group" title="Toggle movie's watched status">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="toggleWatched()">
+                        <i class="fa fa-lg fa-eye" [class.false]="!movie.watched"></i>
+                    </button>
+                </div>
+                <div class="btn-group" title="Toggle movie's collected status">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="toggleCollected()">
+                        <i class="fa fa-lg fa-hdd-o" [class.false]="!movie.collected"></i>
+                    </button>
+                </div>
+                <div class="btn-group" title="Toggle movie's watchlist status">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="toggleWatchlist()">
+                        <i class="fa fa-lg fa-heart" [class.false]="!movie.watchlist"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="btn-group" role="group" *ngIf="movie.collected || movie.watched">
+                <div class="btn-group" *ngFor="let r of [1,2,3,4,5]">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="setRating(r)">
+                        <i class="fa fa-lg" [class.fa-star-o]="movie.rating < r" [class.fa-star]="movie.rating >= r"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
