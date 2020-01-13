@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  __apiHost: "http://localhost:5000",
-  apiHost: "http://storage/uoccin-server"
+  apiHost: "http://localhost:5000",
+  __apiHost: "http://storage/uoccin-server"
 };
 
 /*

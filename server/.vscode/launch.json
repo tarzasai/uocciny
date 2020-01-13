@@ -6,16 +6,15 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-            "pythonPath": "c:\\Python27",
-            "program": "${file}",
+            "pythonPath": "c:\\Python27\\python.exe",
+            "program": "${workspaceRoot}\\uocciny\\__init__.py",
             "cwd": "${workspaceRoot}",
-            "debugOptions": [
-                "RedirectOutput"
-            ],
+            "redirectOutput": true,
             "args": [],
             "env": {
                 "UOCCINY_DB": "C:\\Workspace\\uocciny\\test\\data.db",
-                "UOCCIN_PATH": "C:\\Workspace\\uocciny\\test\\uoccin_path",
+                "__UOCCIN_PATH": "C:\\Workspace\\uocciny\\test\\uoccin_path",
+                "UOCCIN_PATH": "C:\\Google Drive\\uoccin",
                 "TVDB_API_KEY": "A74D017DA5F2C3B0",
                 "TMDB_API_KEY": "4cb75e343ed38c533e19f547c44cf5d0",
                 "IMDB_USER_ID": "ur31826272",
