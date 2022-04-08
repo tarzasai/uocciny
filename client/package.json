@@ -22,7 +22,7 @@
     "ag-grid-community": "^21.0.0",
     "bootstrap": "^4.3.1",
     "font-awesome": "^4.7.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "ngx-bootstrap": "^4.2.0",
     "rxjs": "~6.4.0",
     "sprintf-js": "^1.1.2",
